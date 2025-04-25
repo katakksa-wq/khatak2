@@ -14,12 +14,12 @@ interface AdminLayoutProps {
 }
 
 function AdminLayout({ children }: AdminLayoutProps) {
-  const { user, isLoading } = useAuth();
+  const { user, loading } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
     // Redirect to login if not authenticated and not loading
-    if (!user && !isLoading) {
+    if (!user && !loading) {
       router.push('/login');
     }
     
@@ -27,9 +27,9 @@ function AdminLayout({ children }: AdminLayoutProps) {
     if (user && user.role !== 'ADMIN') {
       router.push('/dashboard');
     }
-  }, [user, isLoading, router]);
+  }, [user, loading, router]);
 
-  if (isLoading) {
+  if (loading) {
     return (
       <div className="d-flex justify-content-center align-items-center vh-100">
         <div className="spinner-border text-primary" role="status">
@@ -150,7 +150,7 @@ export default function AdminPaymentsPage() {
       if (!driverStats[driverId]) {
         driverStats[driverId] = {
           id: driverId,
-          name: payment.driver?.name || 'Unknown Driver',
+          name: `${payment.driver?.firstName || ''} ${payment.driver?.lastName || ''}`.trim() || 'Unknown Driver',
           totalPaid: 0,
           totalPending: 0,
           paymentCount: 0
