@@ -750,13 +750,13 @@ export default function UsersManagementPage() {
                       </div>
                       <div className="card-body">
                         <div className="row g-2">
-                          {selectedUser.driver_profile.licenseDocument && (
+                          {selectedUser.driver_profile?.licenseDocument && (
                             <div className="col-md-6 mb-2">
                               <p className="mb-1"><strong>Driver's License:</strong></p>
                               <div className="d-flex align-items-center gap-2">
                                 <div className="position-relative" style={{ width: '100px', height: '100px' }}>
                                   <img 
-                                    src={selectedUser.driver_profile.licenseDocument} 
+                                    src={selectedUser.driver_profile?.licenseDocument} 
                                     alt="Driver's License" 
                                     className="img-thumbnail" 
                                     style={{ 
@@ -765,7 +765,7 @@ export default function UsersManagementPage() {
                                       objectFit: 'cover',
                                       cursor: 'pointer'
                                     }}
-                                    onClick={() => window.open(selectedUser.driver_profile.licenseDocument, '_blank')}
+                                    onClick={() => window.open(selectedUser.driver_profile?.licenseDocument, '_blank')}
                                     onError={(e) => {
                                       e.currentTarget.src = '/images/document-placeholder.png';
                                       e.currentTarget.onerror = null;
@@ -776,7 +776,7 @@ export default function UsersManagementPage() {
                                   </div>
                                 </div>
                                 <a 
-                                  href={selectedUser.driver_profile.licenseDocument} 
+                                  href={selectedUser.driver_profile?.licenseDocument} 
                                   target="_blank" 
                                   rel="noopener noreferrer"
                                   className="btn btn-sm btn-outline-primary"
@@ -787,13 +787,13 @@ export default function UsersManagementPage() {
                             </div>
                           )}
                           
-                          {selectedUser.driver_profile.registrationDocument && (
+                          {selectedUser.driver_profile?.registrationDocument && (
                             <div className="col-md-6 mb-2">
                               <p className="mb-1"><strong>Vehicle Registration:</strong></p>
                               <div className="d-flex align-items-center gap-2">
                                 <div className="position-relative" style={{ width: '100px', height: '100px' }}>
                                   <img 
-                                    src={selectedUser.driver_profile.registrationDocument} 
+                                    src={selectedUser.driver_profile?.registrationDocument} 
                                     alt="Vehicle Registration" 
                                     className="img-thumbnail" 
                                     style={{ 
@@ -802,7 +802,7 @@ export default function UsersManagementPage() {
                                       objectFit: 'cover',
                                       cursor: 'pointer'
                                     }}
-                                    onClick={() => window.open(selectedUser.driver_profile.registrationDocument, '_blank')}
+                                    onClick={() => window.open(selectedUser.driver_profile?.registrationDocument, '_blank')}
                                     onError={(e) => {
                                       e.currentTarget.src = '/images/document-placeholder.png';
                                       e.currentTarget.onerror = null;
@@ -813,7 +813,7 @@ export default function UsersManagementPage() {
                                   </div>
                                 </div>
                                 <a 
-                                  href={selectedUser.driver_profile.registrationDocument} 
+                                  href={selectedUser.driver_profile?.registrationDocument} 
                                   target="_blank" 
                                   rel="noopener noreferrer"
                                   className="btn btn-sm btn-outline-primary"
@@ -824,13 +824,13 @@ export default function UsersManagementPage() {
                             </div>
                           )}
                           
-                          {selectedUser.driver_profile.insuranceDocument && (
+                          {selectedUser.driver_profile?.insuranceDocument && (
                             <div className="col-md-6 mb-2">
                               <p className="mb-1"><strong>Insurance:</strong></p>
                               <div className="d-flex align-items-center gap-2">
                                 <div className="position-relative" style={{ width: '100px', height: '100px' }}>
                                   <img 
-                                    src={selectedUser.driver_profile.insuranceDocument} 
+                                    src={selectedUser.driver_profile?.insuranceDocument} 
                                     alt="Insurance" 
                                     className="img-thumbnail" 
                                     style={{ 
@@ -839,7 +839,7 @@ export default function UsersManagementPage() {
                                       objectFit: 'cover',
                                       cursor: 'pointer'
                                     }}
-                                    onClick={() => window.open(selectedUser.driver_profile.insuranceDocument, '_blank')}
+                                    onClick={() => window.open(selectedUser.driver_profile?.insuranceDocument, '_blank')}
                                     onError={(e) => {
                                       e.currentTarget.src = '/images/document-placeholder.png';
                                       e.currentTarget.onerror = null;
@@ -850,7 +850,7 @@ export default function UsersManagementPage() {
                                   </div>
                                 </div>
                                 <a 
-                                  href={selectedUser.driver_profile.insuranceDocument} 
+                                  href={selectedUser.driver_profile?.insuranceDocument} 
                                   target="_blank" 
                                   rel="noopener noreferrer"
                                   className="btn btn-sm btn-outline-primary"
@@ -861,13 +861,13 @@ export default function UsersManagementPage() {
                             </div>
                           )}
                           
-                          {selectedUser.driver_profile.backgroundCheckDocument && (
+                          {selectedUser.driver_profile?.backgroundCheckDocument && (
                             <div className="col-md-6 mb-2">
                               <p className="mb-1"><strong>Background Check:</strong></p>
                               <div className="d-flex align-items-center gap-2">
                                 <div className="position-relative" style={{ width: '100px', height: '100px' }}>
                                   <img 
-                                    src={selectedUser.driver_profile.backgroundCheckDocument} 
+                                    src={selectedUser.driver_profile?.backgroundCheckDocument} 
                                     alt="Background Check" 
                                     className="img-thumbnail" 
                                     style={{ 
@@ -876,7 +876,7 @@ export default function UsersManagementPage() {
                                       objectFit: 'cover',
                                       cursor: 'pointer'
                                     }}
-                                    onClick={() => window.open(selectedUser.driver_profile.backgroundCheckDocument, '_blank')}
+                                    onClick={() => window.open(selectedUser.driver_profile?.backgroundCheckDocument, '_blank')}
                                     onError={(e) => {
                                       e.currentTarget.src = '/images/document-placeholder.png';
                                       e.currentTarget.onerror = null;
@@ -887,7 +887,7 @@ export default function UsersManagementPage() {
                                   </div>
                                 </div>
                                 <a 
-                                  href={selectedUser.driver_profile.backgroundCheckDocument} 
+                                  href={selectedUser.driver_profile?.backgroundCheckDocument} 
                                   target="_blank" 
                                   rel="noopener noreferrer"
                                   className="btn btn-sm btn-outline-primary"
@@ -898,10 +898,10 @@ export default function UsersManagementPage() {
                             </div>
                           )}
                           
-                          {!selectedUser.driver_profile.licenseDocument && 
-                           !selectedUser.driver_profile.registrationDocument && 
-                           !selectedUser.driver_profile.insuranceDocument && 
-                           !selectedUser.driver_profile.backgroundCheckDocument && (
+                          {!selectedUser.driver_profile?.licenseDocument && 
+                           !selectedUser.driver_profile?.registrationDocument && 
+                           !selectedUser.driver_profile?.insuranceDocument && 
+                           !selectedUser.driver_profile?.backgroundCheckDocument && (
                             <div className="col-12">
                               <p className="text-muted">No documents available</p>
                             </div>
