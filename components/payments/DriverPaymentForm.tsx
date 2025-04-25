@@ -155,6 +155,14 @@ export default function DriverPaymentForm({ orderId, onPaymentComplete }: Driver
   return renderPaymentForm();
 
   function renderPaymentForm() {
+    if (!commissionData) {
+      return (
+        <div className="alert alert-danger">
+          <p className="mb-0">Failed to load commission data for this order</p>
+        </div>
+      );
+    }
+    
     return (
       <div className="card shadow border-0">
         <div className="card-header bg-white py-3">
