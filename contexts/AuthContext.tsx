@@ -69,20 +69,35 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         throw new Error('No response data received');
       }
 
-      const { user, token } = response.data;
-      if (!user || !token) {
+      const { user: apiUser, token } = response.data;
+      if (!apiUser || !token) {
         throw new Error('No user or token data received');
       }
 
       // Store auth data
       localStorage.setItem('token', token);
-      localStorage.setItem('user', JSON.stringify(user));
+      localStorage.setItem('user', JSON.stringify(apiUser));
       
-      setUser(user);
+      // Convert authService User to context User
+      const contextUser: User = {
+        id: apiUser.id,
+        name: apiUser.name,
+        email: apiUser.email,
+        phone: apiUser.phone || '',
+        role: apiUser.role as UserRole,
+        isActive: apiUser.isActive,
+        createdAt: apiUser.createdAt || new Date().toISOString(),
+        // Convert string address to object if needed
+        address: typeof apiUser.address === 'string' 
+          ? { street: apiUser.address } 
+          : apiUser.address as User['address']
+      };
+
+      setUser(contextUser);
       setToken(token);
 
       // Redirect based on role
-      const role = user.role.toUpperCase();
+      const role = apiUser.role.toUpperCase();
       switch (role) {
         case 'ADMIN':
           router.replace('/admin/dashboard');
