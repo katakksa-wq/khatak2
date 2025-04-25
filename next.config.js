@@ -4,16 +4,13 @@ const nextConfig = {
   images: {
     domains: ['localhost', 'via.placeholder.com'],
   },
-  experimental: {
-    optimizeFonts: true,
-  },
   webpack(config) {
     return config;
   },
   i18n: {
     locales: ['en', 'ar'],
     defaultLocale: 'en',
-    localeDetection: true,
+    localeDetection: false,
   },
   async rewrites() {
     return [

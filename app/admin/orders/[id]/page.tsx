@@ -209,7 +209,7 @@ export default function AdminOrderDetailsPage() {
         <div className="card shadow">
           <div className="card-header bg-white py-3">
             <div className="d-flex justify-content-between align-items-center">
-              <h2 className="m-0 font-weight-bold">Order #{order.orderNumber}</h2>
+              <h2 className="m-0 font-weight-bold">Order #{order.trackingNumber}</h2>
               <div className="d-flex align-items-center">
                 <span className={`badge ${getStatusBadgeClass(order.status)} fs-6 me-3`}>
                   {order.status.replace('_', ' ')}
@@ -456,7 +456,7 @@ export default function AdminOrderDetailsPage() {
           <div className="modal-dialog">
             <div className="modal-content">
               <div className="modal-header">
-                <h5 className="modal-title">Assign Driver to Order #{order.orderNumber}</h5>
+                <h5 className="modal-title">Assign Driver to Order #{order.trackingNumber}</h5>
                 <button 
                   type="button" 
                   className="btn-close" 
@@ -530,7 +530,7 @@ export default function AdminOrderDetailsPage() {
           <div className="modal-dialog">
             <div className="modal-content">
               <div className="modal-header">
-                <h5 className="modal-title">Change Status for Order #{order.orderNumber}</h5>
+                <h5 className="modal-title">Change Status for Order #{order.trackingNumber}</h5>
                 <button 
                   type="button" 
                   className="btn-close" 
