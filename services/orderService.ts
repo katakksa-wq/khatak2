@@ -157,7 +157,7 @@ export const orderService = {
 
   async cancelOrder(orderId: string): Promise<ApiResponse<Order>> {
     try {
-      const response = await apiClient.patch(`/api/orders/${orderId}/cancel`);
+      const response = await apiClient.patch<Order>(`/api/orders/${orderId}/cancel`);
       return response;
     } catch (error) {
       console.error('Error cancelling order:', error);
