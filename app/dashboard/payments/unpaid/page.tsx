@@ -22,12 +22,9 @@ const DriverPaymentForm = ({ order, onPaymentComplete }: { order: any; onPayment
     setSubmitting(true);
     
     try {
-      await submitPayment({
-        orderId: order.id,
-        amount: order.commissionAmount,
+      await submitPayment(order.id, {
         paymentMethod,
-        reference,
-        driverId: order.driverId
+        paymentReference: reference,
       });
       
       onPaymentComplete();

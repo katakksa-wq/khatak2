@@ -6,6 +6,7 @@ import paymentService, {
   PaymentSubmission
 } from '@/services/paymentService';
 import { toast } from 'react-toastify';
+import { apiClient } from '@/utils/apiClient';
 
 // Define types for payments
 export interface Order {
@@ -59,6 +60,7 @@ export function usePayments() {
   const [bankAccounts, setBankAccounts] = useState<BankAccount[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const [unpaidOrders, setUnpaidOrders] = useState<any[]>([]);
   
   // Statistics
   const [pendingCount, setPendingCount] = useState(0);
@@ -221,6 +223,25 @@ export function usePayments() {
     }
   };
   
+  // Fetch unpaid orders
+  const fetchUnpaidOrders = useCallback(async () => {
+    if (!user) return;
+    
+    try {
+      setLoading(true);
+      const response = await apiClient.get('/api/payments/unpaid-orders');
+      if (response.data && typeof response.data === 'object') {
+        const orderData = response.data as any;
+        setUnpaidOrders(orderData.data?.orders || []);
+      }
+    } catch (error) {
+      console.error('Error fetching unpaid orders:', error);
+      toast.error('Failed to load unpaid orders');
+    } finally {
+      setLoading(false);
+    }
+  }, [user]);
+  
   // Fetch data on mount and when refresh is triggered
   useEffect(() => {
     if (user) {
@@ -234,6 +255,7 @@ export function usePayments() {
     payments,
     bankAccounts,
     loading,
+    unpaidOrders,
     
     // Statistics
     pendingCount,
@@ -248,6 +270,7 @@ export function usePayments() {
     confirmPayment,
     addBankAccount,
     updateBankAccount,
-    deleteBankAccount
+    deleteBankAccount,
+    fetchUnpaidOrders
   };
 } 
