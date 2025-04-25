@@ -1,0 +1,138 @@
+/*!*************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[7].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[7].use[3]!./app/dashboard/new-order/styles.module.css ***!
+  \*************************************************************************************************************************************************************************************************************************************************************************************/
+.styles_progressCircle__Tecfg {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #e9ecef;
+  color: #6c757d;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.styles_progressCircleActive__GlC5B {
+  background-color: #0d6efd;
+  color: white;
+}
+
+.styles_progressLabel__LWj_2 {
+  font-size: 0.875rem;
+  color: #6c757d;
+  transition: all 0.3s ease;
+}
+
+.styles_progressLabelActive__V8Tcf {
+  color: #0d6efd;
+  font-weight: 500;
+}
+
+.styles_formControl__Oz6S_:focus {
+  border-color: #0d6efd;
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+.styles_inputGroupText__32_JK {
+  background-color: #f8f9fa;
+  border-color: #dee2e6;
+}
+
+.styles_alert__yDGd6 {
+  border-radius: 0.375rem;
+}
+
+.styles_card__BK3Tr {
+  border-radius: 0.5rem;
+}
+
+.styles_btn__8Yyj_ {
+  padding: 0.5rem 1.5rem;
+  font-weight: 500;
+  border-radius: 0.375rem;
+}
+
+.styles_btnPrimary__6h4RV {
+  background-color: #0d6efd;
+  border-color: #0d6efd;
+}
+
+.styles_btnPrimary__6h4RV:hover {
+  background-color: #0b5ed7;
+  border-color: #0a58ca;
+}
+
+.styles_btnOutlineSecondary__M_TF4 {
+  color: #6c757d;
+  border-color: #6c757d;
+}
+
+.styles_btnOutlineSecondary__M_TF4:hover {
+  background-color: #6c757d;
+  color: white;
+}
+
+.styles_formLabel__fvsFQ {
+  font-weight: 500;
+  color: #212529;
+}
+
+.styles_textMuted__uTORu {
+  font-size: 0.875rem;
+}
+
+.styles_progressStep__vIejU {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.styles_progress__MFYnS {
+  height: 4px;
+  margin-bottom: 0.5rem;
+}
+
+.styles_progressBar__CGDIa {
+  background-color: #0d6efd;
+}
+
+.styles_container__JQLh5 {
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+}
+
+.styles_card__BK3Tr {
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+  border: none;
+}
+
+.styles_cardBody__YGfF7 {
+  padding: 2rem;
+}
+
+.styles_cardTitle__FqJIR {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.styles_formGroup__ZLwqc {
+  margin-bottom: 1rem;
+}
+
+.styles_row__xCyJw {
+  margin-bottom: 1rem;
+}
+
+.styles_mb4___9EKw {
+  margin-bottom: 1.5rem;
+}
+
+.styles_mt4__PSJVl {
+  margin-top: 1.5rem;
+}
+
+.styles_mb6__AN588 {
+  margin-bottom: 3rem;
+} 

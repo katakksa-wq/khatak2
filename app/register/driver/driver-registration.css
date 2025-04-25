@@ -1,0 +1,58 @@
+/* Styling for the driver registration process */
+
+.step-indicator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  opacity: 0.6;
+  transition: opacity 0.3s ease;
+}
+
+.step-indicator.active {
+  opacity: 1;
+}
+
+.step-number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background-color: #e9ecef;
+  color: #495057;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.step-indicator.active .step-number {
+  background-color: #0d6efd;
+  color: white;
+}
+
+.step-text {
+  font-size: 0.8rem;
+  color: #6c757d;
+}
+
+.step-indicator.active .step-text {
+  color: #0d6efd;
+  font-weight: 500;
+}
+
+.photo-preview-container {
+  margin-bottom: 15px;
+}
+
+/* For mobile screens, make the steps more compact */
+@media (max-width: 576px) {
+  .step-indicator {
+    flex-direction: row;
+    margin-bottom: 10px;
+  }
+  
+  .step-number {
+    margin-bottom: 0;
+    margin-right: 8px;
+  }
+} 
