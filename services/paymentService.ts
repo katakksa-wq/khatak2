@@ -6,6 +6,7 @@ export interface AdminBankAccount {
   accountNumber: string;
   accountName: string;
   sortCode?: string;
+  swiftCode?: string;
   description?: string;
   isActive: boolean;
 }
