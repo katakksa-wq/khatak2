@@ -89,7 +89,7 @@ export default function AdminPaymentManagement() {
     setProcessingPaymentId(paymentId);
     
     try {
-      let notes = null;
+      let notes: string | undefined = undefined;
       if (status === 'REJECTED') {
         notes = rejectionNote || 'Payment rejected by admin';
       }
