@@ -5,7 +5,7 @@ let activeRequests: AbortController[] = [];
 
 // API configuration
 const API_CONFIG = {
-  baseUrl: process.env.NEXT_PUBLIC_API_URL || 'http://api.kataakksa.com:5000',
+  baseUrl: process.env.NEXT_PUBLIC_API_URL || 'https://api.katakksa.com:5000',
   defaultHeaders: {
     'Content-Type': 'application/json',
     'Accept': 'application/json'

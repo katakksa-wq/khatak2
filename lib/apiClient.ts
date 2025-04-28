@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // Get API URL from environment or use default
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://api.kataakksa.com:5000';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api.katakksa.com:5000';
 
 // Create axios instance with default config
 export const apiClient = axios.create({

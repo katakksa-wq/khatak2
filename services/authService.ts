@@ -77,7 +77,7 @@ export const authService = {
   login: async (credentials: LoginCredentials): Promise<ApiResponse<AuthResponse>> => {
     try {
       console.log('Attempting login...');
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://api.kataakksa.com:5000'}${ENDPOINTS.login}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://api.katakksa.com:5000'}${ENDPOINTS.login}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -152,7 +152,7 @@ export const authService = {
   register: async (data: RegisterData): Promise<ApiResponse<AuthResponse>> => {
     try {
       console.log('Attempting registration...');
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://api.kataakksa.com:5000'}${ENDPOINTS.register}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://api.katakksa.com:5000'}${ENDPOINTS.register}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
