@@ -2,7 +2,7 @@
 const nextConfig = {
   reactStrictMode: true,
   images: {
-    domains: ['localhost', 'via.placeholder.com'],
+    domains: ['api.kataakksa.com', 'via.placeholder.com'],
   },
   webpack(config) {
     return config;
@@ -16,7 +16,7 @@ const nextConfig = {
     return [
       {
         source: '/api/:path*',
-        destination: 'http://localhost:5000/api/:path*',
+        destination: 'http://api.kataakksa.com:5000/api/:path*',
       },
     ];
   },

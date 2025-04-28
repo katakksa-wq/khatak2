@@ -41,7 +41,7 @@ const DebugPage = () => {
     setTestResult('');
     
     try {
-      const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+      const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://api.kataakksa.com:5000';
       const url = `${baseUrl}${apiEndpoint}`;
       
       console.log('Testing endpoint:', url);
@@ -82,7 +82,7 @@ const DebugPage = () => {
     setTestResult('');
     
     try {
-      const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+      const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://api.kataakksa.com:5000';
       const url = `${baseUrl}/api/orders`;
       
       console.log('Testing create order endpoint:', url);
