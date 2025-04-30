@@ -5,9 +5,12 @@ import { useNotifications } from '@/contexts/NotificationContext';
 import { Notification } from '@/services/notificationService';
 import { formatDistanceToNow } from 'date-fns';
 import { FaCheck, FaFilter, FaSync } from 'react-icons/fa';
+import { useLanguage } from '@/contexts/LanguageContext';
+import TranslatedText from '@/components/TranslatedText';
 
 const NotificationsPage = () => {
   const { notifications, loading, error, fetchNotifications, markAsRead } = useNotifications();
+  const { t } = useLanguage();
   const [filteredNotifications, setFilteredNotifications] = useState<Notification[]>([]);
   const [filter, setFilter] = useState<string>('all'); // 'all', 'unread', 'read'
   const [selectedType, setSelectedType] = useState<string>('all');
@@ -99,14 +102,15 @@ const NotificationsPage = () => {
         <div className="col-12">
           <div className="card shadow-sm">
             <div className="card-header bg-light d-flex justify-content-between align-items-center">
-              <h5 className="mb-0">Your Notifications</h5>
+              <h5 className="mb-0">{t('user.notifications')}</h5>
               <div>
                 <button 
                   className="btn btn-sm btn-outline-primary me-2" 
                   onClick={() => fetchNotifications()}
                   disabled={loading}
                 >
-                  <FaSync className={loading ? 'spin me-1' : 'me-1'} /> Refresh
+                  <FaSync className={loading ? 'spin me-1' : 'me-1'} /> 
+                  {loading ? t('loading.message') : t('admin.refresh')}
                 </button>
                 {selectedNotifications.length > 0 && (
                   <button 
@@ -114,7 +118,7 @@ const NotificationsPage = () => {
                     onClick={handleMarkAsRead}
                     disabled={loading}
                   >
-                    <FaCheck className="me-1" /> Mark Selected as Read
+                    <FaCheck className="me-1" /> {t('notifications.markSelected')}
                   </button>
                 )}
               </div>
@@ -123,30 +127,30 @@ const NotificationsPage = () => {
               {/* Filters */}
               <div className="row mb-3">
                 <div className="col-md-6 d-flex align-items-center mb-2 mb-md-0">
-                  <span className="me-2"><FaFilter /> Filter:</span>
+                  <span className="me-2"><FaFilter /> {t('notifications.filter')}</span>
                   <div className="btn-group me-3">
                     <button 
                       className={`btn btn-sm ${filter === 'all' ? 'btn-primary' : 'btn-outline-primary'}`}
                       onClick={() => setFilter('all')}
                     >
-                      All
+                      {t('notifications.all')}
                     </button>
                     <button 
                       className={`btn btn-sm ${filter === 'unread' ? 'btn-primary' : 'btn-outline-primary'}`}
                       onClick={() => setFilter('unread')}
                     >
-                      Unread
+                      {t('notifications.unread')}
                     </button>
                     <button 
                       className={`btn btn-sm ${filter === 'read' ? 'btn-primary' : 'btn-outline-primary'}`}
                       onClick={() => setFilter('read')}
                     >
-                      Read
+                      {t('notifications.read')}
                     </button>
                   </div>
                 </div>
                 <div className="col-md-6 d-flex align-items-center">
-                  <span className="me-2">Type:</span>
+                  <span className="me-2">{t('notifications.type')}</span>
                   <select 
                     className="form-select form-select-sm" 
                     value={selectedType}
@@ -154,7 +158,9 @@ const NotificationsPage = () => {
                   >
                     {notificationTypes.map(type => (
                       <option key={type} value={type}>
-                        {type.charAt(0).toUpperCase() + type.slice(1)}
+                        {type === 'all' 
+                          ? t('notifications.all')
+                          : type.charAt(0).toUpperCase() + type.slice(1)}
                       </option>
                     ))}
                   </select>
@@ -169,12 +175,12 @@ const NotificationsPage = () => {
               {loading && filteredNotifications.length === 0 ? (
                 <div className="text-center py-5">
                   <div className="spinner-border text-primary" role="status">
-                    <span className="visually-hidden">Loading...</span>
+                    <span className="visually-hidden">{t('loading.message')}</span>
                   </div>
                 </div>
               ) : filteredNotifications.length === 0 ? (
                 <div className="alert alert-info text-center">
-                  No notifications found matching your filters.
+                  {t('notifications.empty')}
                 </div>
               ) : (
                 <div className="table-responsive">
@@ -187,11 +193,12 @@ const NotificationsPage = () => {
                             className="form-check-input" 
                             checked={selectedNotifications.length === filteredNotifications.length && filteredNotifications.length > 0}
                             onChange={handleSelectAll}
+                            aria-label={t('notifications.select')}
                           />
                         </th>
-                        <th style={{ width: '120px' }}>Type</th>
-                        <th>Details</th>
-                        <th style={{ width: '180px' }}>Time</th>
+                        <th style={{ width: '120px' }}>{t('notifications.type')}</th>
+                        <th>{t('notifications.details')}</th>
+                        <th style={{ width: '180px' }}>{t('notifications.time')}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -206,6 +213,7 @@ const NotificationsPage = () => {
                               className="form-check-input" 
                               checked={selectedNotifications.includes(notification.id)}
                               onChange={() => handleSelectNotification(notification.id)}
+                              aria-label={t('notifications.select')}
                             />
                           </td>
                           <td>
@@ -229,7 +237,9 @@ const NotificationsPage = () => {
             </div>
             <div className="card-footer text-muted">
               {filteredNotifications.length > 0 && (
-                <small>Showing {filteredNotifications.length} notification{filteredNotifications.length !== 1 ? 's' : ''}</small>
+                <small>
+                  {t('notifications.showing').replace('{0}', filteredNotifications.length.toString())}
+                </small>
               )}
             </div>
           </div>

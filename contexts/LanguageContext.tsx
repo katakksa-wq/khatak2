@@ -154,6 +154,22 @@ const defaultTranslations: Translations = {
     'user.profile': 'Profile',
     'user.notifications': 'Notifications',
     
+    // Notifications page
+    'notifications.title': 'Your Notifications',
+    'notifications.refresh': 'Refresh',
+    'notifications.markSelected': 'Mark Selected as Read',
+    'notifications.filter': 'Filter:',
+    'notifications.all': 'All',
+    'notifications.unread': 'Unread',
+    'notifications.read': 'Read',
+    'notifications.type': 'Type:',
+    'notifications.empty': 'No notifications found matching your filters.',
+    'notifications.loading': 'Loading...',
+    'notifications.showing': 'Showing {0} notification(s)',
+    'notifications.select': 'Select',
+    'notifications.time': 'Time',
+    'notifications.details': 'Details',
+    
     // Buttons
     'button.submit': 'Submit',
     'button.cancel': 'Cancel',
@@ -312,7 +328,7 @@ const defaultTranslations: Translations = {
     'auth.createPassword': 'إنشاء كلمة مرور',
     'auth.confirmPasswordPlaceholder': 'تأكيد كلمة المرور',
     'auth.alreadyHaveAccount': 'لديك حساب بالفعل؟',
-    'auth.createAccount': 'جارٍ إنشاء الحساب...',
+    'auth.createAccount': 'جاري إنشاء الحساب...',
     
     // Admin
     'admin.title': 'المسؤول',
@@ -355,12 +371,12 @@ const defaultTranslations: Translations = {
     'orders.oneOrderAtTime': 'يمكنك قبول طلب واحد فقط في المرة الواحدة. يرجى إكمال أو إلغاء طلبك الحالي قبل قبول طلب جديد.',
     'orders.lookingToAccept': 'تبحث عن طلبات للقبول؟',
     'orders.pendingDescription': 'جميع الطلبات ذات حالة قيد الانتظار معروضة هنا. بمجرد قبول الطلب، سيظهر في الطلبات الحالية الخاصة بك.',
-    'orders.loadingAvailable': 'جارٍ تحميل الطلبات المتاحة...',
+    'orders.loadingAvailable': 'جاري تحميل الطلبات المتاحة...',
     'orders.noAvailable': 'لا توجد طلبات متاحة',
     'orders.checkBackLater': 'لا توجد حاليًا طلبات متاحة للقبول. يرجى التحقق مرة أخرى لاحقًا.',
     'orders.orderNumber': 'الطلب رقم',
     'orders.acceptOrder': 'قبول الطلب',
-    'orders.acceptingOrder': 'جارٍ القبول...',
+    'orders.acceptingOrder': 'جاري القبول...',
     'orders.weightUnit': 'رطل',
     'orders.distanceUnit': 'ميل',
     'orders.distance': 'المسافة',
@@ -371,7 +387,7 @@ const defaultTranslations: Translations = {
     'orders.noDriverOrders': 'ليس لديك أي طلبات مسندة في الوقت الحالي. تحقق من صفحة الطلبات المتاحة لقبول طلبات جديدة.',
     'orders.noClientOrders': 'ليس لديك أي طلبات نشطة في الوقت الحالي.',
     'orders.findAvailable': 'البحث عن الطلبات المتاحة',
-    'orders.refreshing': 'جارٍ التحديث...',
+    'orders.refreshing': 'جاري التحديث...',
     'orders.trackingNumber': 'رقم التتبع',
     'orders.status': 'الحالة',
     'orders.actions': 'الإجراءات',
@@ -401,12 +417,28 @@ const defaultTranslations: Translations = {
     'user.profile': 'الملف الشخصي',
     'user.notifications': 'الإشعارات',
     
+    // Notifications page
+    'notifications.title': 'إشعاراتك',
+    'notifications.refresh': 'تحديث',
+    'notifications.markSelected': 'تحديد المحدد كمقروء',
+    'notifications.filter': 'تصفية:',
+    'notifications.all': 'الكل',
+    'notifications.unread': 'غير مقروء',
+    'notifications.read': 'مقروء',
+    'notifications.type': 'النوع:',
+    'notifications.empty': 'لم يتم العثور على إشعارات مطابقة لعوامل التصفية.',
+    'notifications.loading': 'جاري التحميل...',
+    'notifications.showing': 'عرض {0} إشعار(ات)',
+    'notifications.select': 'تحديد',
+    'notifications.time': 'الوقت',
+    'notifications.details': 'التفاصيل',
+    
     // Buttons
     'button.submit': 'إرسال',
     'button.cancel': 'إلغاء',
     'button.save': 'حفظ',
     'button.update': 'تحديث',
-    'button.loading': 'جارٍ التحميل...',
+    'button.loading': 'جاري التحميل...',
     
     // Dashboard
     'dashboard.welcome': 'مرحباً',
@@ -431,7 +463,7 @@ const defaultTranslations: Translations = {
     
     // Profile
     'profile.editProfile': 'تعديل الملف الشخصي',
-    'profile.saving': 'جارٍ الحفظ...',
+    'profile.saving': 'جاري الحفظ...',
     'profile.updateSuccess': 'تم تحديث الملف الشخصي بنجاح',
     
     // Order Form
@@ -467,7 +499,7 @@ const defaultTranslations: Translations = {
     'orders.note': 'ملاحظة',
     'orders.realImplementation': 'في التطبيق الفعلي، سيتم استبدال هذا بخريطة تفاعلية حيث يمكن للمستخدمين تحديد موقع التسليم بدقة.',
     'orders.newOrderDescription': 'املأ النموذج لإنشاء طلب شحن جديد',
-    'orders.creating': 'جارٍ إنشاء الطلب...',
+    'orders.creating': 'جاري إنشاء الطلب...',
     'orders.createOrder': 'إنشاء طلب',
     'button.back': 'رجوع',
     'button.next': 'التالي',
