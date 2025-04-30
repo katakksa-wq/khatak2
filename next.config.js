@@ -16,7 +16,7 @@ const nextConfig = {
     return [
       {
         source: '/api/:path*',
-        destination: 'https://api.katakksa.com:5000/api/:path*',
+        destination: 'https://api.katakksa.com/api/:path*',
       },
     ];
   },
