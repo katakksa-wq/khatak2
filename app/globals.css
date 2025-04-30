@@ -8,8 +8,8 @@
 }
 
 .progress-circle {
-  width: 40px;
-  height: 40px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
   background-color: #e9ecef;
   color: #6c757d;
@@ -21,10 +21,23 @@
   transition: all 0.3s ease;
 }
 
+@media (min-width: 768px) {
+  .progress-circle {
+    width: 40px;
+    height: 40px;
+  }
+}
+
 .progress-label {
-  font-size: 12px;
+  font-size: 10px;
   color: #6c757d;
   transition: all 0.3s ease;
+}
+
+@media (min-width: 768px) {
+  .progress-label {
+    font-size: 12px;
+  }
 }
 
 .progress-step.active .progress-circle {
@@ -38,9 +51,16 @@
 }
 
 .progress {
-  height: 6px;
-  margin-top: -20px;
+  height: 4px;
+  margin-top: -15px;
   z-index: 0;
+}
+
+@media (min-width: 768px) {
+  .progress {
+    height: 6px;
+    margin-top: -20px;
+  }
 }
 
 .progress-bar {
@@ -58,5 +78,81 @@
   }
   100% {
     transform: rotate(360deg);
+  }
+}
+
+/* Mobile-first form controls */
+input.form-control, 
+select.form-control, 
+textarea.form-control {
+  font-size: 16px; /* Prevents iOS zoom on focus */
+  padding: 0.5rem 0.75rem;
+}
+
+/* Improve tap targets for mobile */
+button, 
+.btn, 
+a.btn, 
+input[type="button"], 
+input[type="submit"] {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* Better readability on mobile */
+.card {
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+/* Better touch scroll experience */
+.scrollable {
+  -webkit-overflow-scrolling: touch;
+  overflow-y: auto;
+}
+
+/* Improved mobile form layout spacing */
+.form-group + .form-group,
+.form-group + .row,
+.row + .form-group,
+.row + .row {
+  margin-top: 1rem;
+}
+
+/* Responsive line heights for better readability */
+p, .text {
+  line-height: 1.5;
+}
+
+@media (min-width: 768px) {
+  p, .text {
+    line-height: 1.6;
+  }
+}
+
+/* Mobile-friendly headings */
+h1, .h1 {
+  font-size: 1.75rem;
+}
+
+h2, .h2 {
+  font-size: 1.5rem;
+}
+
+h3, .h3 {
+  font-size: 1.25rem;
+}
+
+@media (min-width: 768px) {
+  h1, .h1 {
+    font-size: 2.25rem;
+  }
+  
+  h2, .h2 {
+    font-size: 1.75rem;
+  }
+  
+  h3, .h3 {
+    font-size: 1.5rem;
   }
 } 

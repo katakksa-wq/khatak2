@@ -3,6 +3,7 @@ import { Inter, Tajawal } from 'next/font/google';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '@/app/globals.css';
 import '@/styles/rtl.css';
+import '@/styles/responsive.css';
 import { AuthProvider } from '@/contexts/AuthContext';
 import { OrderProvider } from '@/contexts/OrderContext';
 import { NotificationProvider } from '@/contexts/NotificationContext';
@@ -46,6 +47,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+      </head>
       <body className={`${inter.className} ${tajawal.variable}`}>
         <RootLayoutClient>{children}</RootLayoutClient>
       </body>

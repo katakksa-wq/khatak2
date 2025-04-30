@@ -61,24 +61,24 @@ export default function RegisterPage() {
   };
 
   return (
-    <Container className="py-5">
+    <Container className="py-3 py-md-5 px-4">
       <div className="d-flex justify-content-end mb-3">
         <LanguageSwitcher />
       </div>
       
       <Row className="justify-content-center">
-        <Col md={8} lg={6}>
+        <Col xs={12} sm={11} md={10} lg={8} xl={6}>
           <Card className="shadow-sm">
             <Card.Header className="bg-primary text-white">
               <h2 className="h4 mb-0">{t('auth.signup')}</h2>
             </Card.Header>
-            <Card.Body className="p-4">
+            <Card.Body className="p-3 p-md-4">
               {error && <Alert variant="danger">{error}</Alert>}
               
               <Form onSubmit={handleSubmit}>
                 <Row>
-                  <Col md={6}>
-                    <Form.Group className="mb-3">
+                  <Col xs={12} md={6} className="mb-3">
+                    <Form.Group>
                       <Form.Label>{t('auth.firstName')}</Form.Label>
                       <div className="input-group">
                         <span className="input-group-text">
@@ -95,8 +95,8 @@ export default function RegisterPage() {
                       </div>
                     </Form.Group>
                   </Col>
-                  <Col md={6}>
-                    <Form.Group className="mb-3">
+                  <Col xs={12} md={6} className="mb-3">
+                    <Form.Group>
                       <Form.Label>{t('auth.lastName')}</Form.Label>
                       <div className="input-group">
                         <span className="input-group-text">
@@ -172,25 +172,26 @@ export default function RegisterPage() {
                     variant="primary" 
                     size="lg"
                     disabled={loading}
+                    className="py-2"
                   >
                     {loading ? `${t('auth.signup')}...` : t('auth.signup')}
                   </Button>
                 </div>
               </Form>
             </Card.Body>
-            <Card.Footer className="bg-light">
+            <Card.Footer className="bg-light p-3 p-md-4">
               <div className="text-center">
                 <p className="mb-2">
                   {t('auth.alreadyHaveAccount')} <Link href="/login">{t('auth.login')}</Link>
                 </p>
                 <div className="driver-registration-card mt-3 mb-2 p-3 border rounded bg-light">
-                  <div className="d-flex align-items-center justify-content-between">
+                  <div className="d-flex flex-column flex-sm-row align-items-center justify-content-between gap-2">
                     <div>
                       <h5 className="mb-0">{t('driver.becomeDriver')}</h5>
                       <p className="text-muted mb-0 small">{t('driver.earnMoney')}</p>
                     </div>
                     <Link href="/register/driver" passHref>
-                      <Button variant="outline-primary" className="d-flex align-items-center">
+                      <Button variant="outline-primary" className="d-flex align-items-center w-100 w-sm-auto justify-content-center">
                         <FaTruck className="me-2" /> {t('driver.registration')}
                       </Button>
                     </Link>

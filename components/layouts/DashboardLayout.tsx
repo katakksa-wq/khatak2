@@ -61,33 +61,55 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   return (
     <div className="d-flex flex-column min-vh-100">
       {/* Mobile Navigation Toggle */}
-      <div className="d-md-none bg-dark text-white p-2">
-        <button 
-          className="btn btn-link text-white"
-          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-        >
-          <FaBars size={24} />
-        </button>
+      <div className="d-md-none bg-dark text-white p-2 shadow-sm">
+        <div className="d-flex justify-content-between align-items-center">
+          <div className="d-flex align-items-center">
+            <span className="ms-2 fw-bold">{user.firstName || user.email}</span>
+          </div>
+          <button 
+            className="btn btn-link text-white"
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            aria-label="Toggle navigation"
+          >
+            <FaBars size={24} />
+          </button>
+        </div>
       </div>
 
-      {/* Mobile Navigation Menu */}
-      <div className={`d-md-none bg-dark text-white ${isMobileMenuOpen ? 'd-block' : 'd-none'}`}>
+      {/* Mobile Navigation Menu - Slide in from left */}
+      <div 
+        className={`position-fixed bg-dark text-white h-100 top-0 start-0 overflow-auto transition-all ${
+          isMobileMenuOpen ? 'w-75 shadow-lg' : 'w-0'
+        }`} 
+        style={{ 
+          zIndex: 1050, 
+          transition: 'width 0.3s ease-in-out',
+          maxWidth: '300px'
+        }}
+      >
         <div className="p-3">
-          <div className="d-flex align-items-center mb-4">
-            <div className="rounded-circle me-2 bg-primary text-center" style={{ width: '32px', height: '32px', lineHeight: '32px' }}>
-              {user.firstName?.charAt(0) || user.email.charAt(0)}
+          <div className="d-flex justify-content-between align-items-center mb-4">
+            <div className="d-flex align-items-center">
+              <div className="rounded-circle me-2 bg-primary text-center" style={{ width: '32px', height: '32px', lineHeight: '32px' }}>
+                {user.firstName?.charAt(0) || user.email.charAt(0)}
+              </div>
+              <div>
+                <strong className="d-block">{user.firstName || user.email}</strong>
+                <small className="text-white-50">{user.role}</small>
+              </div>
             </div>
-            <div>
-              <strong className="d-block">{user.firstName || user.email}</strong>
-              <small className="text-white-50">{user.role}</small>
-            </div>
+            <button 
+              className="btn-close btn-close-white" 
+              onClick={() => setIsMobileMenuOpen(false)} 
+              aria-label="Close menu"
+            ></button>
           </div>
           <ul className="nav flex-column">
             {navItems.map((item) => (
               <li className="nav-item" key={item.name}>
                 <Link 
                   href={item.href}
-                  className={`nav-link text-white d-flex align-items-center ${pathname === item.href ? 'active bg-primary' : ''}`}
+                  className={`nav-link text-white d-flex align-items-center ${pathname === item.href ? 'active bg-primary rounded' : ''}`}
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   <span className="me-2">{item.icon}</span>
@@ -107,9 +129,18 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         </div>
       </div>
 
-      {/* Desktop Navigation */}
-      <div className="d-none d-md-flex">
-        <div className="bg-dark text-white d-flex flex-column p-3" style={{ width: '250px', minHeight: '100vh' }}>
+      {/* Overlay when mobile menu is open */}
+      {isMobileMenuOpen && (
+        <div 
+          className="position-fixed top-0 start-0 w-100 h-100 bg-dark" 
+          style={{ opacity: '0.5', zIndex: 1040 }}
+          onClick={() => setIsMobileMenuOpen(false)}
+        ></div>
+      )}
+
+      <div className="d-flex flex-grow-1">
+        {/* Desktop Sidebar Navigation */}
+        <div className="bg-dark text-white d-none d-md-flex flex-column p-3" style={{ width: '250px', minHeight: '100vh' }}>
           <div className="d-flex align-items-center mb-4">
             <div className="rounded-circle me-2 bg-primary text-center" style={{ width: '32px', height: '32px', lineHeight: '32px' }}>
               {user.firstName?.charAt(0) || user.email.charAt(0)}
@@ -125,40 +156,35 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
               <li className="nav-item" key={item.name}>
                 <Link 
                   href={item.href}
-                  className={`nav-link text-white d-flex align-items-center ${pathname === item.href ? 'active bg-primary' : ''}`}
+                  className={`nav-link text-white d-flex align-items-center ${pathname === item.href ? 'active bg-primary rounded' : ''}`}
                 >
                   <span className="me-2">{item.icon}</span>
                   {item.name}
                 </Link>
               </li>
             ))}
-            <li className="nav-item mt-3">
-              <button 
-                className="nav-link text-white d-flex align-items-center w-100"
-                onClick={logout}
-              >
-                <FaSignOutAlt className="me-2" /> Logout
-              </button>
-            </li>
           </ul>
-        </div>
-      </div>
-
-      {/* Main content */}
-      <div className="flex-grow-1">
-        <header className="bg-light p-3 shadow-sm">
-          <div className="d-flex justify-content-between align-items-center">
-            <h1 className="h4 mb-0">Driver Dashboard</h1>
-            <div className="d-flex align-items-center">
-              <button className="btn btn-outline-danger btn-sm" onClick={logout}>
-                <FaSignOutAlt className="me-1" /> Logout
-              </button>
-            </div>
+          <div className="mt-auto">
+            <button 
+              className="nav-link text-white d-flex align-items-center w-100"
+              onClick={logout}
+            >
+              <FaSignOutAlt className="me-2" /> Logout
+            </button>
           </div>
-        </header>
-        <main className="py-3 px-4">
-          {children}
-        </main>
+        </div>
+
+        {/* Main content */}
+        <div className="flex-grow-1 d-flex flex-column">
+          <header className="bg-light p-3 shadow-sm d-none d-md-block">
+            <div className="d-flex justify-content-between align-items-center">
+              <h1 className="h4 mb-0">Dashboard</h1>
+            </div>
+          </header>
+          <main className="py-3 px-3 px-md-4 flex-grow-1">
+            {children}
+          </main>
+        </div>
       </div>
     </div>
   );

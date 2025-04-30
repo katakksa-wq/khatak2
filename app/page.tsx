@@ -116,19 +116,22 @@ export default function Home() {
     <main className="container-fluid p-0">
       {/* Header with language switcher */}
       <header className="bg-light py-2">
-        <div className="container d-flex justify-content-end">
+        <div className="container d-flex justify-content-between align-items-center">
+          <div className="d-flex align-items-center">
+            <h1 className="h5 mb-0">{t('app.title')}</h1>
+          </div>
           <LanguageSwitcher />
         </div>
       </header>
       
       {/* Hero Section */}
-      <section className="bg-primary text-white text-center py-5">
-        <div className="container py-5">
-          <h1 className="display-4 fw-bold mb-4">{t('app.title')}</h1>
+      <section className="bg-primary text-white text-center py-4 py-md-5">
+        <div className="container py-3 py-md-5">
+          <h1 className="display-5 display-md-4 fw-bold mb-3 mb-md-4">{t('app.title')}</h1>
           <p className="lead mb-4">
             {t('homepage.subtitle')}
           </p>
-          <div className="d-flex justify-content-center gap-3">
+          <div className="d-flex flex-column flex-sm-row justify-content-center gap-2 gap-sm-3">
             <Link href={content?.hero.cta.primary.link || '/login'} className="btn btn-light btn-lg px-4">
               {t('nav.login')}
             </Link>
@@ -140,14 +143,14 @@ export default function Home() {
       </section>
 
       {/* Services Section */}
-      <section className="py-5">
+      <section className="py-4 py-md-5">
         <div className="container">
-          <h2 className="text-center mb-5">{t('services.title')}</h2>
-          <div className="row g-4">
+          <h2 className="text-center mb-4 mb-md-5">{t('services.title')}</h2>
+          <div className="row g-3 g-md-4">
             {content?.services.map((service, index) => (
-              <div className="col-md-4" key={index}>
+              <div className="col-12 col-sm-6 col-md-4" key={index}>
                 <div className="card h-100 border-0 shadow-sm">
-                  <div className="card-body text-center p-4">
+                  <div className="card-body text-center p-3 p-md-4">
                     <div className="mb-3">
                       <i className={`bi ${service.icon} text-primary`} style={{ fontSize: '2.5rem' }}></i>
                     </div>
@@ -164,19 +167,19 @@ export default function Home() {
       </section>
 
       {/* How it Works Section */}
-      <section className="py-5 bg-light">
+      <section className="py-4 py-md-5 bg-light">
         <div className="container">
-          <h2 className="text-center mb-5">{t('howItWorks.title')}</h2>
+          <h2 className="text-center mb-4 mb-md-5">{t('howItWorks.title')}</h2>
           <div className="row justify-content-center">
-            <div className="col-lg-8">
-              <div className="d-flex flex-column flex-md-row gap-4">
+            <div className="col-lg-10">
+              <div className="d-flex flex-column flex-sm-row gap-4">
                 {content?.howItWorks.map((step, index) => (
-                  <div className="text-center" key={index}>
+                  <div className="text-center mb-3 mb-sm-0" key={index}>
                     <div className="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style={{ width: '60px', height: '60px' }}>
                       <span className="fs-4">{step.step}</span>
                     </div>
                     <h3 className="h5">{t(`homepage.howItWorks.${index}.title`)}</h3>
-                    <p>{t(`homepage.howItWorks.${index}.description`)}</p>
+                    <p className="mb-0">{t(`homepage.howItWorks.${index}.description`)}</p>
                   </div>
                 ))}
               </div>
@@ -186,10 +189,10 @@ export default function Home() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-5 bg-primary text-white">
+      <section className="py-4 py-md-5 bg-primary text-white">
         <div className="container text-center">
-          <h2 className="mb-4">{t('homepage.cta.title')}</h2>
-          <p className="lead mb-4">{t('homepage.cta.subtitle')}</p>
+          <h2 className="mb-3 mb-md-4">{t('homepage.cta.title')}</h2>
+          <p className="lead mb-3 mb-md-4">{t('homepage.cta.subtitle')}</p>
           <Link href={content?.cta.buttonLink || '/signup'} className="btn btn-light btn-lg px-4">
             {t('homepage.cta.buttonText')}
           </Link>
