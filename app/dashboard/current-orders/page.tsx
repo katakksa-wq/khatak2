@@ -9,10 +9,13 @@ import { apiClient } from '@/utils/apiClient';
 import { useRouter } from 'next/navigation';
 import { orderService, OrderStatus } from '@/services/orderService';
 import { toast } from 'react-toastify';
+import { useLanguage } from '@/contexts/LanguageContext';
+import TranslatedText from '@/components/TranslatedText';
 
 export default function CurrentOrdersPage() {
   const { user, isDriver, isClient } = useAuth();
   const { fetchOrders, orders, loading: ordersLoading } = useOrders();
+  const { t } = useLanguage();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [currentOrders, setCurrentOrders] = useState<Order[]>([]);
@@ -218,10 +221,10 @@ export default function CurrentOrdersPage() {
     if (!order) return;
 
     const confirmMessage = isClient() 
-      ? 'Are you sure you want to cancel this order? This action cannot be undone.'
+      ? t('orders.confirmClientCancel')
       : isDriver()
-      ? 'Are you sure you want to cancel this delivery? This will make the order available for other drivers.'
-      : 'Are you sure you want to cancel this order? This action cannot be undone.';
+      ? t('orders.confirmDriverCancel')
+      : t('orders.confirmAdminCancel');
 
     if (window.confirm(confirmMessage)) {
       try {
@@ -236,18 +239,18 @@ export default function CurrentOrdersPage() {
           
           // Show success message based on user role
           const successMessage = isClient()
-            ? 'Order cancelled successfully'
+            ? t('orders.clientCancelSuccess')
             : isDriver()
-            ? 'Delivery cancelled successfully'
-            : 'Order cancelled successfully';
+            ? t('orders.driverCancelSuccess')
+            : t('orders.adminCancelSuccess');
             
           toast.success(successMessage);
         } else {
-          throw new Error(response.message || 'Failed to cancel order');
+          throw new Error(response.message || t('orders.cancelFailed'));
         }
       } catch (err) {
         console.error('Error cancelling order:', err);
-        toast.error('Failed to cancel order. Please try again.');
+        toast.error(t('orders.cancelError'));
       } finally {
         setUpdatingOrderId(null);
       }
@@ -265,14 +268,14 @@ export default function CurrentOrdersPage() {
   };
 
   if (!user) {
-    return <div>Loading...</div>;
+    return <div><TranslatedText text="loading.message" /></div>;
   }
 
   if (loading) {
     return (
       <div className="d-flex justify-content-center align-items-center min-vh-100">
         <div className="spinner-border text-primary" role="status">
-          <span className="visually-hidden">Loading...</span>
+          <span className="visually-hidden"><TranslatedText text="loading.message" /></span>
         </div>
       </div>
     );
@@ -284,14 +287,14 @@ export default function CurrentOrdersPage() {
         <div className="col-12">
           <div className="card shadow">
             <div className="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-              <h2 className="card-title mb-0">Current Orders</h2>
+              <h2 className="card-title mb-0"><TranslatedText text="orders.current" /></h2>
               <button 
                 className="btn btn-light btn-sm"
                 onClick={handleRefresh}
                 disabled={isRefreshing}
               >
                 <FaSpinner className={`me-2 ${isRefreshing ? 'fa-spin' : ''}`} />
-                {isRefreshing ? 'Refreshing...' : 'Refresh'}
+                {isRefreshing ? <TranslatedText text="orders.refreshing" /> : <TranslatedText text="button.refresh" />}
               </button>
             </div>
             <div className="card-body">
@@ -303,18 +306,18 @@ export default function CurrentOrdersPage() {
 
               {currentOrders.length === 0 ? (
                 <div className="text-center py-5">
-                  <h3 className="text-muted">No Active Orders</h3>
+                  <h3 className="text-muted"><TranslatedText text="orders.noActiveOrders" /></h3>
                   <p className="text-muted">
                     {isDriver() 
-                      ? "You don't have any assigned orders at the moment. Check the Available Orders page to accept new orders."
-                      : "You don't have any active orders at the moment."}
+                      ? <TranslatedText text="orders.noDriverOrders" />
+                      : <TranslatedText text="orders.noClientOrders" />}
                   </p>
                   {isClient() && (
                     <button 
                       className="btn btn-primary mt-3"
                       onClick={() => window.location.href = '/dashboard/new-order'}
                     >
-                      Create New Order
+                      <TranslatedText text="orders.new" />
                     </button>
                   )}
                   {isDriver() && (
@@ -322,7 +325,7 @@ export default function CurrentOrdersPage() {
                       className="btn btn-primary mt-3"
                       onClick={() => window.location.href = '/dashboard/available-orders'}
                     >
-                      Find Available Orders
+                      <TranslatedText text="orders.findAvailable" />
                     </button>
                   )}
                 </div>
@@ -331,13 +334,13 @@ export default function CurrentOrdersPage() {
                   <table className="table table-hover">
                     <thead>
                       <tr>
-                        <th>Tracking Number</th>
-                        <th>Status</th>
-                        <th>Pickup Address</th>
-                        <th>Delivery Address</th>
-                        <th>Price</th>
-                        <th>Created At</th>
-                        <th>Actions</th>
+                        <th><TranslatedText text="orders.trackingNumber" /></th>
+                        <th><TranslatedText text="orders.status" /></th>
+                        <th><TranslatedText text="orders.pickupAddress" /></th>
+                        <th><TranslatedText text="orders.deliveryAddress" /></th>
+                        <th><TranslatedText text="orders.price" /></th>
+                        <th><TranslatedText text="orders.createdAt" /></th>
+                        <th><TranslatedText text="orders.actions" /></th>
                       </tr>
                     </thead>
                     <tbody>
@@ -346,7 +349,7 @@ export default function CurrentOrdersPage() {
                           <td>{order.trackingNumber}</td>
                           <td>
                             <span className={`badge bg-${getStatusColor(order.status)}`}>
-                              {order.status.replace('_', ' ')}
+                              <TranslatedText text={`dashboard.orderStatus.${order.status}`} />
                             </span>
                           </td>
                           <td>
@@ -375,7 +378,7 @@ export default function CurrentOrdersPage() {
                                 className="btn btn-sm btn-outline-primary"
                                 onClick={() => router.push(`/dashboard/orders/${order.id}`)}
                               >
-                                View Details
+                                <TranslatedText text="dashboard.viewDetails" />
                               </button>
                               
                               {/* Driver-specific actions */}
@@ -390,7 +393,7 @@ export default function CurrentOrdersPage() {
                                   ) : (
                                     <FaBoxOpen className="me-1" />
                                   )}
-                                  Mark as Picked Up
+                                  <TranslatedText text="orders.markAsPickedUp" />
                                 </button>
                               )}
                               
@@ -405,7 +408,7 @@ export default function CurrentOrdersPage() {
                                   ) : (
                                     <FaTruck className="me-1" />
                                   )}
-                                  Start Transit
+                                  <TranslatedText text="orders.startTransit" />
                                 </button>
                               )}
                               
@@ -420,7 +423,7 @@ export default function CurrentOrdersPage() {
                                   ) : (
                                     <FaCheck className="me-1" />
                                   )}
-                                  Mark as Delivered
+                                  <TranslatedText text="orders.markAsDelivered" />
                                 </button>
                               )}
                               
@@ -436,7 +439,7 @@ export default function CurrentOrdersPage() {
                                   ) : (
                                     <FaTrash className="me-1" />
                                   )}
-                                  Cancel Order
+                                  <TranslatedText text="orders.cancelOrder" />
                                 </button>
                               )}
                             </div>
