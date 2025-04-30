@@ -55,7 +55,7 @@ export default function PaymentConfirmation() {
     try {
       // In reality, drivers can't directly confirm their own payments, that's an admin function
       // This would need to be a special API endpoint for drivers if this functionality is needed
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http:api.kataakksa.com:5000'}/api/payments/driver-confirm/${paymentId}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https:api.kataakksa.com:5000'}/api/payments/driver-confirm/${paymentId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
