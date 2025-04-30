@@ -6,9 +6,12 @@ import { Order } from '@/types';
 import { FaSpinner } from 'react-icons/fa';
 import { apiClient } from '@/utils/apiClient';
 import { useRouter } from 'next/navigation';
+import { useLanguage } from '@/contexts/LanguageContext';
+import TranslatedText from '@/components/TranslatedText';
 
 export default function OrdersHistoryPage() {
   const { user, isDriver, isClient } = useAuth();
+  const { t } = useLanguage();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [completedOrders, setCompletedOrders] = useState<Order[]>([]);
@@ -197,14 +200,14 @@ export default function OrdersHistoryPage() {
   };
 
   if (!user) {
-    return <div>Loading...</div>;
+    return <div><TranslatedText text="loading.message" /></div>;
   }
 
   if (loading) {
     return (
       <div className="d-flex justify-content-center align-items-center min-vh-100">
         <div className="spinner-border text-primary" role="status">
-          <span className="visually-hidden">Loading...</span>
+          <span className="visually-hidden"><TranslatedText text="loading.message" /></span>
         </div>
       </div>
     );
@@ -216,14 +219,14 @@ export default function OrdersHistoryPage() {
         <div className="col-12">
           <div className="card shadow">
             <div className="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-              <h2 className="card-title mb-0">Orders History</h2>
+              <h2 className="card-title mb-0"><TranslatedText text="orders.history" /></h2>
               <button 
                 className="btn btn-light btn-sm"
                 onClick={handleRefresh}
                 disabled={isRefreshing}
               >
                 <FaSpinner className={`me-2 ${isRefreshing ? 'fa-spin' : ''}`} />
-                {isRefreshing ? 'Refreshing...' : 'Refresh'}
+                {isRefreshing ? <TranslatedText text="orders.refreshing" /> : <TranslatedText text="admin.refresh" />}
               </button>
             </div>
             <div className="card-body">
@@ -235,14 +238,14 @@ export default function OrdersHistoryPage() {
 
               {completedOrders.length === 0 ? (
                 <div className="text-center py-5">
-                  <h3 className="text-muted">No Completed Orders</h3>
-                  <p className="text-muted">You don't have any completed orders in your history.</p>
+                  <h3 className="text-muted"><TranslatedText text="orders.noCompletedOrders" /></h3>
+                  <p className="text-muted"><TranslatedText text="orders.noOrdersInHistory" /></p>
                   {isClient() && (
                     <button 
                       className="btn btn-primary mt-3"
                       onClick={() => window.location.href = '/dashboard/new-order'}
                     >
-                      Create New Order
+                      <TranslatedText text="orders.new" />
                     </button>
                   )}
                 </div>
@@ -251,13 +254,13 @@ export default function OrdersHistoryPage() {
                   <table className="table table-hover">
                     <thead>
                       <tr>
-                        <th>Tracking Number</th>
-                        <th>Status</th>
-                        <th>Pickup Address</th>
-                        <th>Delivery Address</th>
-                        <th>Price</th>
-                        <th>Completed Date</th>
-                        <th>Actions</th>
+                        <th><TranslatedText text="orders.trackingNumber" /></th>
+                        <th><TranslatedText text="orders.status" /></th>
+                        <th><TranslatedText text="orders.pickupAddress" /></th>
+                        <th><TranslatedText text="orders.deliveryAddress" /></th>
+                        <th><TranslatedText text="orders.price" /></th>
+                        <th><TranslatedText text="orders.completedDate" /></th>
+                        <th><TranslatedText text="orders.actions" /></th>
                       </tr>
                     </thead>
                     <tbody>
@@ -266,7 +269,7 @@ export default function OrdersHistoryPage() {
                           <td>{order.trackingNumber}</td>
                           <td>
                             <span className={`badge bg-${getStatusColor(order.status)}`}>
-                              {order.status.replace('_', ' ')}
+                              <TranslatedText text={`dashboard.orderStatus.${order.status}`} />
                             </span>
                           </td>
                           <td>
@@ -298,7 +301,7 @@ export default function OrdersHistoryPage() {
                               className="btn btn-sm btn-outline-primary"
                               onClick={() => router.push(`/dashboard/orders/${order.id}`)}
                             >
-                              View Details
+                              <TranslatedText text="dashboard.viewDetails" />
                             </button>
                           </td>
                         </tr>
