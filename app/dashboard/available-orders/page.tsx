@@ -6,6 +6,8 @@ import { useAuth } from '@/contexts/AuthContext';
 import { FaTruck, FaMapMarkerAlt, FaBox, FaCheckCircle, FaExclamationTriangle, FaDollarSign } from 'react-icons/fa';
 import { apiClient } from '@/utils/apiClient';
 import { Order } from '@/types';
+import { useLanguage } from '@/contexts/LanguageContext';
+import TranslatedText from '@/components/TranslatedText';
 
 // Extended order interface for available orders
 interface AvailableOrder extends Order {
@@ -16,6 +18,7 @@ interface AvailableOrder extends Order {
 export default function AvailableOrders() {
   const router = useRouter();
   const { user, isDriver } = useAuth();
+  const { t } = useLanguage();
   const [orders, setOrders] = useState<AvailableOrder[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -176,22 +179,22 @@ export default function AvailableOrders() {
     return (
       <div className="container py-4">
         <div className="d-flex justify-content-between align-items-center mb-4">
-          <h1 className="h3 mb-0">Available Orders</h1>
+          <h1 className="h3 mb-0"><TranslatedText text="orders.available" /></h1>
         </div>
         
         <div className="card border-0 shadow-sm">
           <div className="card-body py-5">
             <div className="text-center">
               <FaDollarSign size={48} className="text-warning mb-3" />
-              <h4>Unconfirmed Payments Limit Reached</h4>
+              <h4><TranslatedText text="payment.unconfirmedLimit" /></h4>
               <p className="text-muted">
-                You currently have {unconfirmedPaymentsCount} unconfirmed payments. You cannot accept new orders until you confirm your pending payments.
+                {t('payment.unconfirmedDescription').replace('{0}', unconfirmedPaymentsCount.toString())}
               </p>
               <button 
                 className="btn btn-primary mt-3"
                 onClick={() => router.push('/dashboard/payment-confirmation')}
               >
-                View Pending Payments
+                <TranslatedText text="payment.viewPending" />
               </button>
             </div>
           </div>
@@ -205,22 +208,22 @@ export default function AvailableOrders() {
     return (
       <div className="container py-4">
         <div className="d-flex justify-content-between align-items-center mb-4">
-          <h1 className="h3 mb-0">Available Orders</h1>
+          <h1 className="h3 mb-0"><TranslatedText text="orders.available" /></h1>
         </div>
         
         <div className="card border-0 shadow-sm">
           <div className="card-body py-5">
             <div className="text-center">
               <FaExclamationTriangle size={48} className="text-warning mb-3" />
-              <h4>You Have an Active Order</h4>
+              <h4><TranslatedText text="orders.haveActiveOrder" /></h4>
               <p className="text-muted">
-                You can only accept one order at a time. Please complete or cancel your current order before accepting a new one.
+                <TranslatedText text="orders.oneOrderAtTime" />
               </p>
               
               {activeOrder && (
                 <div className="card mt-4 mb-4 mx-auto" style={{ maxWidth: '500px' }}>
                   <div className="card-header bg-light">
-                    <h5 className="mb-0">Order #{activeOrder.trackingNumber || activeOrder.id?.substring(0, 8)}</h5>
+                    <h5 className="mb-0"><TranslatedText text="orders.orderNumber" translation={false}>Order #{activeOrder.trackingNumber || activeOrder.id?.substring(0, 8)}</TranslatedText></h5>
                   </div>
                   <div className="card-body">
                     <div className="d-flex align-items-center mb-3">
@@ -235,7 +238,7 @@ export default function AvailableOrders() {
                         <FaMapMarkerAlt className="text-danger" />
                       </div>
                       <div>
-                        <p className="mb-0 small">Pickup: {activeOrder.pickupAddress?.street}, {activeOrder.pickupAddress?.city}</p>
+                        <p className="mb-0 small"><TranslatedText text="orders.pickup" />: {activeOrder.pickupAddress?.street}, {activeOrder.pickupAddress?.city}</p>
                       </div>
                     </div>
                     
@@ -244,7 +247,7 @@ export default function AvailableOrders() {
                         <FaMapMarkerAlt className="text-success" />
                       </div>
                       <div>
-                        <p className="mb-0 small">Delivery: {activeOrder.deliveryAddress?.street}, {activeOrder.deliveryAddress?.city}</p>
+                        <p className="mb-0 small"><TranslatedText text="orders.delivery" />: {activeOrder.deliveryAddress?.street}, {activeOrder.deliveryAddress?.city}</p>
                       </div>
                     </div>
                   </div>
@@ -255,7 +258,7 @@ export default function AvailableOrders() {
                 className="btn btn-primary mt-3"
                 onClick={() => router.push('/dashboard/current-orders')}
               >
-                View Current Orders
+                <TranslatedText text="orders.viewCurrentOrders" />
               </button>
             </div>
           </div>
@@ -267,15 +270,15 @@ export default function AvailableOrders() {
   return (
     <div className="container py-4">
       <div className="d-flex justify-content-between align-items-center mb-4">
-        <h1 className="h3 mb-0">Available Orders</h1>
+        <h1 className="h3 mb-0"><TranslatedText text="orders.available" /></h1>
       </div>
       
       <div className="alert alert-info mb-4" role="alert">
         <div className="d-flex align-items-center">
           <FaTruck className="me-2" />
           <div>
-            <p className="mb-0"><strong>Looking for orders to accept?</strong></p>
-            <p className="mb-0 small">All orders with PENDING status are shown here. Once you accept an order, it will appear in your Current Orders.</p>
+            <p className="mb-0"><strong><TranslatedText text="orders.lookingToAccept" /></strong></p>
+            <p className="mb-0 small"><TranslatedText text="orders.pendingDescription" /></p>
           </div>
         </div>
       </div>
@@ -289,16 +292,16 @@ export default function AvailableOrders() {
       {loading ? (
         <div className="text-center py-5">
           <div className="spinner-border text-primary" role="status">
-            <span className="visually-hidden">Loading...</span>
+            <span className="visually-hidden"><TranslatedText text="loading.message" /></span>
           </div>
-          <p className="mt-3 text-muted">Loading available orders...</p>
+          <p className="mt-3 text-muted"><TranslatedText text="orders.loadingAvailable" /></p>
         </div>
       ) : orders.length === 0 ? (
         <div className="card border-0 shadow-sm">
           <div className="card-body py-5 text-center">
             <FaTruck size={48} className="text-muted mb-3" />
-            <h5>No Available Orders</h5>
-            <p className="text-muted">There are currently no available orders to accept. Please check back later.</p>
+            <h5><TranslatedText text="orders.noAvailable" /></h5>
+            <p className="text-muted"><TranslatedText text="orders.checkBackLater" /></p>
           </div>
         </div>
       ) : (
@@ -308,7 +311,7 @@ export default function AvailableOrders() {
               <div className="card border-0 shadow-sm h-100">
                 <div className="card-header bg-white py-3 d-flex justify-content-between align-items-center">
                   <h5 className="card-title mb-0">
-                    Order #{order.trackingNumber || order.id?.substring(0, 8)}
+                    <TranslatedText text="orders.orderNumber" translation={false}>Order #{order.trackingNumber || order.id?.substring(0, 8)}</TranslatedText>
                   </h5>
                   <span className="badge bg-primary">
                     ${typeof order.price === 'number' ? order.price.toFixed(2) : '0.00'}
@@ -321,7 +324,7 @@ export default function AvailableOrders() {
                         <FaMapMarkerAlt className="text-danger" />
                       </div>
                       <div>
-                        <p className="mb-0 text-muted small">Pickup</p>
+                        <p className="mb-0 text-muted small"><TranslatedText text="orders.pickup" /></p>
                         <p className="mb-0">{order.pickupAddress?.street}</p>
                         <p className="mb-0">
                           {order.pickupAddress?.city}, {order.pickupAddress?.state} {order.pickupAddress?.zipCode}
@@ -336,7 +339,7 @@ export default function AvailableOrders() {
                         <FaMapMarkerAlt className="text-success" />
                       </div>
                       <div>
-                        <p className="mb-0 text-muted small">Delivery</p>
+                        <p className="mb-0 text-muted small"><TranslatedText text="orders.delivery" /></p>
                         <p className="mb-0">{order.deliveryAddress?.street}</p>
                         <p className="mb-0">
                           {order.deliveryAddress?.city}, {order.deliveryAddress?.state} {order.deliveryAddress?.zipCode}
@@ -351,13 +354,13 @@ export default function AvailableOrders() {
                         <FaBox className="text-primary" />
                       </div>
                       <div>
-                        <p className="mb-0 text-muted small">Package</p>
+                        <p className="mb-0 text-muted small"><TranslatedText text="orders.package" /></p>
                         <p className="mb-0">
-                          {order.packageDetails?.weight} lbs
+                          {order.packageDetails?.weight} <TranslatedText text="orders.weightUnit" />
                           {order.packageDetails?.description ? `, ${order.packageDetails.description}` : ''}
                         </p>
                         {order.packageDetails?.fragile && (
-                          <p className="mb-0 small text-danger">Fragile - Handle with care</p>
+                          <p className="mb-0 small text-danger"><TranslatedText text="orders.fragileWarning" /></p>
                         )}
                       </div>
                     </div>
@@ -368,15 +371,15 @@ export default function AvailableOrders() {
                       {order.estimatedDistance !== undefined && (
                         <div className="col-6">
                           <div className="border-end">
-                            <p className="mb-0 fw-bold">{order.estimatedDistance} miles</p>
-                            <p className="mb-0">Distance</p>
+                            <p className="mb-0 fw-bold">{order.estimatedDistance} <TranslatedText text="orders.distanceUnit" /></p>
+                            <p className="mb-0"><TranslatedText text="orders.distance" /></p>
                           </div>
                         </div>
                       )}
                       {order.estimatedTime !== undefined && (
                         <div className="col-6">
-                          <p className="mb-0 fw-bold">{order.estimatedTime} mins</p>
-                          <p className="mb-0">Est. Time</p>
+                          <p className="mb-0 fw-bold">{order.estimatedTime} <TranslatedText text="orders.timeUnit" /></p>
+                          <p className="mb-0"><TranslatedText text="orders.estimatedTime" /></p>
                         </div>
                       )}
                     </div>
@@ -393,7 +396,10 @@ export default function AvailableOrders() {
                     ) : (
                       <FaCheckCircle className="me-2" />
                     )}
-                    {acceptingOrderId === order.id ? 'Accepting...' : 'Accept Order'}
+                    {acceptingOrderId === order.id ? 
+                      <TranslatedText text="orders.acceptingOrder" /> : 
+                      <TranslatedText text="orders.acceptOrder" />
+                    }
                   </button>
                 </div>
               </div>
