@@ -541,6 +541,7 @@ const NewOrderPage = () => {
             value={formData.customPrice}
             onChange={handleChange}
             required
+            placeholder={t('orders.enterPrice')}
           />
         </div>
       </div>
