@@ -8,6 +8,7 @@ import axios from 'axios';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
+import TranslatedText from '@/components/TranslatedText';
 
 interface CTAButton {
   text: string;
@@ -118,7 +119,7 @@ export default function Home() {
       <header className="bg-light py-2">
         <div className="container d-flex justify-content-between align-items-center">
           <div className="d-flex align-items-center">
-            <h1 className="h5 mb-0">{t('app.title')}</h1>
+            <h1 className="h5 mb-0"><TranslatedText text="app.title" /></h1>
           </div>
           <LanguageSwitcher />
         </div>
@@ -127,16 +128,16 @@ export default function Home() {
       {/* Hero Section */}
       <section className="bg-primary text-white text-center py-4 py-md-5">
         <div className="container py-3 py-md-5">
-          <h1 className="display-5 display-md-4 fw-bold mb-3 mb-md-4">{t('app.title')}</h1>
+          <h1 className="display-5 display-md-4 fw-bold mb-3 mb-md-4"><TranslatedText text="app.title" /></h1>
           <p className="lead mb-4">
-            {t('homepage.subtitle')}
+            <TranslatedText text="homepage.subtitle" />
           </p>
           <div className="d-flex flex-column flex-sm-row justify-content-center gap-2 gap-sm-3">
             <Link href={content?.hero.cta.primary.link || '/login'} className="btn btn-light btn-lg px-4">
-              {t('nav.login')}
+              <TranslatedText text="nav.login" />
             </Link>
             <Link href={content?.hero.cta.secondary.link || '/signup'} className="btn btn-outline-light btn-lg px-4">
-              {t('nav.signup')}
+              <TranslatedText text="nav.signup" />
             </Link>
           </div>
         </div>
@@ -145,7 +146,7 @@ export default function Home() {
       {/* Services Section */}
       <section className="py-4 py-md-5">
         <div className="container">
-          <h2 className="text-center mb-4 mb-md-5">{t('services.title')}</h2>
+          <h2 className="text-center mb-4 mb-md-5"><TranslatedText text="services.title" /></h2>
           <div className="row g-3 g-md-4">
             {content?.services.map((service, index) => (
               <div className="col-12 col-sm-6 col-md-4" key={index}>
@@ -154,9 +155,9 @@ export default function Home() {
                     <div className="mb-3">
                       <i className={`bi ${service.icon} text-primary`} style={{ fontSize: '2.5rem' }}></i>
                     </div>
-                    <h3 className="card-title h5">{t(`homepage.services.${index}.title`)}</h3>
+                    <h3 className="card-title h5"><TranslatedText text={`homepage.services.${index}.title`} /></h3>
                     <p className="card-text">
-                      {t(`homepage.services.${index}.description`)}
+                      <TranslatedText text={`homepage.services.${index}.description`} />
                     </p>
                   </div>
                 </div>
@@ -169,7 +170,7 @@ export default function Home() {
       {/* How it Works Section */}
       <section className="py-4 py-md-5 bg-light">
         <div className="container">
-          <h2 className="text-center mb-4 mb-md-5">{t('howItWorks.title')}</h2>
+          <h2 className="text-center mb-4 mb-md-5"><TranslatedText text="howItWorks.title" /></h2>
           <div className="row justify-content-center">
             <div className="col-lg-10">
               <div className="d-flex flex-column flex-sm-row gap-4">
@@ -178,8 +179,8 @@ export default function Home() {
                     <div className="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style={{ width: '60px', height: '60px' }}>
                       <span className="fs-4">{step.step}</span>
                     </div>
-                    <h3 className="h5">{t(`homepage.howItWorks.${index}.title`)}</h3>
-                    <p className="mb-0">{t(`homepage.howItWorks.${index}.description`)}</p>
+                    <h3 className="h5"><TranslatedText text={`homepage.howItWorks.${index}.title`} /></h3>
+                    <p className="mb-0"><TranslatedText text={`homepage.howItWorks.${index}.description`} /></p>
                   </div>
                 ))}
               </div>
@@ -191,10 +192,10 @@ export default function Home() {
       {/* CTA Section */}
       <section className="py-4 py-md-5 bg-primary text-white">
         <div className="container text-center">
-          <h2 className="mb-3 mb-md-4">{t('homepage.cta.title')}</h2>
-          <p className="lead mb-3 mb-md-4">{t('homepage.cta.subtitle')}</p>
+          <h2 className="mb-3 mb-md-4"><TranslatedText text="homepage.cta.title" /></h2>
+          <p className="lead mb-3 mb-md-4"><TranslatedText text="homepage.cta.subtitle" /></p>
           <Link href={content?.cta.buttonLink || '/signup'} className="btn btn-light btn-lg px-4">
-            {t('homepage.cta.buttonText')}
+            <TranslatedText text="homepage.cta.buttonText" />
           </Link>
         </div>
       </section>

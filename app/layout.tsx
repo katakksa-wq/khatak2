@@ -39,6 +39,25 @@ const RootLayoutClient = ({ children }: { children: React.ReactNode }) => {
   );
 };
 
+// HTML Language Attributes Component
+const LanguageAttributes = () => {
+  const script = `
+    (function() {
+      try {
+        const savedLanguage = localStorage.getItem('app_language') || 'en';
+        document.documentElement.lang = savedLanguage;
+        document.documentElement.dir = savedLanguage === 'ar' ? 'rtl' : 'ltr';
+        if (savedLanguage === 'ar') {
+          document.body.classList.add('font-tajawal');
+        }
+      } catch (e) {
+        console.error('Error setting language attributes:', e);
+      }
+    })();
+  `;
+  return <script dangerouslySetInnerHTML={{ __html: script }} />;
+};
+
 // Server component
 export default function RootLayout({
   children,
@@ -46,11 +65,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html>
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
       </head>
       <body className={`${inter.className} ${tajawal.variable}`}>
+        <LanguageAttributes />
         <RootLayoutClient>{children}</RootLayoutClient>
       </body>
     </html>

@@ -7,6 +7,7 @@ import { FaEnvelope, FaLock, FaEye, FaEyeSlash } from 'react-icons/fa';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
+import TranslatedText from '@/components/TranslatedText';
 
 export default function Login() {
   const router = useRouter();
@@ -63,8 +64,8 @@ export default function Login() {
           <div className="card shadow-sm border-0">
             <div className="card-body p-3 p-md-4">
               <div className="text-center mb-4">
-                <h2 className="fw-bold">{t('auth.login')}</h2>
-                <p className="text-muted">{t('auth.login')}</p>
+                <h2 className="fw-bold"><TranslatedText text="auth.login" /></h2>
+                <p className="text-muted"><TranslatedText text="auth.loginDescription" translation={false}>{t('auth.login')}</TranslatedText></p>
               </div>
 
               {error && (
@@ -75,7 +76,7 @@ export default function Login() {
 
               <form onSubmit={handleSubmit}>
                 <div className="mb-3">
-                  <label htmlFor="email" className="form-label">{t('auth.email')}</label>
+                  <label htmlFor="email" className="form-label"><TranslatedText text="auth.email" /></label>
                   <div className="input-group">
                     <span className="input-group-text">
                       <FaEnvelope />
@@ -94,7 +95,7 @@ export default function Login() {
                 </div>
 
                 <div className="mb-4">
-                  <label htmlFor="password" className="form-label">{t('auth.password')}</label>
+                  <label htmlFor="password" className="form-label"><TranslatedText text="auth.password" /></label>
                   <div className="input-group">
                     <span className="input-group-text">
                       <FaLock />
@@ -113,6 +114,7 @@ export default function Login() {
                       type="button"
                       className="btn btn-outline-secondary"
                       onClick={() => setShowPassword(!showPassword)}
+                      aria-label={t(showPassword ? 'auth.hidePassword' : 'auth.showPassword')}
                     >
                       {showPassword ? <FaEyeSlash /> : <FaEye />}
                     </button>
@@ -128,19 +130,19 @@ export default function Login() {
                     {loading ? (
                       <>
                         <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                        {t('auth.login')}...
+                        <TranslatedText text="loading.message" />
                       </>
                     ) : (
-                      t('auth.login')
+                      <TranslatedText text="auth.login" />
                     )}
                   </button>
                 </div>
 
                 <div className="text-center mt-3">
                   <p className="mb-0">
-                    {t('nav.signup')}?{' '}
+                    <TranslatedText text="nav.signup" />?{' '}
                     <Link href="/register" className="text-primary">
-                      {t('nav.signup')}
+                      <TranslatedText text="nav.signup" />
                     </Link>
                   </p>
                 </div>

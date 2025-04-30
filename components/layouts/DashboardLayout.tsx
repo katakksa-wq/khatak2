@@ -5,6 +5,8 @@ import { useRouter, usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { FaSignOutAlt, FaBars, FaHome, FaBox, FaDollarSign, FaUser, FaTruck, FaClipboardCheck, FaCreditCard, FaHistory, FaBell } from 'react-icons/fa';
 import Link from 'next/link';
+import { useLanguage } from '@/contexts/LanguageContext';
+import TranslatedText from '../TranslatedText';
 
 // Define missing types
 interface User {
@@ -27,6 +29,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const router = useRouter();
   const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { t } = useLanguage();
 
   useEffect(() => {
     // Redirect to login if not authenticated and not loading
@@ -39,7 +42,9 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     return (
       <div className="d-flex justify-content-center align-items-center vh-100">
         <div className="spinner-border text-primary" role="status">
-          <span className="visually-hidden">Loading...</span>
+          <span className="visually-hidden">
+            <TranslatedText text="loading.message" />
+          </span>
         </div>
       </div>
     );
@@ -50,12 +55,12 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   }
 
   const navItems = [
-    { name: 'Dashboard', icon: <FaHome />, href: '/dashboard' },
-    { name: 'Current Orders', icon: <FaTruck />, href: '/dashboard/current-orders' },
-    { name: 'Orders History', icon: <FaHistory />, href: '/dashboard/orders-history' },
-    { name: 'Payment Confirmation', icon: <FaCreditCard />, href: '/dashboard/payment-confirmation' },
-    { name: 'Payment History', icon: <FaDollarSign />, href: '/dashboard/payments' },
-    { name: 'Profile', icon: <FaUser />, href: '/dashboard/profile' },
+    { name: 'dashboard.welcome', icon: <FaHome />, href: '/dashboard' },
+    { name: 'orders.current', icon: <FaTruck />, href: '/dashboard/current-orders' },
+    { name: 'orders.history', icon: <FaHistory />, href: '/dashboard/orders-history' },
+    { name: 'payment.confirmation', icon: <FaCreditCard />, href: '/dashboard/payment-confirmation' },
+    { name: 'payment.history', icon: <FaDollarSign />, href: '/dashboard/payments' },
+    { name: 'user.profile', icon: <FaUser />, href: '/dashboard/profile' },
   ];
 
   return (
@@ -69,7 +74,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           <button 
             className="btn btn-link text-white"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            aria-label="Toggle navigation"
+            aria-label={t('nav.toggle')}
           >
             <FaBars size={24} />
           </button>
@@ -101,7 +106,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             <button 
               className="btn-close btn-close-white" 
               onClick={() => setIsMobileMenuOpen(false)} 
-              aria-label="Close menu"
+              aria-label={t('button.close')}
             ></button>
           </div>
           <ul className="nav flex-column">
@@ -113,7 +118,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   <span className="me-2">{item.icon}</span>
-                  {item.name}
+                  <TranslatedText text={item.name} />
                 </Link>
               </li>
             ))}
@@ -122,7 +127,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                 className="nav-link text-white d-flex align-items-center w-100"
                 onClick={logout}
               >
-                <FaSignOutAlt className="me-2" /> Logout
+                <FaSignOutAlt className="me-2" /> <TranslatedText text="nav.logout" />
               </button>
             </li>
           </ul>
@@ -159,7 +164,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                   className={`nav-link text-white d-flex align-items-center ${pathname === item.href ? 'active bg-primary rounded' : ''}`}
                 >
                   <span className="me-2">{item.icon}</span>
-                  {item.name}
+                  <TranslatedText text={item.name} />
                 </Link>
               </li>
             ))}
@@ -169,7 +174,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
               className="nav-link text-white d-flex align-items-center w-100"
               onClick={logout}
             >
-              <FaSignOutAlt className="me-2" /> Logout
+              <FaSignOutAlt className="me-2" /> <TranslatedText text="nav.logout" />
             </button>
           </div>
         </div>
@@ -178,7 +183,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         <div className="flex-grow-1 d-flex flex-column">
           <header className="bg-light p-3 shadow-sm d-none d-md-block">
             <div className="d-flex justify-content-between align-items-center">
-              <h1 className="h4 mb-0">Dashboard</h1>
+              <h1 className="h4 mb-0"><TranslatedText text="dashboard.welcome" /></h1>
             </div>
           </header>
           <main className="py-3 px-3 px-md-4 flex-grow-1">

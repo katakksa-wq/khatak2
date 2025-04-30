@@ -439,25 +439,43 @@ const LanguageContext = createContext<LanguageContextType | undefined>(undefined
 
 export const LanguageProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [language, setLanguage] = useState<Language>('en');
-  const [translations, setTranslations] = useState(defaultTranslations);
+  const [translations, setTranslations] = useState<Translations>(defaultTranslations);
   
+  // Initialize language from localStorage on mount
   useEffect(() => {
-    // Load language preference from localStorage if available
-    const savedLanguage = localStorage.getItem('language') as Language;
-    if (savedLanguage) {
-      setLanguage(savedLanguage);
+    try {
+      const savedLanguage = localStorage.getItem('app_language');
+      if (savedLanguage === 'ar' || savedLanguage === 'en') {
+        setLanguage(savedLanguage);
+      }
+    } catch (error) {
+      console.error('Error reading language from localStorage:', error);
     }
-    
-    // Update document direction based on language
-    document.documentElement.dir = language === 'ar' ? 'rtl' : 'ltr';
-    document.documentElement.lang = language;
+  }, []);
+  
+  // Update HTML attributes and localStorage when language changes
+  useEffect(() => {
+    try {
+      // Update localStorage
+      localStorage.setItem('app_language', language);
+      
+      // Update HTML attributes
+      document.documentElement.lang = language;
+      document.documentElement.dir = language === 'ar' ? 'rtl' : 'ltr';
+      
+      // Update body classes for font
+      if (language === 'ar') {
+        document.body.classList.add('font-tajawal');
+      } else {
+        document.body.classList.remove('font-tajawal');
+      }
+    } catch (error) {
+      console.error('Error updating language attributes:', error);
+    }
   }, [language]);
   
   const changeLanguage = (lang: Language) => {
     setLanguage(lang);
-    localStorage.setItem('language', lang);
-    document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
-    document.documentElement.lang = lang;
   };
   
   const t = (key: string): string => {

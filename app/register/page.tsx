@@ -8,6 +8,7 @@ import { FaUser, FaLock, FaEnvelope, FaTruck } from 'react-icons/fa';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
+import TranslatedText from '@/components/TranslatedText';
 
 export default function RegisterPage() {
   const [formData, setFormData] = useState({
@@ -70,7 +71,7 @@ export default function RegisterPage() {
         <Col xs={12} sm={11} md={10} lg={8} xl={6}>
           <Card className="shadow-sm">
             <Card.Header className="bg-primary text-white">
-              <h2 className="h4 mb-0">{t('auth.signup')}</h2>
+              <h2 className="h4 mb-0"><TranslatedText text="auth.signup" /></h2>
             </Card.Header>
             <Card.Body className="p-3 p-md-4">
               {error && <Alert variant="danger">{error}</Alert>}
@@ -79,7 +80,7 @@ export default function RegisterPage() {
                 <Row>
                   <Col xs={12} md={6} className="mb-3">
                     <Form.Group>
-                      <Form.Label>{t('auth.firstName')}</Form.Label>
+                      <Form.Label><TranslatedText text="auth.firstName" /></Form.Label>
                       <div className="input-group">
                         <span className="input-group-text">
                           <FaUser />
@@ -97,7 +98,7 @@ export default function RegisterPage() {
                   </Col>
                   <Col xs={12} md={6} className="mb-3">
                     <Form.Group>
-                      <Form.Label>{t('auth.lastName')}</Form.Label>
+                      <Form.Label><TranslatedText text="auth.lastName" /></Form.Label>
                       <div className="input-group">
                         <span className="input-group-text">
                           <FaUser />
@@ -116,7 +117,7 @@ export default function RegisterPage() {
                 </Row>
                 
                 <Form.Group className="mb-3">
-                  <Form.Label>{t('auth.email')}</Form.Label>
+                  <Form.Label><TranslatedText text="auth.email" /></Form.Label>
                   <div className="input-group">
                     <span className="input-group-text">
                       <FaEnvelope />
@@ -133,7 +134,7 @@ export default function RegisterPage() {
                 </Form.Group>
                 
                 <Form.Group className="mb-3">
-                  <Form.Label>{t('auth.password')}</Form.Label>
+                  <Form.Label><TranslatedText text="auth.password" /></Form.Label>
                   <div className="input-group">
                     <span className="input-group-text">
                       <FaLock />
@@ -150,7 +151,7 @@ export default function RegisterPage() {
                 </Form.Group>
                 
                 <Form.Group className="mb-4">
-                  <Form.Label>{t('auth.confirmPassword')}</Form.Label>
+                  <Form.Label><TranslatedText text="auth.confirmPassword" /></Form.Label>
                   <div className="input-group">
                     <span className="input-group-text">
                       <FaLock />
@@ -174,7 +175,14 @@ export default function RegisterPage() {
                     disabled={loading}
                     className="py-2"
                   >
-                    {loading ? `${t('auth.signup')}...` : t('auth.signup')}
+                    {loading ? (
+                      <>
+                        <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                        <TranslatedText text="auth.createAccount" />
+                      </>
+                    ) : (
+                      <TranslatedText text="auth.signup" />
+                    )}
                   </Button>
                 </div>
               </Form>
@@ -182,17 +190,17 @@ export default function RegisterPage() {
             <Card.Footer className="bg-light p-3 p-md-4">
               <div className="text-center">
                 <p className="mb-2">
-                  {t('auth.alreadyHaveAccount')} <Link href="/login">{t('auth.login')}</Link>
+                  <TranslatedText text="auth.alreadyHaveAccount" /> <Link href="/login"><TranslatedText text="auth.login" /></Link>
                 </p>
                 <div className="driver-registration-card mt-3 mb-2 p-3 border rounded bg-light">
                   <div className="d-flex flex-column flex-sm-row align-items-center justify-content-between gap-2">
                     <div>
-                      <h5 className="mb-0">{t('driver.becomeDriver')}</h5>
-                      <p className="text-muted mb-0 small">{t('driver.earnMoney')}</p>
+                      <h5 className="mb-0"><TranslatedText text="driver.becomeDriver" /></h5>
+                      <p className="text-muted mb-0 small"><TranslatedText text="driver.earnMoney" /></p>
                     </div>
                     <Link href="/register/driver" passHref>
                       <Button variant="outline-primary" className="d-flex align-items-center w-100 w-sm-auto justify-content-center">
-                        <FaTruck className="me-2" /> {t('driver.registration')}
+                        <FaTruck className="me-2" /> <TranslatedText text="driver.registration" />
                       </Button>
                     </Link>
                   </div>
