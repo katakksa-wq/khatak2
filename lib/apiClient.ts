@@ -9,7 +9,7 @@ export const apiClient = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
-  withCredentials: true, // Include cookies for auth
+  withCredentials: false, // Changed from true to false to avoid CORS issues with wildcard origin
 });
 
 // Create a separate client for bank account endpoints that doesn't use credentials

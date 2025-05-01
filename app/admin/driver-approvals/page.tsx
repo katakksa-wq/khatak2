@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { FaEye, FaCheck, FaTimes, FaIdCard, FaCar, FaPhoneAlt, FaEnvelope, FaSearch, FaRedo, FaIdBadge, FaFile, FaFileAlt } from 'react-icons/fa';
 import { apiClient } from '@/utils/apiClient';
 import { useRouter } from 'next/navigation';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface DriverApplication {
   id: string;
@@ -47,6 +48,7 @@ interface DriversApiResponse {
 
 export default function DriverApprovalsPage() {
   const router = useRouter();
+  const { t } = useLanguage();
   const [drivers, setDrivers] = useState<DriverApplication[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -277,7 +279,7 @@ export default function DriverApprovalsPage() {
               onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
               disabled={currentPage === 1}
             >
-              Previous
+              {t('pagination.previous')}
             </button>
           </li>
           
@@ -298,7 +300,7 @@ export default function DriverApprovalsPage() {
               onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
               disabled={currentPage === totalPages}
             >
-              Next
+              {t('pagination.next')}
             </button>
           </li>
         </ul>
@@ -319,12 +321,12 @@ export default function DriverApprovalsPage() {
                       <input
                         type="text"
                         className="form-control"
-                        placeholder="Search by name or email"
+                        placeholder={t('admin.searchDrivers')}
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                       />
                       <button className="btn btn-primary" type="submit">
-                        <FaSearch className="me-1" /> Search
+                        <FaSearch className="me-1" /> {t('admin.search')}
                       </button>
                     </div>
                   </form>
@@ -338,10 +340,10 @@ export default function DriverApprovalsPage() {
                       setCurrentPage(1); // Reset to first page when filtering
                     }}
                   >
-                    <option value="ALL">All Status</option>
-                    <option value="PENDING">Pending</option>
-                    <option value="APPROVED">Approved</option>
-                    <option value="REJECTED">Rejected</option>
+                    <option value="ALL">{t('admin.allStatuses')}</option>
+                    <option value="PENDING">{t('dashboard.orderStatus.PENDING')}</option>
+                    <option value="APPROVED">{t('admin.approved')}</option>
+                    <option value="REJECTED">{t('admin.rejected')}</option>
                   </select>
                 </div>
                 <div className="col-md-3 text-end">
@@ -350,7 +352,7 @@ export default function DriverApprovalsPage() {
                     onClick={handleRefreshClick}
                     disabled={loading}
                   >
-                    <FaRedo className="me-1" /> {loading ? 'Refreshing...' : 'Refresh'}
+                    <FaRedo className="me-1" /> {loading ? t('orders.refreshing') : t('admin.refresh')}
                   </button>
                 </div>
               </div>
@@ -369,18 +371,18 @@ export default function DriverApprovalsPage() {
         <div className="col-12">
           <div className="card border-0 shadow-sm">
             <div className="card-header bg-white py-3">
-              <h5 className="mb-0">Driver Applications</h5>
+              <h5 className="mb-0">{t('admin.driverApprovals')}</h5>
             </div>
             <div className="card-body">
               {loading ? (
                 <div className="d-flex justify-content-center my-5">
                   <div className="spinner-border text-primary" role="status">
-                    <span className="visually-hidden">Loading...</span>
+                    <span className="visually-hidden">{t('button.loading')}</span>
                   </div>
                 </div>
               ) : drivers.length === 0 ? (
                 <div className="text-center py-5">
-                  <p className="text-muted mb-0">No driver applications found</p>
+                  <p className="text-muted mb-0">{t('admin.noDriverApplications')}</p>
                 </div>
               ) : (
                 <>
@@ -388,13 +390,13 @@ export default function DriverApprovalsPage() {
                     <table className="table table-hover align-middle">
                       <thead>
                         <tr>
-                          <th>Name</th>
-                          <th>Email</th>
-                          <th>Phone</th>
-                          <th>Vehicle</th>
-                          <th>Application Date</th>
-                          <th>Status</th>
-                          <th>Actions</th>
+                          <th>{t('auth.name')}</th>
+                          <th>{t('auth.email')}</th>
+                          <th>{t('auth.phone')}</th>
+                          <th>{t('driver.vehicle')}</th>
+                          <th>{t('driver.applicationDate')}</th>
+                          <th>{t('admin.status')}</th>
+                          <th>{t('admin.actions')}</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -413,7 +415,7 @@ export default function DriverApprovalsPage() {
                                 driver.status === 'REJECTED' ? 'bg-danger' : 
                                 'bg-warning'
                               }`}>
-                                {driver.status}
+                                {t(`dashboard.orderStatus.${driver.status}`)}
                               </span>
                             </td>
                             <td>
@@ -423,7 +425,7 @@ export default function DriverApprovalsPage() {
                                   className="btn btn-sm btn-outline-primary"
                                   onClick={() => handleViewDetails(driver)}
                                 >
-                                  <FaEye /> View
+                                  <FaEye /> {t('admin.view')}
                                 </button>
                                 {driver.status === 'PENDING' && (
                                   <>
@@ -432,14 +434,14 @@ export default function DriverApprovalsPage() {
                                       className="btn btn-sm btn-outline-success"
                                       onClick={() => handleConfirmAction('approve', driver)}
                                     >
-                                      <FaCheck /> Approve
+                                      <FaCheck /> {t('admin.approve')}
                                     </button>
                                     <button 
                                       type="button" 
                                       className="btn btn-sm btn-outline-danger"
                                       onClick={() => handleConfirmAction('reject', driver)}
                                     >
-                                      <FaTimes /> Reject
+                                      <FaTimes /> {t('admin.reject')}
                                     </button>
                                   </>
                                 )}
@@ -464,7 +466,7 @@ export default function DriverApprovalsPage() {
           <div className="modal-dialog modal-lg">
             <div className="modal-content">
               <div className="modal-header">
-                <h5 className="modal-title">Driver Application Details</h5>
+                <h5 className="modal-title">{t('driver.applicationDetails')}</h5>
                 <button 
                   type="button" 
                   className="btn-close" 
@@ -474,45 +476,45 @@ export default function DriverApprovalsPage() {
               <div className="modal-body">
                 <div className="row mb-4">
                   <div className="col-md-6">
-                    <h6 className="mb-3"><FaIdCard className="me-2" /> Personal Information</h6>
-                    <p><strong>Name:</strong> {selectedDriver.name}</p>
-                    <p><strong>Email:</strong> <span className="text-primary"><FaEnvelope className="me-1" /> {selectedDriver.email}</span></p>
-                    <p><strong>Phone:</strong> <span className="text-primary"><FaPhoneAlt className="me-1" /> {selectedDriver.phoneNumber}</span></p>
-                    <p><strong>Application Date:</strong> {new Date(selectedDriver.applicationDate).toLocaleDateString()}</p>
+                    <h6 className="mb-3"><FaIdCard className="me-2" /> {t('driver.personalInfo')}</h6>
+                    <p><strong>{t('auth.name')}:</strong> {selectedDriver.name}</p>
+                    <p><strong>{t('auth.email')}:</strong> <span className="text-primary"><FaEnvelope className="me-1" /> {selectedDriver.email}</span></p>
+                    <p><strong>{t('auth.phone')}:</strong> <span className="text-primary"><FaPhoneAlt className="me-1" /> {selectedDriver.phoneNumber}</span></p>
+                    <p><strong>{t('driver.applicationDate')}:</strong> {new Date(selectedDriver.applicationDate).toLocaleDateString()}</p>
                     <p>
-                      <strong>Status:</strong>{' '}
+                      <strong>{t('admin.status')}:</strong>{' '}
                       <span className={`badge ${
                         selectedDriver.status === 'APPROVED' ? 'bg-success' : 
                         selectedDriver.status === 'REJECTED' ? 'bg-danger' : 
                         'bg-warning'
                       }`}>
-                        {selectedDriver.status}
+                        {t(`dashboard.orderStatus.${selectedDriver.status}`)}
                       </span>
                     </p>
                   </div>
                   <div className="col-md-6">
-                    <h6 className="mb-3"><FaCar className="me-2" /> Vehicle Information</h6>
+                    <h6 className="mb-3"><FaCar className="me-2" /> {t('driver.vehicleInfo')}</h6>
                     <div className="card">
                       <div className="card-body p-3">
                         <div className="row g-2">
                           <div className="col-6">
-                            <p className="mb-1"><strong>Make:</strong></p>
+                            <p className="mb-1"><strong>{t('driver.make')}:</strong></p>
                             <p className="mb-2">{selectedDriver.vehicleInfo.make}</p>
                           </div>
                           <div className="col-6">
-                            <p className="mb-1"><strong>Model:</strong></p>
+                            <p className="mb-1"><strong>{t('driver.model')}:</strong></p>
                             <p className="mb-2">{selectedDriver.vehicleInfo.model}</p>
                           </div>
                           <div className="col-6">
-                            <p className="mb-1"><strong>Year:</strong></p>
+                            <p className="mb-1"><strong>{t('driver.year')}:</strong></p>
                             <p className="mb-2">{selectedDriver.vehicleInfo.year}</p>
                           </div>
                           <div className="col-6">
-                            <p className="mb-1"><strong>Color:</strong></p>
-                            <p className="mb-2">{selectedDriver.vehicleInfo.color || 'N/A'}</p>
+                            <p className="mb-1"><strong>{t('driver.color')}:</strong></p>
+                            <p className="mb-2">{selectedDriver.vehicleInfo.color || t('general.notApplicable')}</p>
                           </div>
                           <div className="col-12">
-                            <p className="mb-1"><strong>License Plate:</strong></p>
+                            <p className="mb-1"><strong>{t('driver.licensePlate')}:</strong></p>
                             <p className="mb-0">{selectedDriver.vehicleInfo.licensePlate}</p>
                           </div>
                         </div>
@@ -523,11 +525,11 @@ export default function DriverApprovalsPage() {
                 
                 <div className="row mb-4">
                   <div className="col-md-6">
-                    <h6 className="mb-3"><FaIdBadge className="me-2" /> License Information</h6>
+                    <h6 className="mb-3"><FaIdBadge className="me-2" /> {t('driver.licenseInfo')}</h6>
                     <div className="card">
                       <div className="card-body p-3">
-                        <p><strong>License Number:</strong> {selectedDriver.licenseInfo.licenseNumber}</p>
-                        <p className="mb-0"><strong>Expiry Date:</strong> {new Date(selectedDriver.licenseInfo.expiryDate).toLocaleDateString()}</p>
+                        <p><strong>{t('driver.licenseNumber')}:</strong> {selectedDriver.licenseInfo.licenseNumber}</p>
+                        <p className="mb-0"><strong>{t('driver.expiryDate')}:</strong> {new Date(selectedDriver.licenseInfo.expiryDate).toLocaleDateString()}</p>
                       </div>
                     </div>
                   </div>
@@ -536,18 +538,18 @@ export default function DriverApprovalsPage() {
                 {/* Documents Section */}
                 <div className="row">
                   <div className="col-12">
-                    <h6 className="mb-3"><FaFile className="me-2" /> Documents</h6>
+                    <h6 className="mb-3"><FaFile className="me-2" /> {t('driver.documents')}</h6>
                     <div className="card">
                       <div className="card-body p-3">
                         <div className="row">
                           {selectedDriver.documents && selectedDriver.documents.driversLicense && (
                             <div className="col-md-6 mb-3">
-                              <p><strong>Driver's License:</strong></p>
+                              <p><strong>{t('driver.driversLicense')}:</strong></p>
                               <div className="d-flex align-items-center gap-2">
                                 <div className="position-relative" style={{ width: '100px', height: '100px' }}>
                                   <img 
                                     src={selectedDriver.documents.driversLicense} 
-                                    alt="Driver's License" 
+                                    alt={t('driver.driversLicense')} 
                                     className="img-thumbnail" 
                                     style={{ 
                                       width: '100%', 
@@ -562,7 +564,7 @@ export default function DriverApprovalsPage() {
                                     }}
                                   />
                                   <div className="position-absolute top-0 end-0 p-1">
-                                    <span className="badge bg-primary">Click to enlarge</span>
+                                    <span className="badge bg-primary">{t('general.clickToEnlarge')}</span>
                                   </div>
                                 </div>
                                 <a 
@@ -571,7 +573,7 @@ export default function DriverApprovalsPage() {
                                   rel="noopener noreferrer"
                                   className="btn btn-sm btn-outline-primary"
                                 >
-                                  <FaFileAlt className="me-1" /> View Full Size
+                                  <FaFileAlt className="me-1" /> {t('general.viewFullSize')}
                                 </a>
                               </div>
                             </div>
@@ -579,12 +581,12 @@ export default function DriverApprovalsPage() {
                           
                           {selectedDriver.documents && selectedDriver.documents.vehicleRegistration && (
                             <div className="col-md-6 mb-3">
-                              <p><strong>Vehicle Registration:</strong></p>
+                              <p><strong>{t('driver.vehicleRegistration')}:</strong></p>
                               <div className="d-flex align-items-center gap-2">
                                 <div className="position-relative" style={{ width: '100px', height: '100px' }}>
                                   <img 
                                     src={selectedDriver.documents.vehicleRegistration} 
-                                    alt="Vehicle Registration" 
+                                    alt={t('driver.vehicleRegistration')} 
                                     className="img-thumbnail" 
                                     style={{ 
                                       width: '100%', 
@@ -599,7 +601,7 @@ export default function DriverApprovalsPage() {
                                     }}
                                   />
                                   <div className="position-absolute top-0 end-0 p-1">
-                                    <span className="badge bg-primary">Click to enlarge</span>
+                                    <span className="badge bg-primary">{t('general.clickToEnlarge')}</span>
                                   </div>
                                 </div>
                                 <a 
@@ -608,7 +610,7 @@ export default function DriverApprovalsPage() {
                                   rel="noopener noreferrer"
                                   className="btn btn-sm btn-outline-primary"
                                 >
-                                  <FaFileAlt className="me-1" /> View Full Size
+                                  <FaFileAlt className="me-1" /> {t('general.viewFullSize')}
                                 </a>
                               </div>
                             </div>
@@ -616,12 +618,12 @@ export default function DriverApprovalsPage() {
                           
                           {selectedDriver.documents && selectedDriver.documents.insurance && (
                             <div className="col-md-6 mb-3">
-                              <p><strong>Insurance:</strong></p>
+                              <p><strong>{t('driver.insurance')}:</strong></p>
                               <div className="d-flex align-items-center gap-2">
                                 <div className="position-relative" style={{ width: '100px', height: '100px' }}>
                                   <img 
                                     src={selectedDriver.documents.insurance} 
-                                    alt="Insurance Document" 
+                                    alt={t('driver.insurance')} 
                                     className="img-thumbnail" 
                                     style={{ 
                                       width: '100%', 
@@ -636,7 +638,7 @@ export default function DriverApprovalsPage() {
                                     }}
                                   />
                                   <div className="position-absolute top-0 end-0 p-1">
-                                    <span className="badge bg-primary">Click to enlarge</span>
+                                    <span className="badge bg-primary">{t('general.clickToEnlarge')}</span>
                                   </div>
                                 </div>
                                 <a 
@@ -645,7 +647,7 @@ export default function DriverApprovalsPage() {
                                   rel="noopener noreferrer"
                                   className="btn btn-sm btn-outline-primary"
                                 >
-                                  <FaFileAlt className="me-1" /> View Full Size
+                                  <FaFileAlt className="me-1" /> {t('general.viewFullSize')}
                                 </a>
                               </div>
                             </div>
@@ -653,12 +655,12 @@ export default function DriverApprovalsPage() {
                           
                           {selectedDriver.documents && selectedDriver.documents.backgroundCheck && (
                             <div className="col-md-6 mb-3">
-                              <p><strong>Background Check:</strong></p>
+                              <p><strong>{t('driver.backgroundCheck')}:</strong></p>
                               <div className="d-flex align-items-center gap-2">
                                 <div className="position-relative" style={{ width: '100px', height: '100px' }}>
                                   <img 
                                     src={selectedDriver.documents.backgroundCheck} 
-                                    alt="Background Check" 
+                                    alt={t('driver.backgroundCheck')} 
                                     className="img-thumbnail" 
                                     style={{ 
                                       width: '100%', 
@@ -673,7 +675,7 @@ export default function DriverApprovalsPage() {
                                     }}
                                   />
                                   <div className="position-absolute top-0 end-0 p-1">
-                                    <span className="badge bg-primary">Click to enlarge</span>
+                                    <span className="badge bg-primary">{t('general.clickToEnlarge')}</span>
                                   </div>
                                 </div>
                                 <a 
@@ -682,7 +684,7 @@ export default function DriverApprovalsPage() {
                                   rel="noopener noreferrer"
                                   className="btn btn-sm btn-outline-primary"
                                 >
-                                  <FaFileAlt className="me-1" /> View Full Size
+                                  <FaFileAlt className="me-1" /> {t('general.viewFullSize')}
                                 </a>
                               </div>
                             </div>
@@ -694,7 +696,7 @@ export default function DriverApprovalsPage() {
                              !selectedDriver.documents.insurance && 
                              !selectedDriver.documents.backgroundCheck)) && (
                             <div className="col-12">
-                              <p className="text-center text-muted py-3">No documents available</p>
+                              <p className="text-center text-muted py-3">{t('driver.noDocuments')}</p>
                             </div>
                           )}
                         </div>
@@ -709,7 +711,7 @@ export default function DriverApprovalsPage() {
                   className="btn btn-secondary" 
                   onClick={() => setShowDetailsModal(false)}
                 >
-                  Close
+                  {t('button.close')}
                 </button>
                 {selectedDriver.status === 'PENDING' && (
                   <>
@@ -721,7 +723,7 @@ export default function DriverApprovalsPage() {
                         handleConfirmAction('approve', selectedDriver);
                       }}
                     >
-                      <FaCheck className="me-1" /> Approve
+                      <FaCheck className="me-1" /> {t('admin.approve')}
                     </button>
                     <button 
                       type="button" 
@@ -731,7 +733,7 @@ export default function DriverApprovalsPage() {
                         handleConfirmAction('reject', selectedDriver);
                       }}
                     >
-                      <FaTimes className="me-1" /> Reject
+                      <FaTimes className="me-1" /> {t('admin.reject')}
                     </button>
                   </>
                 )}
@@ -748,7 +750,7 @@ export default function DriverApprovalsPage() {
             <div className="modal-content">
               <div className="modal-header">
                 <h5 className="modal-title">
-                  {confirmAction === 'approve' ? 'Approve Driver' : 'Reject Driver'}
+                  {confirmAction === 'approve' ? t('admin.approveDriver') : t('admin.rejectDriver')}
                 </h5>
                 <button 
                   type="button" 
@@ -765,18 +767,21 @@ export default function DriverApprovalsPage() {
                 ) : (
                   <>
                     <p>
-                      Are you sure you want to {confirmAction === 'approve' ? 'approve' : 'reject'} the driver application for <strong>{selectedDriver.name}</strong>?
+                      {confirmAction === 'approve' 
+                        ? `${t('admin.confirmApproveDriver')} ${selectedDriver.name}?`
+                        : `${t('admin.confirmRejectDriver')} ${selectedDriver.name}?`
+                      }
                     </p>
                     {confirmAction === 'reject' && (
                       <div className="mb-3">
-                        <label htmlFor="rejectionReason" className="form-label">Reason for Rejection:</label>
+                        <label htmlFor="rejectionReason" className="form-label">{t('admin.rejectionReason')}:</label>
                         <textarea
                           id="rejectionReason"
                           className="form-control"
                           rows={3}
                           value={confirmReason}
                           onChange={(e) => setConfirmReason(e.target.value)}
-                          placeholder="Please provide a reason for rejection..."
+                          placeholder={t('admin.rejectionReasonPlaceholder')}
                         ></textarea>
                       </div>
                     )}
@@ -790,7 +795,7 @@ export default function DriverApprovalsPage() {
                     className="btn btn-primary" 
                     onClick={() => setShowConfirmModal(false)}
                   >
-                    Close
+                    {t('button.close')}
                   </button>
                 ) : (
                   <>
@@ -800,7 +805,7 @@ export default function DriverApprovalsPage() {
                       onClick={() => setShowConfirmModal(false)}
                       disabled={loading}
                     >
-                      Cancel
+                      {t('button.cancel')}
                     </button>
                     <button 
                       type="button" 
@@ -811,12 +816,12 @@ export default function DriverApprovalsPage() {
                       {loading ? (
                         <>
                           <span className="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
-                          Processing...
+                          {t('button.processing')}
                         </>
                       ) : (
                         <>
                           {confirmAction === 'approve' ? <FaCheck className="me-1" /> : <FaTimes className="me-1" />}
-                          {confirmAction === 'approve' ? 'Approve' : 'Reject'}
+                          {confirmAction === 'approve' ? t('admin.approve') : t('admin.reject')}
                         </>
                       )}
                     </button>
