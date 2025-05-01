@@ -1,4 +1,4 @@
-import { apiClient } from '@/lib/apiClient';
+import { apiClient, bankApiClient } from '@/lib/apiClient';
 
 export interface AdminBankAccount {
   id: string;
@@ -86,7 +86,7 @@ const paymentService = {
   // Bank account operations
   getBankAccounts: async (): Promise<AdminBankAccount[]> => {
     try {
-      const response = await apiClient.get('/api/payments/bank-accounts');
+      const response = await bankApiClient.get('/api/payments/bank-accounts');
       return response.data.data.bankAccounts;
     } catch (error) {
       console.error('Error getting bank accounts:', error);
@@ -96,7 +96,7 @@ const paymentService = {
 
   addBankAccount: async (accountData: Omit<AdminBankAccount, 'id'>): Promise<AdminBankAccount> => {
     try {
-      const response = await apiClient.post('/api/payments/bank-accounts', accountData);
+      const response = await bankApiClient.post('/api/payments/bank-accounts', accountData);
       return response.data.data.bankAccount;
     } catch (error) {
       console.error('Error adding bank account:', error);
@@ -106,7 +106,7 @@ const paymentService = {
 
   updateBankAccount: async (id: string, accountData: Partial<AdminBankAccount>): Promise<AdminBankAccount> => {
     try {
-      const response = await apiClient.put(`/api/payments/bank-accounts/${id}`, accountData);
+      const response = await bankApiClient.put(`/api/payments/bank-accounts/${id}`, accountData);
       return response.data.data.bankAccount;
     } catch (error) {
       console.error('Error updating bank account:', error);
@@ -116,7 +116,7 @@ const paymentService = {
 
   deleteBankAccount: async (id: string): Promise<void> => {
     try {
-      await apiClient.delete(`/api/payments/bank-accounts/${id}`);
+      await bankApiClient.delete(`/api/payments/bank-accounts/${id}`);
     } catch (error) {
       console.error('Error deleting bank account:', error);
       throw error;
