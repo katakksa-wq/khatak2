@@ -261,7 +261,23 @@ function getStatusIcon(status: string) {
 
 function getStatusText(status: string) {
   const { t } = useLanguage();
-  return t(`dashboard.orderStatus.${status}`);
+  
+  switch (status) {
+    case 'PENDING':
+      return t('dashboard.orderStatus.PENDING');
+    case 'IN_TRANSIT':
+      return t('dashboard.orderStatus.IN_TRANSIT');
+    case 'DELIVERED':
+      return t('dashboard.orderStatus.DELIVERED');
+    case 'CANCELLED':
+      return t('dashboard.orderStatus.CANCELLED');
+    case 'ACCEPTED':
+      return t('dashboard.orderStatus.ACCEPTED');
+    case 'PICKED_UP':
+      return t('dashboard.orderStatus.PICKED_UP');
+    default:
+      return status;
+  }
 }
 
 export default Dashboard; 
