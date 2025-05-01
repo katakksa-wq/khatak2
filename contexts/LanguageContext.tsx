@@ -321,10 +321,26 @@ const defaultTranslations: Translations = {
     
     // Payments
     'payment.confirmation': 'Payment Confirmation',
-    'payment.history': 'Payment History',
-    'payment.unconfirmedLimit': 'Unconfirmed Payments Limit Reached',
-    'payment.unconfirmedDescription': 'You currently have {0} unconfirmed payments. You cannot accept new orders until you confirm your pending payments.',
-    'payment.viewPending': 'View Pending Payments',
+    'payment.confirmation.bankAccounts': 'Payment Bank Accounts',
+    'payment.confirmation.noBankAccounts': 'No bank accounts available. Please contact admin.',
+    'payment.confirmation.pendingPayments': 'Pending Payments',
+    'payment.confirmation.loadingPayments': 'Loading payments...',
+    'payment.confirmation.noPendingPayments': 'No Pending Payments',
+    'payment.confirmation.noPaymentsDescription': 'There are currently no payments that need confirmation.',
+    'payment.confirmation.order': 'Order',
+    'payment.confirmation.method': 'Payment Method',
+    'payment.confirmation.reference': 'Reference',
+    'payment.confirmation.receipt': 'Receipt',
+    'payment.confirmation.ref': 'Ref',
+    'payment.confirmation.verifyMessage': 'Please confirm this payment was processed correctly or report an issue if there\'s a problem.',
+    'payment.confirmation.reportIssue': 'Report Issue',
+    'payment.confirmation.confirm': 'Confirm Payment',
+    'payment.confirmation.success': 'Payment confirmed successfully!',
+    'payment.confirmation.failed': 'Failed to confirm payment. Please try again.',
+    'payment.confirmation.reportedIssue': 'Reported as issue by driver',
+    'payment.confirmation.reportFailed': 'Failed to report payment issue. Please try again.',
+    'payment.confirmation.issueReported': 'Payment issue reported to admin',
+    'button.processing': 'Processing...',
     
     // User
     'user.profile': 'Profile',
@@ -365,7 +381,6 @@ const defaultTranslations: Translations = {
     'button.update': 'Update',
     'button.loading': 'Loading...',
     'button.close': 'Close',
-    'button.processing': 'Processing...',
     
     // Dashboard
     'dashboard.welcome': 'Welcome',
@@ -774,10 +789,26 @@ const defaultTranslations: Translations = {
     
     // Payments
     'payment.confirmation': 'تأكيد الدفع',
-    'payment.history': 'سجل المدفوعات',
-    'payment.unconfirmedLimit': 'تم الوصول إلى حد المدفوعات غير المؤكدة',
-    'payment.unconfirmedDescription': 'لديك حاليًا {0} مدفوعات غير مؤكدة. لا يمكنك قبول طلبات جديدة حتى تؤكد المدفوعات المعلقة.',
-    'payment.viewPending': 'عرض المدفوعات المعلقة',
+    'payment.confirmation.bankAccounts': 'الحسابات المصرفية',
+    'payment.confirmation.noBankAccounts': 'لا توجد حسابات مصرفية',
+    'payment.confirmation.pendingPayments': 'المدفوعات المعلقة',
+    'payment.confirmation.loadingPayments': 'جاري تحميل المدفوعات...',
+    'payment.confirmation.noPendingPayments': 'لا توجد مدفوعات معلقة',
+    'payment.confirmation.noPaymentsDescription': 'لا توجد مدفوعات معلقة',
+    'payment.confirmation.order': 'الطلب',
+    'payment.confirmation.method': 'طريقة الدفع',
+    'payment.confirmation.reference': 'مرجع',
+    'payment.confirmation.receipt': 'إيصال الدفع',
+    'payment.confirmation.ref': 'مرجع',
+    'payment.confirmation.verifyMessage': 'يرجى تأكيد أن هذا الدفع تم معالجته بشكل صحيح أو إبلاغ مشكلة إذا كانت هناك مشكلة.',
+    'payment.confirmation.reportIssue': 'إبلاغ مشكلة',
+    'payment.confirmation.confirm': 'تأكيد الدفع',
+    'payment.confirmation.success': 'تم تأكيد الدفع بنجاح!',
+    'payment.confirmation.failed': 'فشل تأكيد الدفع. يرجى المحاولة مرة أخرى.',
+    'payment.confirmation.reportedIssue': 'أبلغ بأنه مشكلة بواسطة السائق',
+    'payment.confirmation.reportFailed': 'فشل إبلاغ مشكلة الدفع. يرجى المحاولة مرة أخرى.',
+    'payment.confirmation.issueReported': 'تم إبلاغ مشكلة الدفع إلى المسؤول',
+    'button.processing': 'جاري المعالجة...',
     
     // User
     'user.profile': 'الملف الشخصي',
@@ -818,7 +849,6 @@ const defaultTranslations: Translations = {
     'button.update': 'تحديث',
     'button.loading': 'جاري التحميل...',
     'button.close': 'إغلاق',
-    'button.processing': 'جاري المعالجة...',
     
     // Dashboard
     'dashboard.welcome': 'مرحباً',
