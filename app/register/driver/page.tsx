@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { FaUser, FaLock, FaEnvelope, FaPhone, FaCar, FaIdCard, FaCamera } from 'react-icons/fa';
 import { useAuth } from '@/contexts/AuthContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 // Components for image preview
 const ImagePreview = ({ file, onRemove }: { file: File; onRemove: () => void }) => {
@@ -43,6 +44,7 @@ const ImagePreview = ({ file, onRemove }: { file: File; onRemove: () => void }) 
 export default function DriverRegistrationPage() {
   const { register } = useAuth();
   const router = useRouter();
+  const { t } = useLanguage();
   
   // Form state
   const [formData, setFormData] = useState({
@@ -88,7 +90,7 @@ export default function DriverRegistrationPage() {
       if (driverPhotos.length + newPhotos.length <= 2) {
         setDriverPhotos([...driverPhotos, ...newPhotos]);
       } else {
-        setError('Maximum 2 driver photos allowed');
+        setError(t('driver.maxDriverPhotosError'));
       }
     }
   };
@@ -100,7 +102,7 @@ export default function DriverRegistrationPage() {
       if (carPhotos.length + newPhotos.length <= 4) {
         setCarPhotos([...carPhotos, ...newPhotos]);
       } else {
-        setError('Maximum 4 car photos allowed');
+        setError(t('driver.maxCarPhotosError'));
       }
     }
   };
@@ -134,28 +136,28 @@ export default function DriverRegistrationPage() {
     
     // Validate passwords match
     if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match');
+      setError(t('auth.passwordsDoNotMatch'));
       return;
     }
     
     // Validate required fields
     if (!formData.plateNumber) {
-      setError('License plate number is required');
+      setError(t('driver.plateNumberRequired'));
       return;
     }
     
     if (!licenseCopy) {
-      setError('A copy of your driver license is required');
+      setError(t('driver.licenseRequired'));
       return;
     }
     
     if (carPhotos.length === 0) {
-      setError('At least one car photo is required');
+      setError(t('driver.carPhotoRequired'));
       return;
     }
     
     if (driverPhotos.length === 0) {
-      setError('At least one driver photo is required');
+      setError(t('driver.driverPhotoRequired'));
       return;
     }
     
@@ -201,7 +203,7 @@ export default function DriverRegistrationPage() {
         });
         
         if (!licenseResponse.ok) {
-          throw new Error('Failed to upload license document');
+          throw new Error(t('driver.uploadLicenseError'));
         }
         const licenseData = await licenseResponse.json();
         console.log('License document upload response:', licenseData);
@@ -215,7 +217,7 @@ export default function DriverRegistrationPage() {
         });
         
         if (!carPhotoResponse.ok) {
-          throw new Error('Failed to upload car photo');
+          throw new Error(t('driver.uploadCarPhotoError'));
         }
         const carPhotoData = await carPhotoResponse.json();
         console.log('Car photo upload response:', carPhotoData);
@@ -229,7 +231,7 @@ export default function DriverRegistrationPage() {
         });
         
         if (!driverPhotoResponse.ok) {
-          throw new Error('Failed to upload driver photo');
+          throw new Error(t('driver.uploadDriverPhotoError'));
         }
         const driverPhotoData = await driverPhotoResponse.json();
         console.log('Driver photo upload response:', driverPhotoData);
@@ -243,7 +245,7 @@ export default function DriverRegistrationPage() {
           });
           
           if (!insuranceResponse.ok) {
-            throw new Error('Failed to upload insurance document');
+            throw new Error(t('driver.uploadInsuranceError'));
           }
           insuranceData = await insuranceResponse.json();
         }
@@ -280,13 +282,13 @@ export default function DriverRegistrationPage() {
         
       } catch (uploadError) {
         console.error('Error uploading documents:', uploadError);
-        setError('Failed to upload documents. Please try again.');
+        setError(t('driver.uploadError'));
         setLoading(false);
         return;
       }
     } catch (err) {
       console.error('Error during registration:', err);
-      setError('Registration failed. Please try again.');
+      setError(t('auth.registrationFailed'));
       setLoading(false);
     }
   };
@@ -297,7 +299,7 @@ export default function DriverRegistrationPage() {
       // Validate step 1
       if (!formData.firstName || !formData.lastName || !formData.email || 
           !formData.password || !formData.confirmPassword || !formData.phone) {
-        setError('Please fill in all required fields');
+        setError(t('auth.fillAllFields'));
         return;
       }
     }
@@ -316,7 +318,7 @@ export default function DriverRegistrationPage() {
         <Col md={8} lg={7}>
           <Card className="shadow-sm">
             <Card.Header className="bg-primary text-white">
-              <h2 className="h4 mb-0">Driver Registration</h2>
+              <h2 className="h4 mb-0">{t('driver.registration')}</h2>
             </Card.Header>
             <Card.Body className="p-4">
               {error && <Alert variant="danger">{error}</Alert>}
@@ -325,15 +327,15 @@ export default function DriverRegistrationPage() {
                 <div className="d-flex justify-content-between mb-2">
                   <div className={`step-indicator ${step >= 1 ? 'active' : ''}`}>
                     <span className="step-number">1</span>
-                    <span className="step-text">Account Information</span>
+                    <span className="step-text">{t('auth.accountInformation')}</span>
                   </div>
                   <div className={`step-indicator ${step >= 2 ? 'active' : ''}`}>
                     <span className="step-number">2</span>
-                    <span className="step-text">Vehicle Details</span>
+                    <span className="step-text">{t('driver.vehicleInfo')}</span>
                   </div>
                   <div className={`step-indicator ${step >= 3 ? 'active' : ''}`}>
                     <span className="step-number">3</span>
-                    <span className="step-text">Required Documents</span>
+                    <span className="step-text">{t('driver.documents')}</span>
                   </div>
                 </div>
                 <ProgressBar now={(step / 3) * 100} className="mb-4" />
@@ -342,11 +344,11 @@ export default function DriverRegistrationPage() {
               <Form onSubmit={handleSubmit}>
                 {step === 1 && (
                   <>
-                    <h3 className="h5 mb-3">Personal Information</h3>
+                    <h3 className="h5 mb-3">{t('driver.personalInfo')}</h3>
                     <Row>
                       <Col md={6}>
                         <Form.Group className="mb-3">
-                          <Form.Label>First Name</Form.Label>
+                          <Form.Label>{t('auth.firstName')}</Form.Label>
                           <div className="input-group">
                             <span className="input-group-text">
                               <FaUser />
@@ -357,7 +359,7 @@ export default function DriverRegistrationPage() {
                               id="firstName"
                               value={formData.firstName}
                               onChange={handleChange}
-                              placeholder="Enter first name"
+                              placeholder={t('auth.firstNamePlaceholder')}
                               required
                             />
                           </div>
@@ -365,7 +367,7 @@ export default function DriverRegistrationPage() {
                       </Col>
                       <Col md={6}>
                         <Form.Group className="mb-3">
-                          <Form.Label>Last Name</Form.Label>
+                          <Form.Label>{t('auth.lastName')}</Form.Label>
                           <div className="input-group">
                             <span className="input-group-text">
                               <FaUser />
@@ -376,7 +378,7 @@ export default function DriverRegistrationPage() {
                               id="lastName"
                               value={formData.lastName}
                               onChange={handleChange}
-                              placeholder="Enter last name"
+                              placeholder={t('auth.lastNamePlaceholder')}
                               required
                             />
                           </div>
@@ -385,7 +387,7 @@ export default function DriverRegistrationPage() {
                     </Row>
                     
                     <Form.Group className="mb-3">
-                      <Form.Label>Email Address</Form.Label>
+                      <Form.Label>{t('auth.email')}</Form.Label>
                       <div className="input-group">
                         <span className="input-group-text">
                           <FaEnvelope />
@@ -396,14 +398,14 @@ export default function DriverRegistrationPage() {
                           id="email"
                           value={formData.email}
                           onChange={handleChange}
-                          placeholder="Enter email"
+                          placeholder={t('auth.emailPlaceholder')}
                           required
                         />
                       </div>
                     </Form.Group>
                     
                     <Form.Group className="mb-3">
-                      <Form.Label>Phone Number</Form.Label>
+                      <Form.Label>{t('auth.phone')}</Form.Label>
                       <div className="input-group">
                         <span className="input-group-text">
                           <FaPhone />
@@ -414,7 +416,7 @@ export default function DriverRegistrationPage() {
                           id="phone"
                           value={formData.phone}
                           onChange={handleChange}
-                          placeholder="Enter phone number"
+                          placeholder={t('auth.phonePlaceholder')}
                           required
                         />
                       </div>
@@ -423,7 +425,7 @@ export default function DriverRegistrationPage() {
                     <Row>
                       <Col md={6}>
                         <Form.Group className="mb-3">
-                          <Form.Label>Password</Form.Label>
+                          <Form.Label>{t('auth.password')}</Form.Label>
                           <div className="input-group">
                             <span className="input-group-text">
                               <FaLock />
@@ -434,7 +436,7 @@ export default function DriverRegistrationPage() {
                               id="password"
                               value={formData.password}
                               onChange={handleChange}
-                              placeholder="Create a password"
+                              placeholder={t('auth.passwordPlaceholder')}
                               required
                             />
                           </div>
@@ -442,7 +444,7 @@ export default function DriverRegistrationPage() {
                       </Col>
                       <Col md={6}>
                         <Form.Group className="mb-3">
-                          <Form.Label>Confirm Password</Form.Label>
+                          <Form.Label>{t('auth.confirmPassword')}</Form.Label>
                           <div className="input-group">
                             <span className="input-group-text">
                               <FaLock />
@@ -453,7 +455,7 @@ export default function DriverRegistrationPage() {
                               id="confirmPassword"
                               value={formData.confirmPassword}
                               onChange={handleChange}
-                              placeholder="Confirm password"
+                              placeholder={t('auth.confirmPasswordPlaceholder')}
                               required
                             />
                           </div>
@@ -463,7 +465,7 @@ export default function DriverRegistrationPage() {
                     
                     <div className="d-flex justify-content-end mt-4">
                       <Button type="button" variant="primary" onClick={nextStep}>
-                        Next: Vehicle Details
+                        {t('button.next')}: {t('driver.vehicleInfo')}
                       </Button>
                     </div>
                   </>
@@ -471,9 +473,9 @@ export default function DriverRegistrationPage() {
                 
                 {step === 2 && (
                   <>
-                    <h3 className="h5 mb-3">Vehicle Information</h3>
+                    <h3 className="h5 mb-3">{t('driver.vehicleInfo')}</h3>
                     <Form.Group className="mb-3">
-                      <Form.Label>License Plate Number</Form.Label>
+                      <Form.Label>{t('driver.licensePlate')}</Form.Label>
                       <div className="input-group">
                         <span className="input-group-text">
                           <FaCar />
@@ -484,7 +486,7 @@ export default function DriverRegistrationPage() {
                           id="plateNumber"
                           value={formData.plateNumber}
                           onChange={handleChange}
-                          placeholder="Enter license plate number"
+                          placeholder={t('driver.licensePlatePlaceholder')}
                           required
                         />
                       </div>
@@ -493,28 +495,28 @@ export default function DriverRegistrationPage() {
                     <Row>
                       <Col md={6}>
                         <Form.Group className="mb-3">
-                          <Form.Label>Car Make</Form.Label>
+                          <Form.Label>{t('driver.make')}</Form.Label>
                           <Form.Control
                             type="text"
                             name="carMake"
                             id="carMake"
                             value={formData.carMake}
                             onChange={handleChange}
-                            placeholder="e.g. Toyota, Honda"
+                            placeholder={t('driver.makePlaceholder')}
                             required
                           />
                         </Form.Group>
                       </Col>
                       <Col md={6}>
                         <Form.Group className="mb-3">
-                          <Form.Label>Car Model</Form.Label>
+                          <Form.Label>{t('driver.model')}</Form.Label>
                           <Form.Control
                             type="text"
                             name="carModel"
                             id="carModel"
                             value={formData.carModel}
                             onChange={handleChange}
-                            placeholder="e.g. Camry, Civic"
+                            placeholder={t('driver.modelPlaceholder')}
                             required
                           />
                         </Form.Group>
@@ -524,28 +526,28 @@ export default function DriverRegistrationPage() {
                     <Row>
                       <Col md={6}>
                         <Form.Group className="mb-3">
-                          <Form.Label>Year</Form.Label>
+                          <Form.Label>{t('driver.year')}</Form.Label>
                           <Form.Control
                             type="number"
                             name="carYear"
                             id="carYear"
                             value={formData.carYear}
                             onChange={handleChange}
-                            placeholder="e.g. 2020"
+                            placeholder={t('driver.yearPlaceholder')}
                             required
                           />
                         </Form.Group>
                       </Col>
                       <Col md={6}>
                         <Form.Group className="mb-3">
-                          <Form.Label>Color</Form.Label>
+                          <Form.Label>{t('driver.color')}</Form.Label>
                           <Form.Control
                             type="text"
                             name="carColor"
                             id="carColor"
                             value={formData.carColor}
                             onChange={handleChange}
-                            placeholder="e.g. Black, White"
+                            placeholder={t('driver.colorPlaceholder')}
                             required
                           />
                         </Form.Group>
@@ -554,10 +556,10 @@ export default function DriverRegistrationPage() {
                     
                     <div className="d-flex justify-content-between mt-4">
                       <Button type="button" variant="outline-secondary" onClick={prevStep}>
-                        Back
+                        {t('button.back')}
                       </Button>
                       <Button type="button" variant="primary" onClick={nextStep}>
-                        Next: Required Documents
+                        {t('button.next')}: {t('driver.documents')}
                       </Button>
                     </div>
                   </>
@@ -565,10 +567,10 @@ export default function DriverRegistrationPage() {
                 
                 {step === 3 && (
                   <>
-                    <h3 className="h5 mb-3">Required Documents</h3>
+                    <h3 className="h5 mb-3">{t('driver.documents')}</h3>
                     
                     <Form.Group className="mb-4">
-                      <Form.Label>Driver Photos (Selfie/Portrait)</Form.Label>
+                      <Form.Label>{t('driver.driverPhotos')}</Form.Label>
                       <div className="d-flex mb-2">
                         <Button 
                           variant="outline-primary" 
@@ -576,7 +578,7 @@ export default function DriverRegistrationPage() {
                           onClick={() => driverPhotoInputRef.current?.click()}
                         >
                           <FaCamera className="me-2" />
-                          Upload Driver Photo
+                          {t('driver.uploadDriverPhoto')}
                         </Button>
                         <Form.Control
                           type="file"
@@ -587,7 +589,7 @@ export default function DriverRegistrationPage() {
                           className="d-none"
                         />
                         <small className="text-muted d-flex align-items-center">
-                          {driverPhotos.length}/2 photos
+                          {driverPhotos.length}/2 {t('driver.photos')}
                         </small>
                       </div>
                       <div className="photo-preview-container">
@@ -603,12 +605,12 @@ export default function DriverRegistrationPage() {
                         </Row>
                       </div>
                       <small className="text-muted">
-                        Please provide a clear photo of your face (like a selfie) with good lighting.
+                        {t('driver.photoInstructions')}
                       </small>
                     </Form.Group>
                     
                     <Form.Group className="mb-4">
-                      <Form.Label>Car Photos</Form.Label>
+                      <Form.Label>{t('driver.carPhotos')}</Form.Label>
                       <div className="d-flex mb-2">
                         <Button 
                           variant="outline-primary" 
@@ -616,7 +618,7 @@ export default function DriverRegistrationPage() {
                           onClick={() => carPhotoInputRef.current?.click()}
                         >
                           <FaCar className="me-2" />
-                          Upload Car Photos
+                          {t('driver.uploadCarPhotos')}
                         </Button>
                         <Form.Control
                           type="file"
@@ -628,7 +630,7 @@ export default function DriverRegistrationPage() {
                           className="d-none"
                         />
                         <small className="text-muted d-flex align-items-center">
-                          {carPhotos.length}/4 photos
+                          {carPhotos.length}/4 {t('driver.photos')}
                         </small>
                       </div>
                       <div className="photo-preview-container">
@@ -644,12 +646,12 @@ export default function DriverRegistrationPage() {
                         </Row>
                       </div>
                       <small className="text-muted">
-                        Please provide photos of your car from different angles (front, back, and sides).
+                        {t('driver.carPhotoInstructions')}
                       </small>
                     </Form.Group>
                     
                     <Form.Group className="mb-4">
-                      <Form.Label>Driver's License Copy</Form.Label>
+                      <Form.Label>{t('driver.license')}</Form.Label>
                       <div className="d-flex mb-2">
                         <Button 
                           variant="outline-primary" 
@@ -657,7 +659,7 @@ export default function DriverRegistrationPage() {
                           onClick={() => licenseInputRef.current?.click()}
                         >
                           <FaIdCard className="me-2" />
-                          Upload License
+                          {t('driver.uploadLicense')}
                         </Button>
                         <Form.Control
                           type="file"
@@ -690,27 +692,27 @@ export default function DriverRegistrationPage() {
                         </div>
                       )}
                       <small className="text-muted">
-                        Please provide a clear photo or scan of your valid driver's license.
+                        {t('driver.licenseInstructions')}
                       </small>
                     </Form.Group>
                     
                     {loading && (
                       <div className="mb-3">
-                        <p className="mb-1">Uploading documents...</p>
+                        <p className="mb-1">{t('driver.uploadingDocuments')}</p>
                         <ProgressBar now={uploadProgress} label={`${uploadProgress}%`} />
                       </div>
                     )}
                     
                     <div className="d-flex justify-content-between mt-4">
                       <Button type="button" variant="outline-secondary" onClick={prevStep}>
-                        Back
+                        {t('button.back')}
                       </Button>
                       <Button 
                         type="submit" 
                         variant="success" 
                         disabled={loading}
                       >
-                        {loading ? 'Registering...' : 'Complete Registration'}
+                        {loading ? t('auth.registering') : t('auth.completeRegistration')}
                       </Button>
                     </div>
                   </>
@@ -719,10 +721,10 @@ export default function DriverRegistrationPage() {
             </Card.Body>
             <Card.Footer className="bg-light text-center">
               <p className="mb-0">
-                Already have an account? <Link href="/login">Login here</Link>
+                {t('auth.alreadyHaveAccount')} <Link href="/login">{t('auth.loginHere')}</Link>
               </p>
               <p className="mt-2 mb-0 text-muted small">
-                Looking to register as a customer? <Link href="/register">Register here</Link>
+                {t('auth.registerAsCustomer')} <Link href="/register">{t('auth.registerHere')}</Link>
               </p>
             </Card.Footer>
           </Card>
