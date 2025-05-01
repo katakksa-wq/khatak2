@@ -4,7 +4,7 @@ import { format } from 'date-fns';
 
 interface PaymentReceiptProps {
   payment: any;
-  onClose: () => void;
+  onClose?: () => void;
 }
 
 const PaymentReceipt: React.FC<PaymentReceiptProps> = ({ payment, onClose }) => {
@@ -121,9 +121,11 @@ const PaymentReceipt: React.FC<PaymentReceiptProps> = ({ payment, onClose }) => 
         )}
 
         <div className="d-flex justify-content-between mt-4">
-          <button className="btn btn-secondary" onClick={onClose}>
-            Close
-          </button>
+          {onClose && (
+            <button className="btn btn-secondary" onClick={onClose}>
+              Close
+            </button>
+          )}
           <button className="btn btn-primary" onClick={handleDownload}>
             Download Receipt
           </button>
