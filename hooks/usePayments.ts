@@ -42,6 +42,9 @@ export interface Payment {
   updatedAt: string;
   order: Order;
   driver: Driver;
+  bankAccount?: BankAccount;
+  confirmedBy?: { name: string; id: string };
+  issueDescription?: string;
 }
 
 export interface BankAccount {
