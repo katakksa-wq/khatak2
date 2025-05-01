@@ -127,17 +127,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
 
         {/* Main content */}
         <div className="col-md-9 col-lg-10 ms-sm-auto px-md-4 py-4">
-          {/* Top navigation bar */}
-          <div className="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-            <h1 className="h2">
-              {pathname && pathname.split('/').pop()?.replace('-', ' ').replace(/^\w/, c => c.toUpperCase()) || t('nav.home')}
-            </h1>
-            <div className="d-flex align-items-center">
-              <LanguageSwitcher className="me-3" />
-              <NotificationBell />
-            </div>
-          </div>
-          
+          {/* Removed top navigation bar */}
           {children}
         </div>
       </div>
