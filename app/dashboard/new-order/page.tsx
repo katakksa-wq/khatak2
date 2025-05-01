@@ -59,6 +59,9 @@ const NewOrderPage = () => {
   const [formStep, setFormStep] = useState(1); // 1 = pickup, 2 = delivery, 3 = package details, 4 = map location
   const [isSubmitting, setIsSubmitting] = useState(false);
   
+  // Track whether we've seen contextLoading become true
+  const hasStartedLoading = useRef(false);
+  
   // Reset all loading states
   const resetLoadingStates = useCallback(() => {
     setLoading(false);
@@ -76,6 +79,17 @@ const NewOrderPage = () => {
     console.log(`Step changed to ${formStep}, resetting loading states`);
     resetLoadingStates();
   }, [formStep, resetLoadingStates]);
+
+  // Monitor context loading state
+  useEffect(() => {
+    if (contextLoading) {
+      hasStartedLoading.current = true;
+    } else if (hasStartedLoading.current && !contextLoading) {
+      // Context loading has completed
+      hasStartedLoading.current = false;
+      resetLoadingStates();
+    }
+  }, [contextLoading, resetLoadingStates]);
 
   // Initialize map when step 4 is active
   useEffect(() => {
@@ -190,6 +204,9 @@ const NewOrderPage = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    // Set userInitiatedSubmit to true when user clicks the submit button
+    userInitiatedSubmit.current = true;
+    
     // Debug submission states
     console.log('Submit pressed, current states:', {
       loading,
@@ -198,12 +215,6 @@ const NewOrderPage = () => {
       formStep,
       userInitiated: userInitiatedSubmit.current
     });
-    
-    // Make sure this is a legitimate submission event
-    if (!e.target || !(e.target instanceof HTMLFormElement) || !userInitiatedSubmit.current) {
-      console.log('Non-user initiated submit or invalid event, ignoring');
-      return;
-    }
     
     // Don't allow submission if already processing
     if (loading || isSubmitting) {
@@ -305,6 +316,8 @@ const NewOrderPage = () => {
     } finally {
       setIsSubmitting(false);
       setLoading(false);
+      // Reset userInitiatedSubmit after submission is complete
+      userInitiatedSubmit.current = false;
     }
   };
   
@@ -621,20 +634,41 @@ const NewOrderPage = () => {
     </div>
   );
   
+  // Final form submit button (only shown on last step)
+  const renderSubmitButton = () => {
+    if (formStep === 4) {
+      return (
+        <button 
+          type="submit" 
+          className={`btn btn-primary btn-lg ${styles.submitBtn}`}
+          disabled={loading || isSubmitting || contextLoading}
+          onClick={() => { userInitiatedSubmit.current = true; }} // Set flag on click
+        >
+          {loading || isSubmitting || contextLoading ? (
+            <>
+              <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+              {t('orders.processing')}
+            </>
+          ) : (
+            t('orders.createOrder')
+          )}
+        </button>
+      );
+    }
+    return null;
+  };
+  
   return (
-    <div className="container py-4">
-      <div className="mb-4">
-        <h1 className="mb-0">{t('orders.new')}</h1>
-        <p className="text-muted">{t('orders.newOrderDescription')}</p>
-      </div>
-      
-      {error && (
-        <div className="alert alert-danger mb-4">
-          {error}
-        </div>
-      )}
+    <div className="container mt-4 mb-5">
+      <h2 className="mb-4">{t('orders.createNewOrder')}</h2>
       
       <ProgressIndicator />
+      
+      {(error || contextError) && (
+        <div className="alert alert-danger mb-4">
+          {error || contextError}
+        </div>
+      )}
       
       <form onSubmit={handleSubmit}>
         {renderForm()}
@@ -642,37 +676,26 @@ const NewOrderPage = () => {
         <div className="d-flex justify-content-between mt-4">
           {formStep > 1 && (
             <button 
-              className="btn btn-outline-secondary" 
-              onClick={prevStep} 
-              disabled={loading || isSubmitting}
+              type="button" 
+              className="btn btn-outline-secondary"
+              onClick={prevStep}
+              disabled={loading || isSubmitting || contextLoading}
             >
-              {t('button.back')}
+              {t('orders.previous')}
             </button>
           )}
           
           {formStep < 4 ? (
             <button 
-              className="btn btn-primary ms-auto" 
+              type="button" 
+              className={`btn btn-primary ${formStep === 1 ? 'ms-auto' : ''}`}
               onClick={nextStep}
-              disabled={loading || isSubmitting}
+              disabled={loading || isSubmitting || contextLoading}
             >
-              {t('button.next')}
+              {t('orders.next')}
             </button>
           ) : (
-            <button 
-              className="btn btn-success ms-auto" 
-              onClick={handleSubmit}
-              disabled={loading || isSubmitting}
-            >
-              {isSubmitting ? (
-                <>
-                  <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                  {t('orders.creating')}
-                </>
-              ) : (
-                t('orders.createOrder')
-              )}
-            </button>
+            renderSubmitButton()
           )}
         </div>
       </form>
