@@ -214,7 +214,7 @@ export default function OrderDetailsPage() {
               <div className="mb-3">
                 <p className="mb-1"><strong>Created:</strong> {formatDateTime(order.createdAt)}</p>
                 <p className="mb-1"><strong>Updated:</strong> {formatDateTime(order.updatedAt)}</p>
-                <p className="mb-1"><strong>Price:</strong> ${order.price?.toFixed(2)}</p>
+                <p className="mb-1"><strong>Price:</strong> {order.price?.toFixed(2)} ريال سعودي</p>
                 {order.estimatedDeliveryTime && (
                   <p className="mb-1"><strong>Estimated Delivery:</strong> {formatDateTime(order.estimatedDeliveryTime)}</p>
                 )}

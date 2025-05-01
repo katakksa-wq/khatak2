@@ -229,7 +229,9 @@ export default function AvailableOrders() {
                     <div className="d-flex align-items-center mb-3">
                       <div className="badge bg-primary me-2">{activeOrder.status}</div>
                       <div className="text-muted">
-                        ${typeof activeOrder.price === 'number' ? activeOrder.price.toFixed(2) : '0.00'}
+                        <p className="text-lg font-semibold mb-1">
+                          {typeof activeOrder.price === 'number' ? activeOrder.price.toFixed(2) : '0.00'} ريال سعودي
+                        </p>
                       </div>
                     </div>
                     
@@ -314,7 +316,9 @@ export default function AvailableOrders() {
                     <TranslatedText text="orders.orderNumber" translation={false}>Order #{order.trackingNumber || order.id?.substring(0, 8)}</TranslatedText>
                   </h5>
                   <span className="badge bg-primary">
-                    ${typeof order.price === 'number' ? order.price.toFixed(2) : '0.00'}
+                    <p className="text-success fw-bold mb-0">
+                      {typeof order.price === 'number' ? order.price.toFixed(2) : '0.00'} ريال سعودي
+                    </p>
                   </span>
                 </div>
                 <div className="card-body">

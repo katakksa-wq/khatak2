@@ -23,7 +23,7 @@ const PaymentReceipt: React.FC<PaymentReceiptProps> = ({ payment, onClose }) => 
       
       Payment Information:
       ------------------
-      Amount: £${payment.amount.toFixed(2)}
+      Amount: ${payment.amount.toFixed(2)} ريال سعودي
       Payment Method: ${payment.paymentMethod}
       Reference: ${payment.paymentReference}
       Status: ${payment.status}
@@ -80,7 +80,7 @@ const PaymentReceipt: React.FC<PaymentReceiptProps> = ({ payment, onClose }) => 
           <h5>Payment Information</h5>
           <Row>
             <Col>
-              <strong>Amount:</strong> £{payment.amount.toFixed(2)}
+              <strong>Amount:</strong> {payment.amount.toFixed(2)} ريال سعودي
             </Col>
             <Col>
               <strong>Payment Method:</strong> {payment.paymentMethod}

@@ -137,8 +137,8 @@ export default function PaymentManagement() {
                         {payment.order.trackingNumber}
                       </span>
                     </td>
-                    <td>
-                      <span className="fw-bold">${payment.amount.toFixed(2)}</span>
+                    <td className={payment.status === 'PENDING' ? 'text-warning' : (payment.status === 'CONFIRMED' ? 'text-success' : 'text-danger')}>
+                      <span className="fw-bold">{payment.amount.toFixed(2)} ريال سعودي</span>
                     </td>
                     <td>
                       <span className="text-capitalize">
@@ -204,7 +204,7 @@ export default function PaymentManagement() {
                     <ul className="list-group list-group-flush">
                       <li className="list-group-item d-flex justify-content-between">
                         <span>Amount:</span>
-                        <span className="fw-bold">${modalPayment.amount.toFixed(2)}</span>
+                        <span className="fw-bold">{modalPayment.amount.toFixed(2)} ريال سعودي</span>
                       </li>
                       <li className="list-group-item d-flex justify-content-between">
                         <span>Method:</span>

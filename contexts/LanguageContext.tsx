@@ -267,6 +267,7 @@ const defaultTranslations: Translations = {
     'general.notApplicable': 'N/A',
     'general.clickToEnlarge': 'Click to enlarge',
     'general.viewFullSize': 'View Full Size',
+    'general.currency': 'Saudi Riyal',
     
     // Orders
     'orders.title': 'My Orders',
@@ -373,7 +374,7 @@ const defaultTranslations: Translations = {
     'notification.order.assigned': 'You have been assigned to order #{0}',
     'notification.order.delivered': 'Order #{0} has been delivered',
     'notification.order.cancelled': 'Order #{0} has been cancelled',
-    'notification.payment.received': 'Payment of ${0} has been received',
+    'notification.payment.received': 'Payment of {0} ريال سعودي has been received',
     'notification.payment.confirmed': 'Your payment for order #{0} has been confirmed',
     'notification.payment.rejected': 'Your payment for order #{0} has been rejected',
     'notification.account.welcome': 'Welcome to Katakksa! Your account has been created successfully.',
@@ -754,6 +755,7 @@ const defaultTranslations: Translations = {
     'general.notApplicable': 'غير مطبق',
     'general.clickToEnlarge': 'اضغط لتكبير',
     'general.viewFullSize': 'عرض الحجم الكامل',
+    'general.currency': 'ريال سعودي',
     
     // Orders
     'orders.title': 'طلباتي',
@@ -860,7 +862,7 @@ const defaultTranslations: Translations = {
     'notification.order.assigned': 'لقد تم تعيينك إلى طلب #{0}',
     'notification.order.delivered': 'تم تسليم طلب #{0}',
     'notification.order.cancelled': 'تم إلغاء طلب #{0}',
-    'notification.payment.received': 'تم استلام دفعة بقيمة ${0}',
+    'notification.payment.received': 'تم استلام دفعة بقيمة {0} ريال سعودي',
     'notification.payment.confirmed': 'تم تأكيد دفعتك لطلب #{0}',
     'notification.payment.rejected': 'تم رفض دفعتك لطلب #{0}',
     'notification.account.welcome': 'مرحبا بك في Katakksa! تم إنشاء حسابك بنجاح بنجاح.',

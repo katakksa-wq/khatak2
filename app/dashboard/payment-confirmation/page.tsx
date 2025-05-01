@@ -201,7 +201,7 @@ export default function PaymentConfirmation() {
               <div className="card border-0 shadow-sm">
                 <div className="card-header bg-white py-3 d-flex justify-content-between align-items-center">
                   <h5 className="card-title mb-0">{t('payment.confirmation.order')} #{payment.order.trackingNumber || payment.order.id.substring(0, 8)}</h5>
-                  <span className="badge bg-primary">${payment.amount.toFixed(2)}</span>
+                  <span className="badge bg-primary">{payment.amount.toFixed(2)} ريال سعودي</span>
                 </div>
                 <div className="card-body">
                   <div className="row mb-3">

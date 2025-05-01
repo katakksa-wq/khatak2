@@ -82,7 +82,7 @@ const DriverPaymentForm = ({ order, onPaymentComplete }: { order: any; onPayment
                   Processing...
                 </>
               ) : (
-                <>Submit Payment of £{order.commissionAmount.toFixed(2)}</>
+                <>Submit Payment of {order.commissionAmount.toFixed(2)} ريال سعودي</>
               )}
             </button>
           </div>
@@ -195,8 +195,8 @@ export default function UnpaidOrdersPage() {
                             <p><strong>Delivery Address:</strong> {order.deliveryAddress || 'N/A'}</p>
                           </Col>
                           <Col md={6}>
-                            <p><strong>Order Total:</strong> £{order.totalAmount?.toFixed(2) || '0.00'}</p>
-                            <p><strong>Commission Due:</strong> <span className="text-danger fw-bold">£{order.commissionAmount?.toFixed(2) || '0.00'}</span></p>
+                            <p><strong>Order Total:</strong> {order.totalAmount?.toFixed(2) || '0.00'} ريال سعودي</p>
+                            <p><strong>Commission Due:</strong> <span className="text-danger fw-bold">{order.commissionAmount?.toFixed(2) || '0.00'} ريال سعودي</span></p>
                             <p><strong>Due Date:</strong> {new Date(order.commissionDueDate).toLocaleDateString()}</p>
                           </Col>
                         </Row>

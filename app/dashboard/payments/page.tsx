@@ -76,7 +76,7 @@ export default function DriverPaymentHistory() {
                     <tr key={payment.id}>
                       <td>{format(new Date(payment.createdAt), 'MMM d, yyyy')}</td>
                       <td>{payment.order?.trackingNumber || payment.orderId?.substring(0, 8)}</td>
-                      <td>${payment.amount.toFixed(2)}</td>
+                      <td>{payment.amount.toFixed(2)} ريال سعودي</td>
                       <td>{payment.paymentMethod}</td>
                       <td>{payment.paymentReference}</td>
                       <td>{renderStatusBadge(payment.status)}</td>

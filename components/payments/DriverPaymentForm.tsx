@@ -177,7 +177,7 @@ export default function DriverPaymentForm({ orderId, onPaymentComplete }: Driver
                 <p className="mb-0">Commission Rate: {commissionData.commissionRate}%</p>
               </div>
               <div className="text-end">
-                <h5 className="mb-0">${commissionData.commissionAmount.toFixed(2)}</h5>
+                <h5 className="mb-0">{commissionData.commissionAmount.toFixed(2)} ريال سعودي</h5>
                 <small className="text-muted">Amount due</small>
               </div>
             </div>
@@ -278,7 +278,7 @@ export default function DriverPaymentForm({ orderId, onPaymentComplete }: Driver
             <div className="alert alert-warning mb-4">
               <h6>Important Notes:</h6>
               <ul className="mb-0">
-                <li>Please ensure you transfer exactly ${commissionData.commissionAmount.toFixed(2)}</li>
+                <li>Please ensure you transfer exactly {commissionData.commissionAmount.toFixed(2)} ريال سعودي</li>
                 <li>Include the order number ({commissionData.order.trackingNumber}) in the payment reference</li>
                 <li>Your account will be deactivated after 3 unpaid commissions</li>
               </ul>

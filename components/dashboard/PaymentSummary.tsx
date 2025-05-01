@@ -156,9 +156,9 @@ export default function PaymentSummary() {
                 <div className="d-flex justify-content-between align-items-center">
                   <div>
                     <h6 className="mb-1">Order #{payment.order?.trackingNumber}</h6>
-                    <small className="text-muted">
-                      {new Date(payment.createdAt).toLocaleDateString()} - ${payment.amount.toFixed(2)}
-                    </small>
+                    <p className="small text-muted">
+                      {new Date(payment.createdAt).toLocaleDateString()} - {payment.amount.toFixed(2)} ريال سعودي
+                    </p>
                   </div>
                   <div>
                     {getStatusBadge(payment.status)}

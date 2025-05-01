@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useOrders } from '@/contexts/OrderContext';
 import { Address } from '@/services/orderService';
 import { PackageDetails } from '@/types';
-import { FaBox, FaMapMarkerAlt, FaTruck, FaMapMarked, FaMobileAlt, FaDollarSign } from 'react-icons/fa';
+import { FaBox, FaMapMarkerAlt, FaTruck, FaMapMarked, FaMobileAlt, FaMoneyBillWave } from 'react-icons/fa';
 import { useLanguage } from '@/contexts/LanguageContext';
 import styles from './styles.module.css';
 
@@ -31,13 +31,13 @@ const NewOrderPage = () => {
       street: '',
       city: '',
       state: '',
-      country: 'USA'
+      country: 'KSA'
     },
     deliveryAddress: {
       street: '',
       city: '',
       state: '',
-      country: 'USA',
+      country: 'KSA',
       recipientMobileNumber: '' // Added recipient mobile number
     },
     packageDetails: {
@@ -556,7 +556,7 @@ const NewOrderPage = () => {
         </div>
         <div className="mb-3">
           <label htmlFor="custom-price" className="form-label">
-            <FaDollarSign className="me-1" /> {t('orders.price')}
+            <FaMoneyBillWave className="me-1" /> {t('orders.price')} (ريال سعودي)
           </label>
           <input
             type="number"

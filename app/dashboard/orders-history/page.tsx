@@ -290,7 +290,7 @@ export default function OrdersHistoryPage() {
                               <div>{order.deliveryAddress.country}</div>
                             </div>
                           </td>
-                          <td>${order.price.toFixed(2)}</td>
+                          <td>{order.price.toFixed(2)} ريال سعودي</td>
                           <td>{
                             order.actualDeliveryTime 
                               ? new Date(order.actualDeliveryTime).toLocaleDateString() 

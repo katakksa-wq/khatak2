@@ -370,7 +370,7 @@ export default function CurrentOrdersPage() {
                               <div>{order.deliveryAddress.country}</div>
                             </div>
                           </td>
-                          <td>${order.price.toFixed(2)}</td>
+                          <td>{order.price.toFixed(2)} ريال سعودي</td>
                           <td>{new Date(order.createdAt).toLocaleDateString()}</td>
                           <td>
                             <div className="d-flex flex-column gap-2">
