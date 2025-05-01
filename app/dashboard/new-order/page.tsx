@@ -62,6 +62,9 @@ const NewOrderPage = () => {
   // Track whether we've seen contextLoading become true
   const hasStartedLoading = useRef(false);
   
+  // Flag to determine if we're submitting the final form
+  const [isFinalSubmit, setIsFinalSubmit] = useState(false);
+  
   // Reset all loading states
   const resetLoadingStates = useCallback(() => {
     setLoading(false);
@@ -82,14 +85,18 @@ const NewOrderPage = () => {
 
   // Monitor context loading state
   useEffect(() => {
+    console.log('Context loading state changed:', contextLoading);
     if (contextLoading) {
       hasStartedLoading.current = true;
     } else if (hasStartedLoading.current && !contextLoading) {
       // Context loading has completed
       hasStartedLoading.current = false;
-      resetLoadingStates();
+      // Only reset if we're not in the final submit
+      if (!isFinalSubmit) {
+        resetLoadingStates();
+      }
     }
-  }, [contextLoading, resetLoadingStates]);
+  }, [contextLoading, resetLoadingStates, isFinalSubmit]);
 
   // Initialize map when step 4 is active
   useEffect(() => {
@@ -207,6 +214,9 @@ const NewOrderPage = () => {
     // Set userInitiatedSubmit to true when user clicks the submit button
     userInitiatedSubmit.current = true;
     
+    // Set final submit flag to true
+    setIsFinalSubmit(true);
+    
     // Debug submission states
     console.log('Submit pressed, current states:', {
       loading,
@@ -318,6 +328,8 @@ const NewOrderPage = () => {
       setLoading(false);
       // Reset userInitiatedSubmit after submission is complete
       userInitiatedSubmit.current = false;
+      // Reset final submit flag
+      setIsFinalSubmit(false);
     }
   };
   
@@ -641,10 +653,10 @@ const NewOrderPage = () => {
         <button 
           type="submit" 
           className={`btn btn-primary btn-lg ${styles.submitBtn}`}
-          disabled={loading || isSubmitting || contextLoading}
+          disabled={loading || isSubmitting || (isFinalSubmit && contextLoading)}
           onClick={() => { userInitiatedSubmit.current = true; }} // Set flag on click
         >
-          {loading || isSubmitting || contextLoading ? (
+          {loading || isSubmitting || (isFinalSubmit && contextLoading) ? (
             <>
               <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
               {t('orders.processing')}
@@ -679,7 +691,7 @@ const NewOrderPage = () => {
               type="button" 
               className="btn btn-outline-secondary"
               onClick={prevStep}
-              disabled={loading || isSubmitting || contextLoading}
+              disabled={loading || isSubmitting || (isFinalSubmit && contextLoading)}
             >
               {t('orders.previous')}
             </button>
@@ -690,7 +702,7 @@ const NewOrderPage = () => {
               type="button" 
               className={`btn btn-primary ${formStep === 1 ? 'ms-auto' : ''}`}
               onClick={nextStep}
-              disabled={loading || isSubmitting || contextLoading}
+              disabled={loading || isSubmitting || (isFinalSubmit && contextLoading)}
             >
               {t('orders.next')}
             </button>
