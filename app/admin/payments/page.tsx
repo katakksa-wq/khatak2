@@ -8,6 +8,7 @@ import { Container, Row, Col, Card, Table, Tabs, Tab, Alert } from 'react-bootst
 import { FaUsers, FaMoneyBill, FaExclamationTriangle, FaCheckCircle } from 'react-icons/fa';
 import Link from 'next/link';
 import BankAccountManagement from '@/components/payments/BankAccountManagement';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface AdminLayoutProps {
   children: React.ReactNode;
@@ -15,6 +16,7 @@ interface AdminLayoutProps {
 
 function AdminLayout({ children }: AdminLayoutProps) {
   const { user, loading } = useAuth();
+  const { t } = useLanguage();
   const router = useRouter();
 
   useEffect(() => {
@@ -33,7 +35,7 @@ function AdminLayout({ children }: AdminLayoutProps) {
     return (
       <div className="d-flex justify-content-center align-items-center vh-100">
         <div className="spinner-border text-primary" role="status">
-          <span className="visually-hidden">Loading...</span>
+          <span className="visually-hidden">{t('button.loading')}</span>
         </div>
       </div>
     );
@@ -52,44 +54,44 @@ function AdminLayout({ children }: AdminLayoutProps) {
       {/* Sidebar */}
       <div className="bg-dark text-white d-flex flex-column p-3" style={{ width: '250px', minHeight: '100vh' }}>
         <Link href="/admin" className="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
-          <span className="fs-4">Admin Portal</span>
+          <span className="fs-4">{t('admin.portal')}</span>
         </Link>
         <hr />
         <ul className="nav nav-pills flex-column mb-auto">
           <li className="nav-item">
             <Link href="/admin" className="nav-link text-white d-flex align-items-center">
               <span className="me-2">📊</span>
-              Dashboard
+              {t('admin.dashboard')}
             </Link>
           </li>
           <li className="nav-item">
             <Link href="/admin/orders" className="nav-link text-white d-flex align-items-center">
               <span className="me-2">📦</span>
-              Orders
+              {t('admin.orderManagement')}
             </Link>
           </li>
           <li className="nav-item">
             <Link href="/admin/payments" className="nav-link text-white d-flex align-items-center">
               <span className="me-2">💰</span>
-              Payments
+              {t('admin.paymentManagement')}
             </Link>
           </li>
           <li className="nav-item">
             <Link href="/admin/drivers" className="nav-link text-white d-flex align-items-center">
               <span className="me-2">🚚</span>
-              Drivers
+              {t('admin.drivers')}
             </Link>
           </li>
           <li className="nav-item">
             <Link href="/admin/customers" className="nav-link text-white d-flex align-items-center">
               <span className="me-2">👥</span>
-              Customers
+              {t('admin.customers')}
             </Link>
           </li>
           <li className="nav-item">
             <Link href="/admin/settings" className="nav-link text-white d-flex align-items-center">
               <span className="me-2">⚙️</span>
-              Settings
+              {t('admin.settings')}
             </Link>
           </li>
         </ul>
@@ -99,9 +101,9 @@ function AdminLayout({ children }: AdminLayoutProps) {
       <div className="flex-grow-1">
         <header className="bg-light p-3 shadow-sm">
           <div className="d-flex justify-content-between align-items-center">
-            <h1 className="h4 mb-0">Admin Dashboard</h1>
+            <h1 className="h4 mb-0">{t('admin.dashboard')}</h1>
             <div>
-              <span className="badge bg-success me-2">Admin</span>
+              <span className="badge bg-success me-2">{t('admin.adminBadge')}</span>
               <span>{user.email}</span>
             </div>
           </div>
@@ -129,6 +131,7 @@ interface DriverStats {
 
 export default function AdminPaymentsPage() {
   const { user } = useAuth();
+  const { t } = useLanguage();
   const { payments, loading, bankAccounts } = usePayments();
   const [activeTab, setActiveTab] = useState('payments');
   
@@ -150,7 +153,7 @@ export default function AdminPaymentsPage() {
       if (!driverStats[driverId]) {
         driverStats[driverId] = {
           id: driverId,
-          name: `${payment.driver?.firstName || ''} ${payment.driver?.lastName || ''}`.trim() || 'Unknown Driver',
+          name: `${payment.driver?.firstName || ''} ${payment.driver?.lastName || ''}`.trim() || t('admin.payments.unknownDriver'),
           totalPaid: 0,
           totalPending: 0,
           paymentCount: 0
@@ -176,7 +179,7 @@ export default function AdminPaymentsPage() {
     return (
       <AdminLayout>
         <Alert variant="warning">
-          You don't have permission to access this page.
+          {t('admin.noPermission')}
         </Alert>
       </AdminLayout>
     );
@@ -185,7 +188,7 @@ export default function AdminPaymentsPage() {
   return (
     <AdminLayout>
       <Container fluid>
-        <h2 className="mb-4">Payment Management</h2>
+        <h2 className="mb-4">{t('admin.paymentManagement')}</h2>
         
         {/* Statistics Cards */}
         <Row className="mb-4">
@@ -196,7 +199,7 @@ export default function AdminPaymentsPage() {
                   <FaMoneyBill size={24} />
                 </div>
                 <div>
-                  <h6 className="mb-0 text-muted">Total Commission</h6>
+                  <h6 className="mb-0 text-muted">{t('admin.payments.totalCommission')}</h6>
                   <h4 className="mb-0">£{totalCommission.toFixed(2)}</h4>
                 </div>
               </Card.Body>
@@ -209,7 +212,7 @@ export default function AdminPaymentsPage() {
                   <FaExclamationTriangle size={24} />
                 </div>
                 <div>
-                  <h6 className="mb-0 text-muted">Pending Commission</h6>
+                  <h6 className="mb-0 text-muted">{t('admin.payments.pendingCommission')}</h6>
                   <h4 className="mb-0">£{pendingCommission.toFixed(2)}</h4>
                 </div>
               </Card.Body>
@@ -222,7 +225,7 @@ export default function AdminPaymentsPage() {
                   <FaMoneyBill size={24} />
                 </div>
                 <div>
-                  <h6 className="mb-0 text-muted">Rejected Payments</h6>
+                  <h6 className="mb-0 text-muted">{t('admin.payments.rejectedPayments')}</h6>
                   <h4 className="mb-0">{rejectedPayments}</h4>
                 </div>
               </Card.Body>
@@ -235,7 +238,7 @@ export default function AdminPaymentsPage() {
                   <FaUsers size={24} />
                 </div>
                 <div>
-                  <h6 className="mb-0 text-muted">Total Drivers</h6>
+                  <h6 className="mb-0 text-muted">{t('admin.payments.totalDrivers')}</h6>
                   <h4 className="mb-0">{Object.keys(driverStats).length}</h4>
                 </div>
               </Card.Body>
@@ -246,53 +249,45 @@ export default function AdminPaymentsPage() {
         {/* Top Drivers Table */}
         <Card className="shadow-sm mb-4">
           <Card.Header className="bg-white">
-            <h5 className="mb-0">Top Drivers by Commission Paid</h5>
+            <h5 className="mb-0">{t('admin.payments.topDriversByCommission')}</h5>
           </Card.Header>
-          <Card.Body className="p-0">
+          <Card.Body>
             {loading ? (
-              <div className="text-center p-4">
+              <div className="text-center py-4">
                 <div className="spinner-border text-primary" role="status">
-                  <span className="visually-hidden">Loading...</span>
+                  <span className="visually-hidden">{t('button.loading')}</span>
                 </div>
               </div>
-            ) : topDrivers.length === 0 ? (
-              <div className="text-center p-4">
-                <p className="mb-0 text-muted">No payment data available.</p>
-              </div>
-            ) : (
-              <Table hover responsive className="mb-0">
+            ) : topDrivers.length > 0 ? (
+              <Table responsive hover>
                 <thead>
                   <tr>
-                    <th>Driver</th>
-                    <th>Payments</th>
-                    <th>Total Paid</th>
-                    <th>Pending</th>
-                    <th>Status</th>
+                    <th>{t('admin.payments.driver')}</th>
+                    <th>{t('admin.payments.paidCommission')}</th>
+                    <th>{t('admin.payments.pendingCommission')}</th>
+                    <th>{t('admin.payments.totalPayments')}</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {topDrivers.map((driver: DriverStat) => (
+                  {topDrivers.map(driver => (
                     <tr key={driver.id}>
                       <td>{driver.name}</td>
+                      <td>£{driver.totalPaid.toFixed(2)}</td>
+                      <td>£{driver.totalPending.toFixed(2)}</td>
                       <td>{driver.paymentCount}</td>
-                      <td className="text-success">£{driver.totalPaid.toFixed(2)}</td>
-                      <td className="text-warning">£{driver.totalPending.toFixed(2)}</td>
-                      <td>
-                        {driver.totalPending > 0 ? (
-                          <span className="badge bg-warning">Pending</span>
-                        ) : (
-                          <span className="badge bg-success">Paid</span>
-                        )}
-                      </td>
                     </tr>
                   ))}
                 </tbody>
               </Table>
+            ) : (
+              <div className="text-center py-4">
+                <p className="text-muted mb-0">{t('admin.payments.noDriverData')}</p>
+              </div>
             )}
           </Card.Body>
         </Card>
         
-        {/* Tabs for Payment Management and Bank Accounts */}
+        {/* Tabs for Payments and Bank Account Management */}
         <Card className="shadow-sm">
           <Card.Header className="bg-white">
             <Tabs
@@ -300,15 +295,87 @@ export default function AdminPaymentsPage() {
               onSelect={(k) => k && setActiveTab(k)}
               className="mb-0"
             >
-              <Tab eventKey="payments" title="Payment Management">
-                <Card.Body>
-                  <p>Payment management component will go here</p>
-                </Card.Body>
+              <Tab eventKey="payments" title={t('admin.payments.paymentsTab')}>
+                <div className="p-3">
+                  {loading ? (
+                    <div className="text-center py-4">
+                      <div className="spinner-border text-primary" role="status">
+                        <span className="visually-hidden">{t('button.loading')}</span>
+                      </div>
+                    </div>
+                  ) : payments && payments.length > 0 ? (
+                    <Table responsive hover>
+                      <thead>
+                        <tr>
+                          <th>{t('admin.payments.paymentId')}</th>
+                          <th>{t('admin.payments.driver')}</th>
+                          <th>{t('admin.payments.amount')}</th>
+                          <th>{t('admin.payments.status')}</th>
+                          <th>{t('admin.payments.date')}</th>
+                          <th>{t('admin.payments.actions')}</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {payments.map(payment => (
+                          <tr key={payment.id}>
+                            <td>{payment.id}</td>
+                            <td>
+                              {payment.driver 
+                                ? `${payment.driver.firstName || ''} ${payment.driver.lastName || ''}`.trim() 
+                                : t('admin.payments.unknownDriver')}
+                            </td>
+                            <td>£{payment.amount.toFixed(2)}</td>
+                            <td>
+                              {payment.status === 'CONFIRMED' && (
+                                <span className="badge bg-success">{t('admin.payments.confirmed')}</span>
+                              )}
+                              {payment.status === 'PENDING' && (
+                                <span className="badge bg-warning">{t('admin.payments.pending')}</span>
+                              )}
+                              {payment.status === 'REJECTED' && (
+                                <span className="badge bg-danger">{t('admin.payments.rejected')}</span>
+                              )}
+                            </td>
+                            <td>{new Date(payment.createdAt).toLocaleDateString()}</td>
+                            <td>
+                              <button 
+                                className="btn btn-sm btn-outline-primary me-2"
+                                onClick={() => console.log('View payment details', payment.id)}
+                              >
+                                {t('admin.view')}
+                              </button>
+                              {payment.status === 'PENDING' && (
+                                <>
+                                  <button 
+                                    className="btn btn-sm btn-outline-success me-2"
+                                    onClick={() => console.log('Confirm payment', payment.id)}
+                                  >
+                                    {t('admin.payments.confirm')}
+                                  </button>
+                                  <button 
+                                    className="btn btn-sm btn-outline-danger"
+                                    onClick={() => console.log('Reject payment', payment.id)}
+                                  >
+                                    {t('admin.payments.reject')}
+                                  </button>
+                                </>
+                              )}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </Table>
+                  ) : (
+                    <div className="text-center py-4">
+                      <p className="text-muted mb-0">{t('admin.payments.noPaymentsFound')}</p>
+                    </div>
+                  )}
+                </div>
               </Tab>
-              <Tab eventKey="bank-accounts" title="Bank Accounts">
-                <Card.Body>
+              <Tab eventKey="bankAccounts" title={t('admin.payments.bankAccountsTab')}>
+                <div className="p-3">
                   <BankAccountManagement />
-                </Card.Body>
+                </div>
               </Tab>
             </Tabs>
           </Card.Header>

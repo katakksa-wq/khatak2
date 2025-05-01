@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { FaSearch, FaUserEdit, FaUserSlash, FaKey, FaCheckCircle, FaTimesCircle, FaFileAlt } from 'react-icons/fa';
 import { apiClient } from '@/utils/apiClient';
 import { useRouter } from 'next/navigation';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface User {
   id: string;
@@ -57,8 +58,18 @@ interface UsersApiResponse {
   currentPage: number;
 }
 
+interface ResetPasswordResponse {
+  message?: string;
+  tempPassword?: string;
+  data?: {
+    message?: string;
+    tempPassword?: string;
+  };
+}
+
 export default function UsersManagementPage() {
   const router = useRouter();
+  const { t } = useLanguage();
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -349,75 +360,70 @@ export default function UsersManagementPage() {
 
   const confirmResetPassword = async () => {
     try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        router.replace('/login');
+      if (!resetPasswordEmail) {
+        setResetPasswordResult({
+          success: false,
+          message: t('admin.users.noEmailError')
+        });
         return;
       }
-      
-      console.log(`Resetting password for email: ${resetPasswordEmail}`);
+
+      setLoading(true);
       
       const response = await apiClient.post(
         '/api/admin/users/reset-password',
         { email: resetPasswordEmail },
-        { headers: { Authorization: `Bearer ${token}` }}
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`
+          }
+        }
       );
       
       console.log("Reset password response:", response.data);
       
-      // Handle different response formats
-      const responseData = response.data;
-      let message = "Password reset successfully";
-      let tempPassword = "";
+      // Cast response data to our interface
+      const responseData = response.data as ResetPasswordResponse;
       
-      if (responseData) {
-        if (typeof responseData === 'object') {
-          message = (responseData as any).message || message;
-          tempPassword = (responseData as any).tempPassword || "";
-        } else if (typeof responseData === 'string') {
-          message = responseData;
-        }
-      }
+      const successMessage = 
+        responseData?.message || 
+        responseData?.data?.message || 
+        t('admin.users.passwordResetSuccess');
       
       setResetPasswordResult({
         success: true,
-        message: message,
-        tempPassword: tempPassword
+        message: successMessage,
+        tempPassword: responseData?.data?.tempPassword || responseData?.tempPassword
       });
+      
+      setLoading(false);
     } catch (err: any) {
       console.error('Error resetting password:', err);
       
-      // Handle error response formats
-      const errorResponse = err.response?.data;
-      let errorMessage = 'Failed to reset password';
-      
-      if (errorResponse) {
-        if (typeof errorResponse === 'object' && errorResponse.message) {
-          errorMessage = errorResponse.message;
-        } else if (typeof errorResponse === 'string') {
-          errorMessage = errorResponse;
-        }
-      }
+      const errorMessage = 
+        err.response?.data?.message || 
+        err.message || 
+        t('admin.users.passwordResetFailed');
       
       setResetPasswordResult({
         success: false,
         message: errorMessage
       });
+      
+      setLoading(false);
     }
   };
 
   const getRoleBadgeColor = (role: string): string => {
     switch (role) {
-      case 'ADMIN': return 'danger';
-      case 'DRIVER': return 'info';
-      case 'CLIENT': return 'success';
-      default: return 'secondary';
+      case 'ADMIN': return 'bg-purple-600';
+      case 'DRIVER': return 'bg-blue-600';
+      default: return 'bg-green-600';
     }
   };
 
   const handleCloseResetModal = () => {
     setShowResetModal(false);
-    setResetPasswordEmail('');
     setResetPasswordResult(null);
   };
 
@@ -436,12 +442,12 @@ export default function UsersManagementPage() {
                   <input
                     type="text"
                     className="form-control"
-                    placeholder="Search by name or email"
+                    placeholder={t('admin.users.searchPlaceholder')}
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                   />
                   <button className="btn btn-primary" type="submit">
-                    <FaSearch className="me-1" /> Search
+                    <FaSearch className="me-1" /> {t('admin.search')}
                   </button>
                 </div>
               </form>
@@ -455,10 +461,10 @@ export default function UsersManagementPage() {
                   setCurrentPage(1); // Reset to first page when filtering
                 }}
               >
-                <option value="ALL">All Roles</option>
-                <option value="ADMIN">Admins</option>
-                <option value="CLIENT">Clients</option>
-                <option value="DRIVER">Drivers</option>
+                <option value="ALL">{t('admin.users.allRoles')}</option>
+                <option value="ADMIN">{t('admin.users.roleAdmin')}</option>
+                <option value="CLIENT">{t('admin.users.roleClient')}</option>
+                <option value="DRIVER">{t('admin.users.roleDriver')}</option>
               </select>
             </div>
             <div className="col-md-3 text-end">
@@ -467,7 +473,7 @@ export default function UsersManagementPage() {
                 onClick={() => fetchUsers()}
                 disabled={loading}
               >
-                {loading ? 'Refreshing...' : 'Refresh'}
+                {loading ? t('button.loading') : t('admin.refresh')}
               </button>
             </div>
           </div>
@@ -485,25 +491,25 @@ export default function UsersManagementPage() {
           {loading ? (
             <div className="d-flex justify-content-center my-5">
               <div className="spinner-border text-primary" role="status">
-                <span className="visually-hidden">Loading...</span>
+                <span className="visually-hidden">{t('button.loading')}</span>
               </div>
             </div>
           ) : users.length === 0 ? (
             <div className="text-center py-5">
-              <p className="text-muted mb-0">No users found matching your criteria</p>
+              <p className="text-muted mb-0">{t('admin.users.noUsersFound')}</p>
             </div>
           ) : (
             <div className="table-responsive">
               <table className="table table-hover align-middle">
                 <thead>
                   <tr>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>Role</th>
-                    <th>Status</th>
-                    <th>Created</th>
-                    <th>Last Login</th>
-                    <th>Actions</th>
+                    <th>{t('admin.users.name')}</th>
+                    <th>{t('admin.users.email')}</th>
+                    <th>{t('admin.users.role')}</th>
+                    <th>{t('admin.users.status')}</th>
+                    <th>{t('admin.users.joined')}</th>
+                    <th>{t('admin.users.lastActive')}</th>
+                    <th>{t('admin.actions')}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -512,45 +518,48 @@ export default function UsersManagementPage() {
                       <td>{user.name}</td>
                       <td>{user.email}</td>
                       <td>
-                        <span className={`badge bg-${getRoleBadgeColor(user.role)}`}>
-                          {user.role}
+                        <span className={`badge ${getRoleBadgeColor(user.role)}`}>
+                          {t(`admin.users.role${user.role}`)}
                         </span>
                       </td>
                       <td>
                         {user.isActive ? (
-                          <span className="badge bg-success">Active</span>
+                          <span className="badge bg-success">{t('admin.users.active')}</span>
                         ) : (
-                          <span className="badge bg-danger">Inactive</span>
+                          <span className="badge bg-danger">{t('admin.users.inactive')}</span>
                         )}
                       </td>
                       <td>{new Date(user.createdAt).toLocaleDateString()}</td>
-                      <td>{user.lastLogin ? new Date(user.lastLogin).toLocaleDateString() : 'Never'}</td>
+                      <td>{user.lastLogin ? new Date(user.lastLogin).toLocaleDateString() : t('admin.users.never')}</td>
                       <td>
                         <div className="btn-group" role="group">
                           <button
                             type="button"
                             className="btn btn-sm btn-outline-primary"
                             onClick={() => handleViewDetails(user)}
-                            title="View Details"
                           >
-                            <FaUserEdit />
+                            <FaFileAlt /> {t('admin.view')}
                           </button>
                           <button
                             type="button"
-                            className={`btn btn-sm btn-outline-${user.isActive ? 'danger' : 'success'}`}
-                            onClick={() => handleToggleUserStatus(user.id, user.isActive)}
-                            title={user.isActive ? 'Deactivate User' : 'Activate User'}
-                          >
-                            {user.isActive ? <FaUserSlash /> : <FaCheckCircle />}
-                          </button>
-                          <button
-                            type="button"
-                            className="btn btn-sm btn-outline-warning"
+                            className="btn btn-sm btn-outline-secondary"
                             onClick={() => handleResetPassword(user.email)}
-                            title="Reset Password"
                           >
-                            <FaKey />
+                            <FaKey /> {t('admin.users.resetPwd')}
                           </button>
+                          {user.role !== 'ADMIN' && (
+                            <button
+                              type="button"
+                              className={`btn btn-sm ${user.isActive ? 'btn-outline-danger' : 'btn-outline-success'}`}
+                              onClick={() => handleToggleUserStatus(user.id, user.isActive)}
+                            >
+                              {user.isActive ? (
+                                <><FaUserSlash /> {t('admin.users.deactivate')}</>
+                              ) : (
+                                <><FaUserEdit /> {t('admin.users.activate')}</>
+                              )}
+                            </button>
+                          )}
                         </div>
                       </td>
                     </tr>
@@ -571,7 +580,7 @@ export default function UsersManagementPage() {
                     className="page-link" 
                     onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                   >
-                    Previous
+                    {t('pagination.previous')}
                   </button>
                 </li>
                 
@@ -594,7 +603,7 @@ export default function UsersManagementPage() {
                     className="page-link" 
                     onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
                   >
-                    Next
+                    {t('pagination.next')}
                   </button>
                 </li>
               </ul>
@@ -609,7 +618,7 @@ export default function UsersManagementPage() {
           <div className="modal-dialog modal-lg">
             <div className="modal-content">
               <div className="modal-header">
-                <h5 className="modal-title">User Details</h5>
+                <h5 className="modal-title">{t('admin.users.userDetails')}</h5>
                 <button 
                   type="button" 
                   className="btn-close" 
@@ -618,106 +627,100 @@ export default function UsersManagementPage() {
               </div>
               <div className="modal-body">
                 <div className="mb-3">
-                  <h6 className="text-muted mb-2">Basic Information</h6>
+                  <h6 className="text-muted mb-2">{t('admin.users.basicInfo')}</h6>
                   <div className="row g-2">
                     <div className="col-md-6">
-                      <p className="mb-1"><strong>Name:</strong></p>
+                      <p className="mb-1"><strong>{t('admin.users.name')}:</strong></p>
                       <p>{selectedUser.name}</p>
                     </div>
                     <div className="col-md-6">
-                      <p className="mb-1"><strong>User ID:</strong></p>
-                      <p>{selectedUser.id}</p>
+                      <p className="mb-1"><strong>{t('admin.users.email')}:</strong></p>
+                      <p>{selectedUser.email}</p>
                     </div>
                   </div>
                   
                   <div className="row g-2">
                     <div className="col-md-6">
-                      <p className="mb-1"><strong>Email:</strong></p>
-                      <p>{selectedUser.email}</p>
+                      <p className="mb-1"><strong>{t('admin.users.phone')}:</strong></p>
+                      <p>{selectedUser.phoneNumber || t('admin.users.notProvided')}</p>
                     </div>
                     <div className="col-md-6">
-                      <p className="mb-1"><strong>Phone:</strong></p>
-                      <p>{selectedUser.phoneNumber || 'N/A'}</p>
+                      <p className="mb-1"><strong>{t('admin.users.role')}:</strong></p>
+                      <p>
+                        <span className={`badge ${getRoleBadgeColor(selectedUser.role)}`}>
+                          {t(`admin.users.role${selectedUser.role}`)}
+                        </span>
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <div className="row g-2">
+                    <div className="col-md-6">
+                      <p className="mb-1"><strong>{t('admin.users.status')}:</strong></p>
+                      <p>
+                        {selectedUser.isActive ? (
+                          <span className="badge bg-success">{t('admin.users.active')}</span>
+                        ) : (
+                          <span className="badge bg-danger">{t('admin.users.inactive')}</span>
+                        )}
+                      </p>
+                    </div>
+                    <div className="col-md-6">
+                      <p className="mb-1"><strong>{t('admin.users.joined')}:</strong></p>
+                      <p>{new Date(selectedUser.createdAt).toLocaleString()}</p>
                     </div>
                   </div>
                 </div>
                 
                 <div className="mb-3">
-                  <h6 className="text-muted mb-2">Account Information</h6>
+                  <h6 className="text-muted mb-2">{t('admin.users.accountDetails')}</h6>
                   <div className="row g-2">
                     <div className="col-md-6">
-                      <p className="mb-1"><strong>Role:</strong></p>
-                      <p>
-                        <span className={`badge bg-${getRoleBadgeColor(selectedUser.role)}`}>
-                          {selectedUser.role}
-                        </span>
-                      </p>
+                      <p className="mb-1"><strong>{t('admin.users.lastActive')}:</strong></p>
+                      <p>{selectedUser.lastLogin ? new Date(selectedUser.lastLogin).toLocaleString() : t('admin.users.never')}</p>
                     </div>
-                    <div className="col-md-6">
-                      <p className="mb-1"><strong>Status:</strong></p>
-                      <p>
-                        {selectedUser.isActive ? (
-                          <span className="badge bg-success">Active</span>
-                        ) : (
-                          <span className="badge bg-danger">Inactive</span>
-                        )}
-                      </p>
-                    </div>
-                  </div>
-                  
-                  <div className="row g-2">
-                    <div className="col-md-6">
-                      <p className="mb-1"><strong>Created:</strong></p>
-                      <p>{new Date(selectedUser.createdAt).toLocaleString()}</p>
-                    </div>
-                    <div className="col-md-6">
-                      <p className="mb-1"><strong>Last Login:</strong></p>
-                      <p>{selectedUser.lastLogin ? new Date(selectedUser.lastLogin).toLocaleString() : 'Never'}</p>
-                    </div>
+                    {selectedUser.totalOrders !== undefined && (
+                      <div className="col-md-6">
+                        <p className="mb-1"><strong>{t('admin.users.totalOrders')}:</strong></p>
+                        <p>{selectedUser.totalOrders}</p>
+                      </div>
+                    )}
                   </div>
                 </div>
                 
-                {selectedUser.role === 'CLIENT' && (
-                  <div className="mb-3">
-                    <h6 className="text-muted mb-2">Client Information</h6>
-                    <p className="mb-1"><strong>Total Orders:</strong></p>
-                    <p>{selectedUser.totalOrders}</p>
-                  </div>
-                )}
-                
                 {selectedUser.role === 'DRIVER' && selectedUser.driver_profile && (
                   <div className="mb-3">
-                    <h6 className="text-muted mb-2">Driver Information</h6>
+                    <h6 className="text-muted mb-2">{t('admin.users.driverProfile')}</h6>
                     
                     {/* Vehicle Information */}
                     <div className="card mb-3">
                       <div className="card-header bg-light">
-                        <h6 className="mb-0">Vehicle Information</h6>
+                        <h6 className="mb-0">{t('driver.vehicleInfo')}</h6>
                       </div>
                       <div className="card-body">
                         <div className="row g-2">
                           <div className="col-md-6">
-                            <p className="mb-1"><strong>Make:</strong></p>
+                            <p className="mb-1"><strong>{t('driver.make')}:</strong></p>
                             <p>{selectedUser.driver_profile.vehicleMake || 'N/A'}</p>
                           </div>
                           <div className="col-md-6">
-                            <p className="mb-1"><strong>Model:</strong></p>
+                            <p className="mb-1"><strong>{t('driver.model')}:</strong></p>
                             <p>{selectedUser.driver_profile.vehicleModel || 'N/A'}</p>
                           </div>
                         </div>
                         <div className="row g-2">
                           <div className="col-md-6">
-                            <p className="mb-1"><strong>Year:</strong></p>
+                            <p className="mb-1"><strong>{t('driver.year')}:</strong></p>
                             <p>{selectedUser.driver_profile.vehicleYear || 'N/A'}</p>
                           </div>
                           <div className="col-md-6">
-                            <p className="mb-1"><strong>Color:</strong></p>
+                            <p className="mb-1"><strong>{t('driver.color')}:</strong></p>
                             <p>{selectedUser.driver_profile.vehicleColor || 'N/A'}</p>
                           </div>
                         </div>
                         <div className="row g-2">
                           <div className="col-12">
-                            <p className="mb-1"><strong>License Plate:</strong></p>
+                            <p className="mb-1"><strong>{t('driver.licensePlate')}:</strong></p>
                             <p>{selectedUser.driver_profile.vehicleRegistration || 'N/A'}</p>
                           </div>
                         </div>
@@ -727,16 +730,16 @@ export default function UsersManagementPage() {
                     {/* License Information */}
                     <div className="card mb-3">
                       <div className="card-header bg-light">
-                        <h6 className="mb-0">License Information</h6>
+                        <h6 className="mb-0">{t('driver.licenseInfo')}</h6>
                       </div>
                       <div className="card-body">
                         <div className="row g-2">
                           <div className="col-md-6">
-                            <p className="mb-1"><strong>License Number:</strong></p>
+                            <p className="mb-1"><strong>{t('driver.licenseNumber')}:</strong></p>
                             <p>{selectedUser.driver_profile.licenseNumber || 'N/A'}</p>
                           </div>
                           <div className="col-md-6">
-                            <p className="mb-1"><strong>Expiry Date:</strong></p>
+                            <p className="mb-1"><strong>{t('driver.expiryDate')}:</strong></p>
                             <p>{selectedUser.driver_profile.licenseExpiry ? new Date(selectedUser.driver_profile.licenseExpiry).toLocaleDateString() : 'N/A'}</p>
                           </div>
                         </div>
@@ -746,18 +749,18 @@ export default function UsersManagementPage() {
                     {/* Documents */}
                     <div className="card">
                       <div className="card-header bg-light">
-                        <h6 className="mb-0">Documents</h6>
+                        <h6 className="mb-0">{t('admin.users.documents')}</h6>
                       </div>
                       <div className="card-body">
                         <div className="row g-2">
                           {selectedUser.driver_profile?.licenseDocument && (
                             <div className="col-md-6 mb-2">
-                              <p className="mb-1"><strong>Driver's License:</strong></p>
+                              <p className="mb-1"><strong>{t('driver.license')}:</strong></p>
                               <div className="d-flex align-items-center gap-2">
                                 <div className="position-relative" style={{ width: '100px', height: '100px' }}>
                                   <img 
                                     src={selectedUser.driver_profile?.licenseDocument} 
-                                    alt="Driver's License" 
+                                    alt={t('driver.license')} 
                                     className="img-thumbnail" 
                                     style={{ 
                                       width: '100%', 
@@ -772,7 +775,7 @@ export default function UsersManagementPage() {
                                     }}
                                   />
                                   <div className="position-absolute top-0 end-0 p-1">
-                                    <span className="badge bg-primary">Click to enlarge</span>
+                                    <span className="badge bg-primary">{t('admin.users.clickToEnlarge')}</span>
                                   </div>
                                 </div>
                                 <a 
@@ -781,7 +784,7 @@ export default function UsersManagementPage() {
                                   rel="noopener noreferrer"
                                   className="btn btn-sm btn-outline-primary"
                                 >
-                                  <FaFileAlt className="me-1" /> View Full Size
+                                  <FaFileAlt className="me-1" /> {t('admin.users.viewFullSize')}
                                 </a>
                               </div>
                             </div>
@@ -789,12 +792,12 @@ export default function UsersManagementPage() {
                           
                           {selectedUser.driver_profile?.registrationDocument && (
                             <div className="col-md-6 mb-2">
-                              <p className="mb-1"><strong>Vehicle Registration:</strong></p>
+                              <p className="mb-1"><strong>{t('driver.registration')}:</strong></p>
                               <div className="d-flex align-items-center gap-2">
                                 <div className="position-relative" style={{ width: '100px', height: '100px' }}>
                                   <img 
                                     src={selectedUser.driver_profile?.registrationDocument} 
-                                    alt="Vehicle Registration" 
+                                    alt={t('driver.registration')} 
                                     className="img-thumbnail" 
                                     style={{ 
                                       width: '100%', 
@@ -809,7 +812,7 @@ export default function UsersManagementPage() {
                                     }}
                                   />
                                   <div className="position-absolute top-0 end-0 p-1">
-                                    <span className="badge bg-primary">Click to enlarge</span>
+                                    <span className="badge bg-primary">{t('admin.users.clickToEnlarge')}</span>
                                   </div>
                                 </div>
                                 <a 
@@ -818,7 +821,7 @@ export default function UsersManagementPage() {
                                   rel="noopener noreferrer"
                                   className="btn btn-sm btn-outline-primary"
                                 >
-                                  <FaFileAlt className="me-1" /> View Full Size
+                                  <FaFileAlt className="me-1" /> {t('admin.users.viewFullSize')}
                                 </a>
                               </div>
                             </div>
@@ -826,12 +829,12 @@ export default function UsersManagementPage() {
                           
                           {selectedUser.driver_profile?.insuranceDocument && (
                             <div className="col-md-6 mb-2">
-                              <p className="mb-1"><strong>Insurance:</strong></p>
+                              <p className="mb-1"><strong>{t('driver.insurance')}:</strong></p>
                               <div className="d-flex align-items-center gap-2">
                                 <div className="position-relative" style={{ width: '100px', height: '100px' }}>
                                   <img 
                                     src={selectedUser.driver_profile?.insuranceDocument} 
-                                    alt="Insurance" 
+                                    alt={t('driver.insurance')} 
                                     className="img-thumbnail" 
                                     style={{ 
                                       width: '100%', 
@@ -846,7 +849,7 @@ export default function UsersManagementPage() {
                                     }}
                                   />
                                   <div className="position-absolute top-0 end-0 p-1">
-                                    <span className="badge bg-primary">Click to enlarge</span>
+                                    <span className="badge bg-primary">{t('admin.users.clickToEnlarge')}</span>
                                   </div>
                                 </div>
                                 <a 
@@ -855,7 +858,7 @@ export default function UsersManagementPage() {
                                   rel="noopener noreferrer"
                                   className="btn btn-sm btn-outline-primary"
                                 >
-                                  <FaFileAlt className="me-1" /> View Full Size
+                                  <FaFileAlt className="me-1" /> {t('admin.users.viewFullSize')}
                                 </a>
                               </div>
                             </div>
@@ -863,12 +866,12 @@ export default function UsersManagementPage() {
                           
                           {selectedUser.driver_profile?.backgroundCheckDocument && (
                             <div className="col-md-6 mb-2">
-                              <p className="mb-1"><strong>Background Check:</strong></p>
+                              <p className="mb-1"><strong>{t('driver.backgroundCheck')}:</strong></p>
                               <div className="d-flex align-items-center gap-2">
                                 <div className="position-relative" style={{ width: '100px', height: '100px' }}>
                                   <img 
                                     src={selectedUser.driver_profile?.backgroundCheckDocument} 
-                                    alt="Background Check" 
+                                    alt={t('driver.backgroundCheck')} 
                                     className="img-thumbnail" 
                                     style={{ 
                                       width: '100%', 
@@ -883,7 +886,7 @@ export default function UsersManagementPage() {
                                     }}
                                   />
                                   <div className="position-absolute top-0 end-0 p-1">
-                                    <span className="badge bg-primary">Click to enlarge</span>
+                                    <span className="badge bg-primary">{t('admin.users.clickToEnlarge')}</span>
                                   </div>
                                 </div>
                                 <a 
@@ -892,7 +895,7 @@ export default function UsersManagementPage() {
                                   rel="noopener noreferrer"
                                   className="btn btn-sm btn-outline-primary"
                                 >
-                                  <FaFileAlt className="me-1" /> View Full Size
+                                  <FaFileAlt className="me-1" /> {t('admin.users.viewFullSize')}
                                 </a>
                               </div>
                             </div>
@@ -903,7 +906,7 @@ export default function UsersManagementPage() {
                            !selectedUser.driver_profile?.insuranceDocument && 
                            !selectedUser.driver_profile?.backgroundCheckDocument && (
                             <div className="col-12">
-                              <p className="text-muted">No documents available</p>
+                              <p className="text-muted">{t('admin.users.noDocumentsAvailable')}</p>
                             </div>
                           )}
                         </div>
@@ -914,8 +917,8 @@ export default function UsersManagementPage() {
                 
                 {selectedUser.role === 'DRIVER' && !selectedUser.driver_profile && (
                   <div className="mb-3">
-                    <h6 className="text-muted mb-2">Driver Information</h6>
-                    <p className="text-muted">No driver profile information available.</p>
+                    <h6 className="text-muted mb-2">{t('admin.users.driverInfo')}</h6>
+                    <p className="text-muted">{t('admin.users.noDriverProfileInfo')}</p>
                   </div>
                 )}
               </div>
@@ -926,14 +929,14 @@ export default function UsersManagementPage() {
                     className={`btn me-2 btn-${selectedUser.isActive ? 'danger' : 'success'}`}
                     onClick={() => handleToggleUserStatus(selectedUser.id, selectedUser.isActive)}
                   >
-                    {selectedUser.isActive ? 'Deactivate User' : 'Activate User'}
+                    {selectedUser.isActive ? t('admin.users.deactivate') : t('admin.users.activate')}
                   </button>
                   <button
                     type="button"
                     className="btn btn-warning"
                     onClick={() => handleResetPassword(selectedUser.email)}
                   >
-                    Reset Password
+                    <FaKey className="me-1" /> {t('admin.users.resetPwd')}
                   </button>
                 </div>
                 <button
@@ -941,7 +944,7 @@ export default function UsersManagementPage() {
                   className="btn btn-secondary"
                   onClick={() => setShowDetailsModal(false)}
                 >
-                  Close
+                  {t('button.close')}
                 </button>
               </div>
             </div>
@@ -955,9 +958,7 @@ export default function UsersManagementPage() {
           <div className="modal-dialog">
             <div className="modal-content">
               <div className="modal-header">
-                <h5 className="modal-title">
-                  {resetPasswordResult ? 'Password Reset Result' : 'Confirm Password Reset'}
-                </h5>
+                <h5 className="modal-title">{t('admin.users.resetPassword')}</h5>
                 <button 
                   type="button" 
                   className="btn-close" 
@@ -966,27 +967,26 @@ export default function UsersManagementPage() {
               </div>
 
               {resetPasswordResult ? (
-                <div className="modal-body">
-                  <div className={`alert alert-${resetPasswordResult.success ? 'success' : 'danger'}`}>
-                    {resetPasswordResult.message}
-                  </div>
-                  
+                <div className={`modal-body alert ${resetPasswordResult.success ? 'alert-success' : 'alert-danger'}`}>
+                  <p>{resetPasswordResult.message}</p>
                   {resetPasswordResult.tempPassword && (
-                    <div className="alert alert-warning">
-                      <p><strong>Temporary Password:</strong></p>
-                      <p className="mb-0 user-select-all">{resetPasswordResult.tempPassword}</p>
-                      <p className="mt-2 small text-muted">
-                        Share this temporary password with the user securely.
-                        In a production environment, this would be sent via email.
+                    <div className="mt-3">
+                      <p><strong>{t('admin.users.tempPassword')}:</strong></p>
+                      <div className="bg-light p-2 border rounded">
+                        <code>{resetPasswordResult.tempPassword}</code>
+                      </div>
+                      <p className="mt-2 text-warning">
+                        <small><FaTimesCircle className="me-1" /> {t('admin.users.passwordWarning')}</small>
                       </p>
                     </div>
                   )}
                 </div>
               ) : (
                 <div className="modal-body">
-                  <p>Are you sure you want to reset the password for:</p>
-                  <p className="fw-bold">{resetPasswordEmail}</p>
-                  <p>A password reset link will be sent to this email address.</p>
+                  <p>{t('admin.users.resetPasswordConfirm')}: <strong>{resetPasswordEmail}</strong>?</p>
+                  <p className="text-warning">
+                    <FaTimesCircle className="me-1" /> {t('admin.users.resetPasswordWarning')}
+                  </p>
                 </div>
               )}
               
@@ -997,23 +997,29 @@ export default function UsersManagementPage() {
                     className="btn btn-primary"
                     onClick={handleCloseResetModal}
                   >
-                    Close
+                    {t('button.close')}
                   </button>
                 ) : (
                   <>
                     <button
                       type="button"
                       className="btn btn-secondary"
-                      onClick={() => setShowResetModal(false)}
+                      onClick={handleCloseResetModal}
                     >
-                      Cancel
+                      {t('button.cancel')}
                     </button>
                     <button
                       type="button"
-                      className="btn btn-warning"
+                      className="btn btn-danger"
                       onClick={confirmResetPassword}
+                      disabled={loading}
                     >
-                      Reset Password
+                      {loading ? (
+                        <span className="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                      ) : (
+                        <FaKey className="me-1" />
+                      )}
+                      {loading ? t('button.processing') : t('admin.users.confirmReset')}
                     </button>
                   </>
                 )}
