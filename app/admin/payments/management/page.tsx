@@ -20,10 +20,12 @@ import { format } from 'date-fns';
 import { toast } from 'react-toastify';
 import { BankAccount } from '@/hooks/usePayments';
 import PaymentReceipt from '@/components/payments/PaymentReceipt';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 export default function AdminPaymentManagement() {
   const router = useRouter();
   const { user, isAdmin } = useAuth();
+  const { t } = useLanguage();
   const { 
     payments, 
     bankAccounts, 
@@ -91,7 +93,7 @@ export default function AdminPaymentManagement() {
     try {
       let notes: string | undefined = undefined;
       if (status === 'REJECTED') {
-        notes = rejectionNote || 'Payment rejected by admin';
+        notes = rejectionNote || t('admin.payments.defaultRejectionNote');
       }
       
       const success = await confirmPayment(paymentId, status, notes);
@@ -160,18 +162,18 @@ export default function AdminPaymentManagement() {
       refreshData();
     } catch (error) {
       console.error('Error saving bank account:', error);
-      toast.error('Failed to save bank account');
+      toast.error(t('admin.payments.bankSaveError'));
     }
   };
   
   const handleDeleteBankAccount = async (id: string) => {
-    if (window.confirm('Are you sure you want to delete this bank account?')) {
+    if (window.confirm(t('admin.payments.confirmDeleteBank'))) {
       try {
         await deleteBankAccount(id);
         refreshData();
       } catch (error) {
         console.error('Error deleting bank account:', error);
-        toast.error('Failed to delete bank account');
+        toast.error(t('admin.payments.bankDeleteError'));
       }
     }
   };
@@ -180,11 +182,11 @@ export default function AdminPaymentManagement() {
   const renderStatusBadge = (status: string) => {
     switch (status) {
       case 'PENDING':
-        return <Badge bg="warning">Pending</Badge>;
+        return <Badge bg="warning">{t('admin.payments.pending')}</Badge>;
       case 'CONFIRMED':
-        return <Badge bg="success">Confirmed</Badge>;
+        return <Badge bg="success">{t('admin.payments.confirmed')}</Badge>;
       case 'REJECTED':
-        return <Badge bg="danger">Rejected</Badge>;
+        return <Badge bg="danger">{t('admin.payments.rejected')}</Badge>;
       default:
         return <Badge bg="secondary">{status}</Badge>;
     }
@@ -194,8 +196,8 @@ export default function AdminPaymentManagement() {
     return (
       <div className="container py-5">
         <Alert variant="danger">
-          <Alert.Heading>Access Denied</Alert.Heading>
-          <p>You do not have permission to access this page.</p>
+          <Alert.Heading>{t('admin.accessDenied')}</Alert.Heading>
+          <p>{t('admin.noPermission')}</p>
         </Alert>
       </div>
     );
@@ -204,7 +206,7 @@ export default function AdminPaymentManagement() {
   return (
     <div className="container-fluid py-4">
       <div className="d-flex justify-content-between align-items-center mb-4">
-        <h1 className="h3 mb-0">Payment Management</h1>
+        <h1 className="h3 mb-0">{t('admin.payments.management')}</h1>
       </div>
       
       {/* Statistics Cards */}
@@ -216,9 +218,9 @@ export default function AdminPaymentManagement() {
                 <FaMoneyBill className="text-white" size={24} />
               </div>
               <div>
-                <h6 className="text-muted mb-1">Total Pending</h6>
+                <h6 className="text-muted mb-1">{t('admin.payments.totalPending')}</h6>
                 <h3 className="mb-0">${totalPending.toFixed(2)}</h3>
-                <small className="text-muted">{pendingPayments.length} payments</small>
+                <small className="text-muted">{pendingPayments.length} {t('admin.payments.payments')}</small>
               </div>
             </Card.Body>
           </Card>
@@ -230,9 +232,9 @@ export default function AdminPaymentManagement() {
                 <FaCheck className="text-white" size={24} />
               </div>
               <div>
-                <h6 className="text-muted mb-1">Total Confirmed</h6>
+                <h6 className="text-muted mb-1">{t('admin.payments.totalConfirmed')}</h6>
                 <h3 className="mb-0">${totalConfirmed.toFixed(2)}</h3>
-                <small className="text-muted">{confirmedPayments.length} payments</small>
+                <small className="text-muted">{confirmedPayments.length} {t('admin.payments.payments')}</small>
               </div>
             </Card.Body>
           </Card>
@@ -244,9 +246,9 @@ export default function AdminPaymentManagement() {
                 <FaTimes className="text-white" size={24} />
               </div>
               <div>
-                <h6 className="text-muted mb-1">Total Rejected</h6>
+                <h6 className="text-muted mb-1">{t('admin.payments.totalRejected')}</h6>
                 <h3 className="mb-0">${totalRejected.toFixed(2)}</h3>
-                <small className="text-muted">{rejectedPayments.length} payments</small>
+                <small className="text-muted">{rejectedPayments.length} {t('admin.payments.payments')}</small>
               </div>
             </Card.Body>
           </Card>
@@ -258,289 +260,346 @@ export default function AdminPaymentManagement() {
                 <FaExclamationTriangle className="text-white" size={24} />
               </div>
               <div>
-                <h6 className="text-muted mb-1">Reported Issues</h6>
+                <h6 className="text-muted mb-1">{t('admin.payments.reportedIssues')}</h6>
                 <h3 className="mb-0">{reportedIssues.length}</h3>
-                <small className="text-muted">Require attention</small>
+                <small className="text-muted">{t('admin.payments.requiresAttention')}</small>
               </div>
             </Card.Body>
           </Card>
         </div>
       </div>
       
-      {/* Tabs for different payment sections */}
-      <Tabs
-        activeKey={activeTab}
-        onSelect={(key) => setActiveTab(key || 'pending')}
-        className="mb-4"
-      >
-        <Tab eventKey="pending" title={`Pending Payments (${pendingPayments.length})`}>
-          <Card className="border-0 shadow-sm">
-            <Card.Body>
-              {loading ? (
-                <div className="text-center py-5">
-                  <Spinner animation="border" variant="primary" />
-                  <p className="mt-3 text-muted">Loading payments...</p>
-                </div>
-              ) : pendingPayments.length === 0 ? (
-                <div className="text-center py-5">
-                  <FaInfoCircle size={48} className="text-muted mb-3" />
-                  <h5>No Pending Payments</h5>
-                  <p className="text-muted">There are currently no payments awaiting confirmation.</p>
-                </div>
-              ) : (
-                <div className="table-responsive">
-                  <Table hover>
+      {/* Control Panel */}
+      <Card className="border-0 shadow-sm mb-4">
+        <Card.Body>
+          <Button 
+            variant="primary" 
+            className="mb-3"
+            onClick={() => refreshData()}
+          >
+            {loading ? (
+              <>
+                <Spinner animation="border" size="sm" className="me-2" />
+                {t('button.loading')}
+              </>
+            ) : (
+              <>
+                <FaPlus className="me-2" />
+                {t('admin.refresh')}
+              </>
+            )}
+          </Button>
+          
+          <Button
+            variant="success"
+            className="ms-2 mb-3"
+            onClick={() => openBankModal()}
+          >
+            <FaPlus className="me-2" />
+            {t('admin.payments.addBankAccount')}
+          </Button>
+        </Card.Body>
+      </Card>
+      
+      {/* Tabs for different payment statuses */}
+      <Card className="border-0 shadow-sm mb-4">
+        <Card.Header className="bg-white">
+          <Tabs
+            activeKey={activeTab}
+            onSelect={(k) => k && setActiveTab(k)}
+            className="mb-0"
+          >
+            <Tab 
+              eventKey="pending" 
+              title={`${t('admin.payments.pending')} (${pendingPayments.length})`}
+            >
+              <div className="p-3">
+                {loading ? (
+                  <div className="text-center py-4">
+                    <Spinner animation="border" role="status">
+                      <span className="visually-hidden">{t('button.loading')}</span>
+                    </Spinner>
+                  </div>
+                ) : pendingPayments.length === 0 ? (
+                  <Alert variant="info">
+                    {t('admin.payments.noPendingPayments')}
+                  </Alert>
+                ) : (
+                  <Table responsive hover className="mb-0">
                     <thead>
                       <tr>
-                        <th>Order #</th>
-                        <th>Driver</th>
-                        <th>Date</th>
-                        <th>Amount</th>
-                        <th>Method</th>
-                        <th>Reference</th>
-                        <th>Status</th>
-                        <th>Actions</th>
+                        <th>{t('admin.payments.paymentId')}</th>
+                        <th>{t('admin.payments.driver')}</th>
+                        <th>{t('admin.payments.amount')}</th>
+                        <th>{t('admin.payments.date')}</th>
+                        <th>{t('admin.payments.bankAccount')}</th>
+                        <th>{t('admin.payments.status')}</th>
+                        <th>{t('admin.payments.actions')}</th>
                       </tr>
                     </thead>
                     <tbody>
                       {pendingPayments.map(payment => (
                         <tr key={payment.id}>
-                          <td>{payment.order?.trackingNumber || payment.order?.id.substring(0, 8)}</td>
-                          <td>{payment.driver?.firstName} {payment.driver?.lastName}</td>
+                          <td>{payment.id.substr(0, 8)}...</td>
+                          <td>
+                            {payment.driver ? `${payment.driver.firstName} ${payment.driver.lastName}` : t('admin.payments.unknownDriver')}
+                          </td>
+                          <td className="fw-bold">${payment.amount.toFixed(2)}</td>
                           <td>{format(new Date(payment.createdAt), 'MMM d, yyyy')}</td>
-                          <td>${payment.amount.toFixed(2)}</td>
-                          <td>{payment.paymentMethod}</td>
-                          <td>{payment.paymentReference}</td>
+                          <td>
+                            {payment.bankAccount ? (
+                              <>
+                                <span className="d-block">{payment.bankAccount.bankName}</span>
+                                <small className="text-muted">{payment.bankAccount.accountNumber}</small>
+                              </>
+                            ) : (
+                              <Badge bg="warning">{t('admin.payments.noBankAccount')}</Badge>
+                            )}
+                          </td>
                           <td>{renderStatusBadge(payment.status)}</td>
                           <td>
-                            <Button 
-                              variant="outline-primary" 
-                              size="sm" 
-                              onClick={() => viewPaymentDetails(payment)}
-                              className="me-2"
-                            >
-                              <FaEye /> View
-                            </Button>
+                            <div className="btn-group">
+                              <Button
+                                variant="outline-primary"
+                                size="sm"
+                                onClick={() => viewPaymentDetails(payment)}
+                              >
+                                <FaEye />
+                              </Button>
+                              <Button
+                                variant="outline-success"
+                                size="sm"
+                                onClick={() => handleConfirmPayment(payment.id, 'CONFIRMED')}
+                                disabled={processingPaymentId === payment.id}
+                              >
+                                {processingPaymentId === payment.id ? (
+                                  <Spinner animation="border" size="sm" />
+                                ) : (
+                                  <FaCheck />
+                                )}
+                              </Button>
+                              <Button
+                                variant="outline-danger"
+                                size="sm"
+                                onClick={() => viewPaymentDetails(payment)}
+                                disabled={processingPaymentId === payment.id}
+                              >
+                                <FaTimes />
+                              </Button>
+                            </div>
                           </td>
                         </tr>
                       ))}
                     </tbody>
                   </Table>
-                </div>
-              )}
-            </Card.Body>
-          </Card>
-        </Tab>
-        
-        <Tab eventKey="confirmed" title={`Confirmed Payments (${confirmedPayments.length})`}>
-          <Card className="border-0 shadow-sm">
-            <Card.Body>
-              {loading ? (
-                <div className="text-center py-5">
-                  <Spinner animation="border" variant="primary" />
-                  <p className="mt-3 text-muted">Loading payments...</p>
-                </div>
-              ) : confirmedPayments.length === 0 ? (
-                <div className="text-center py-5">
-                  <FaInfoCircle size={48} className="text-muted mb-3" />
-                  <h5>No Confirmed Payments</h5>
-                  <p className="text-muted">There are no confirmed payments to display.</p>
-                </div>
-              ) : (
-                <div className="table-responsive">
-                  <Table hover>
+                )}
+              </div>
+            </Tab>
+            <Tab 
+              eventKey="confirmed" 
+              title={`${t('admin.payments.confirmed')} (${confirmedPayments.length})`}
+            >
+              <div className="p-3">
+                {loading ? (
+                  <div className="text-center py-4">
+                    <Spinner animation="border" role="status">
+                      <span className="visually-hidden">{t('button.loading')}</span>
+                    </Spinner>
+                  </div>
+                ) : confirmedPayments.length === 0 ? (
+                  <Alert variant="info">
+                    {t('admin.payments.noConfirmedPayments')}
+                  </Alert>
+                ) : (
+                  <Table responsive hover className="mb-0">
                     <thead>
                       <tr>
-                        <th>Order #</th>
-                        <th>Driver</th>
-                        <th>Date</th>
-                        <th>Amount</th>
-                        <th>Method</th>
-                        <th>Reference</th>
-                        <th>Status</th>
-                        <th>Actions</th>
+                        <th>{t('admin.payments.paymentId')}</th>
+                        <th>{t('admin.payments.driver')}</th>
+                        <th>{t('admin.payments.amount')}</th>
+                        <th>{t('admin.payments.date')}</th>
+                        <th>{t('admin.payments.bankAccount')}</th>
+                        <th>{t('admin.payments.confirmedBy')}</th>
+                        <th>{t('admin.payments.actions')}</th>
                       </tr>
                     </thead>
                     <tbody>
                       {confirmedPayments.map(payment => (
                         <tr key={payment.id}>
-                          <td>{payment.order?.trackingNumber || payment.order?.id.substring(0, 8)}</td>
-                          <td>{payment.driver?.firstName} {payment.driver?.lastName}</td>
-                          <td>{format(new Date(payment.createdAt), 'MMM d, yyyy')}</td>
-                          <td>${payment.amount.toFixed(2)}</td>
-                          <td>{payment.paymentMethod}</td>
-                          <td>{payment.paymentReference}</td>
-                          <td>{renderStatusBadge(payment.status)}</td>
+                          <td>{payment.id.substr(0, 8)}...</td>
                           <td>
-                            <Button 
-                              variant="outline-primary" 
-                              size="sm" 
+                            {payment.driver ? `${payment.driver.firstName} ${payment.driver.lastName}` : t('admin.payments.unknownDriver')}
+                          </td>
+                          <td className="fw-bold">${payment.amount.toFixed(2)}</td>
+                          <td>{format(new Date(payment.createdAt), 'MMM d, yyyy')}</td>
+                          <td>
+                            {payment.bankAccount ? (
+                              <>
+                                <span className="d-block">{payment.bankAccount.bankName}</span>
+                                <small className="text-muted">{payment.bankAccount.accountNumber}</small>
+                              </>
+                            ) : (
+                              <Badge bg="warning">{t('admin.payments.noBankAccount')}</Badge>
+                            )}
+                          </td>
+                          <td>
+                            {payment.confirmedBy ? payment.confirmedBy.name : t('admin.system')}
+                          </td>
+                          <td>
+                            <Button
+                              variant="outline-primary"
+                              size="sm"
                               onClick={() => viewPaymentDetails(payment)}
                             >
-                              <FaEye /> View
+                              <FaEye />
                             </Button>
                           </td>
                         </tr>
                       ))}
                     </tbody>
                   </Table>
-                </div>
-              )}
-            </Card.Body>
-          </Card>
-        </Tab>
-        
-        <Tab eventKey="rejected" title={`Rejected Payments (${rejectedPayments.length})`}>
-          <Card className="border-0 shadow-sm">
-            <Card.Body>
-              {loading ? (
-                <div className="text-center py-5">
-                  <Spinner animation="border" variant="primary" />
-                  <p className="mt-3 text-muted">Loading payments...</p>
-                </div>
-              ) : rejectedPayments.length === 0 ? (
-                <div className="text-center py-5">
-                  <FaInfoCircle size={48} className="text-muted mb-3" />
-                  <h5>No Rejected Payments</h5>
-                  <p className="text-muted">There are no rejected payments to display.</p>
-                </div>
-              ) : (
-                <div className="table-responsive">
-                  <Table hover>
+                )}
+              </div>
+            </Tab>
+            <Tab 
+              eventKey="rejected" 
+              title={`${t('admin.payments.rejected')} (${rejectedPayments.length})`}
+            >
+              <div className="p-3">
+                {loading ? (
+                  <div className="text-center py-4">
+                    <Spinner animation="border" role="status">
+                      <span className="visually-hidden">{t('button.loading')}</span>
+                    </Spinner>
+                  </div>
+                ) : rejectedPayments.length === 0 ? (
+                  <Alert variant="info">
+                    {t('admin.payments.noRejectedPayments')}
+                  </Alert>
+                ) : (
+                  <Table responsive hover className="mb-0">
                     <thead>
                       <tr>
-                        <th>Order #</th>
-                        <th>Driver</th>
-                        <th>Date</th>
-                        <th>Amount</th>
-                        <th>Method</th>
-                        <th>Reference</th>
-                        <th>Status</th>
-                        <th>Reason</th>
-                        <th>Actions</th>
+                        <th>{t('admin.payments.paymentId')}</th>
+                        <th>{t('admin.payments.driver')}</th>
+                        <th>{t('admin.payments.amount')}</th>
+                        <th>{t('admin.payments.date')}</th>
+                        <th>{t('admin.payments.rejectionReason')}</th>
+                        <th>{t('admin.payments.rejectedBy')}</th>
+                        <th>{t('admin.payments.actions')}</th>
                       </tr>
                     </thead>
                     <tbody>
                       {rejectedPayments.map(payment => (
                         <tr key={payment.id}>
-                          <td>{payment.order?.trackingNumber || payment.order?.id.substring(0, 8)}</td>
-                          <td>{payment.driver?.firstName} {payment.driver?.lastName}</td>
-                          <td>{format(new Date(payment.createdAt), 'MMM d, yyyy')}</td>
-                          <td>${payment.amount.toFixed(2)}</td>
-                          <td>{payment.paymentMethod}</td>
-                          <td>{payment.paymentReference}</td>
-                          <td>{renderStatusBadge(payment.status)}</td>
-                          <td>{payment.notes || 'No reason provided'}</td>
+                          <td>{payment.id.substr(0, 8)}...</td>
                           <td>
-                            <Button 
-                              variant="outline-primary" 
-                              size="sm" 
+                            {payment.driver ? `${payment.driver.firstName} ${payment.driver.lastName}` : t('admin.payments.unknownDriver')}
+                          </td>
+                          <td className="fw-bold">${payment.amount.toFixed(2)}</td>
+                          <td>{format(new Date(payment.createdAt), 'MMM d, yyyy')}</td>
+                          <td>
+                            {payment.notes || t('admin.payments.noReasonProvided')}
+                          </td>
+                          <td>
+                            {payment.confirmedBy ? payment.confirmedBy.name : t('admin.system')}
+                          </td>
+                          <td>
+                            <Button
+                              variant="outline-primary"
+                              size="sm"
                               onClick={() => viewPaymentDetails(payment)}
                             >
-                              <FaEye /> View
+                              <FaEye />
                             </Button>
                           </td>
                         </tr>
                       ))}
                     </tbody>
                   </Table>
-                </div>
-              )}
-            </Card.Body>
-          </Card>
-        </Tab>
-        
-        <Tab eventKey="issues" title={`Reported Issues (${reportedIssues.length})`}>
-          <Card className="border-0 shadow-sm">
-            <Card.Body>
-              {loading ? (
-                <div className="text-center py-5">
-                  <Spinner animation="border" variant="primary" />
-                  <p className="mt-3 text-muted">Loading reported issues...</p>
-                </div>
-              ) : reportedIssues.length === 0 ? (
-                <div className="text-center py-5">
-                  <FaInfoCircle size={48} className="text-muted mb-3" />
-                  <h5>No Reported Issues</h5>
-                  <p className="text-muted">There are no payment issues reported by drivers.</p>
-                </div>
-              ) : (
-                <div className="table-responsive">
-                  <Table hover>
+                )}
+              </div>
+            </Tab>
+            <Tab 
+              eventKey="issues" 
+              title={`${t('admin.payments.issues')} (${reportedIssues.length})`}
+            >
+              <div className="p-3">
+                {loading ? (
+                  <div className="text-center py-4">
+                    <Spinner animation="border" role="status">
+                      <span className="visually-hidden">{t('button.loading')}</span>
+                    </Spinner>
+                  </div>
+                ) : reportedIssues.length === 0 ? (
+                  <Alert variant="info">
+                    {t('admin.payments.noReportedIssues')}
+                  </Alert>
+                ) : (
+                  <Table responsive hover className="mb-0">
                     <thead>
                       <tr>
-                        <th>Order #</th>
-                        <th>Driver</th>
-                        <th>Date</th>
-                        <th>Amount</th>
-                        <th>Method</th>
-                        <th>Issue Details</th>
-                        <th>Actions</th>
+                        <th>{t('admin.payments.paymentId')}</th>
+                        <th>{t('admin.payments.driver')}</th>
+                        <th>{t('admin.payments.amount')}</th>
+                        <th>{t('admin.payments.date')}</th>
+                        <th>{t('admin.payments.issue')}</th>
+                        <th>{t('admin.payments.status')}</th>
+                        <th>{t('admin.payments.actions')}</th>
                       </tr>
                     </thead>
                     <tbody>
                       {reportedIssues.map(payment => (
                         <tr key={payment.id}>
-                          <td>{payment.order?.trackingNumber || payment.order?.id.substring(0, 8)}</td>
-                          <td>{payment.driver?.firstName} {payment.driver?.lastName}</td>
-                          <td>{format(new Date(payment.createdAt), 'MMM d, yyyy')}</td>
-                          <td>${payment.amount.toFixed(2)}</td>
-                          <td>{payment.paymentMethod}</td>
-                          <td>{payment.issueDetails || 'No details provided'}</td>
+                          <td>{payment.id.substr(0, 8)}...</td>
                           <td>
-                            <Button 
-                              variant="outline-primary" 
-                              size="sm" 
+                            {payment.driver ? `${payment.driver.firstName} ${payment.driver.lastName}` : t('admin.payments.unknownDriver')}
+                          </td>
+                          <td className="fw-bold">${payment.amount.toFixed(2)}</td>
+                          <td>{format(new Date(payment.createdAt), 'MMM d, yyyy')}</td>
+                          <td>
+                            {payment.issueDescription || t('admin.payments.issueReported')}
+                          </td>
+                          <td>{renderStatusBadge(payment.status)}</td>
+                          <td>
+                            <Button
+                              variant="outline-primary"
+                              size="sm"
                               onClick={() => viewPaymentDetails(payment)}
-                              className="me-2"
                             >
-                              <FaEye /> View
+                              <FaEye />
                             </Button>
                           </td>
                         </tr>
                       ))}
                     </tbody>
                   </Table>
-                </div>
-              )}
-            </Card.Body>
-          </Card>
-        </Tab>
-        
-        <Tab eventKey="bank-accounts" title="Bank Accounts">
-          <Card className="border-0 shadow-sm">
-            <Card.Body>
-              <div className="d-flex justify-content-end mb-3">
-                <Button 
-                  variant="primary" 
-                  onClick={() => openBankModal()}
-                >
-                  <FaPlus className="me-2" /> Add Bank Account
-                </Button>
+                )}
               </div>
-              
-              {loading ? (
-                <div className="text-center py-5">
-                  <Spinner animation="border" variant="primary" />
-                  <p className="mt-3 text-muted">Loading bank accounts...</p>
-                </div>
-              ) : bankAccounts.length === 0 ? (
-                <div className="text-center py-5">
-                  <FaInfoCircle size={48} className="text-muted mb-3" />
-                  <h5>No Bank Accounts</h5>
-                  <p className="text-muted">There are no bank accounts set up yet.</p>
-                </div>
-              ) : (
-                <div className="table-responsive">
-                  <Table hover>
+            </Tab>
+            <Tab eventKey="bank" title={t('admin.payments.bankAccounts')}>
+              <div className="p-3">
+                {loading ? (
+                  <div className="text-center py-4">
+                    <Spinner animation="border" role="status">
+                      <span className="visually-hidden">{t('button.loading')}</span>
+                    </Spinner>
+                  </div>
+                ) : bankAccounts.length === 0 ? (
+                  <Alert variant="info">
+                    {t('admin.payments.noBankAccounts')}
+                  </Alert>
+                ) : (
+                  <Table responsive hover className="mb-0">
                     <thead>
                       <tr>
-                        <th>Bank Name</th>
-                        <th>Account Name</th>
-                        <th>Account Number</th>
-                        <th>Sort Code</th>
-                        <th>Status</th>
-                        <th>Actions</th>
+                        <th>{t('admin.payments.bankName')}</th>
+                        <th>{t('admin.payments.accountName')}</th>
+                        <th>{t('admin.payments.accountNumber')}</th>
+                        <th>{t('admin.payments.sortCode')}</th>
+                        <th>{t('admin.payments.description')}</th>
+                        <th>{t('admin.payments.status')}</th>
+                        <th>{t('admin.payments.actions')}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -549,68 +608,189 @@ export default function AdminPaymentManagement() {
                           <td>{account.bankName}</td>
                           <td>{account.accountName}</td>
                           <td>{account.accountNumber}</td>
-                          <td>{account.sortCode || 'N/A'}</td>
+                          <td>{account.sortCode || '-'}</td>
+                          <td>{account.description || '-'}</td>
                           <td>
                             {account.isActive ? (
-                              <Badge bg="success">Active</Badge>
+                              <Badge bg="success">{t('admin.payments.active')}</Badge>
                             ) : (
-                              <Badge bg="secondary">Inactive</Badge>
+                              <Badge bg="secondary">{t('admin.payments.inactive')}</Badge>
                             )}
                           </td>
                           <td>
-                            <Button 
-                              variant="outline-primary" 
-                              size="sm" 
-                              onClick={() => openBankModal(account)}
-                              className="me-2"
-                            >
-                              <FaEdit /> Edit
-                            </Button>
-                            <Button 
-                              variant="outline-danger" 
-                              size="sm" 
-                              onClick={() => handleDeleteBankAccount(account.id)}
-                            >
-                              <FaTrash /> Delete
-                            </Button>
+                            <div className="btn-group">
+                              <Button
+                                variant="outline-primary"
+                                size="sm"
+                                onClick={() => openBankModal(account)}
+                              >
+                                <FaEdit />
+                              </Button>
+                              <Button
+                                variant="outline-danger"
+                                size="sm"
+                                onClick={() => handleDeleteBankAccount(account.id)}
+                              >
+                                <FaTrash />
+                              </Button>
+                            </div>
                           </td>
                         </tr>
                       ))}
                     </tbody>
                   </Table>
-                </div>
-              )}
-            </Card.Body>
-          </Card>
-        </Tab>
-      </Tabs>
+                )}
+              </div>
+            </Tab>
+          </Tabs>
+        </Card.Header>
+      </Card>
       
       {/* Payment Details Modal */}
       <Modal show={showPaymentModal} onHide={() => setShowPaymentModal(false)} size="lg">
         <Modal.Header closeButton>
-          <Modal.Title>Payment Details</Modal.Title>
+          <Modal.Title>{t('admin.payments.paymentDetails')}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           {selectedPayment && (
-            <PaymentReceipt 
-              payment={selectedPayment} 
-              onClose={() => setShowPaymentModal(false)} 
-            />
+            <>
+              <div className="row mb-4">
+                <div className="col-md-6">
+                  <h5>{t('admin.payments.paymentInfo')}</h5>
+                  <p><strong>{t('admin.payments.id')}:</strong> {selectedPayment.id}</p>
+                  <p><strong>{t('admin.payments.amount')}:</strong> ${selectedPayment.amount.toFixed(2)}</p>
+                  <p><strong>{t('admin.payments.date')}:</strong> {format(new Date(selectedPayment.createdAt), 'PPP')}</p>
+                  <p><strong>{t('admin.payments.status')}:</strong> {renderStatusBadge(selectedPayment.status)}</p>
+                  
+                  {selectedPayment.notes && (
+                    <div className="alert alert-info">
+                      <strong>{t('admin.payments.notes')}:</strong> {selectedPayment.notes}
+                    </div>
+                  )}
+                </div>
+                
+                <div className="col-md-6">
+                  <h5>{t('admin.payments.driverInfo')}</h5>
+                  {selectedPayment.driver ? (
+                    <>
+                      <p><strong>{t('admin.payments.name')}:</strong> {selectedPayment.driver.firstName} {selectedPayment.driver.lastName}</p>
+                      <p><strong>{t('admin.payments.email')}:</strong> {selectedPayment.driver.email}</p>
+                      <p><strong>{t('admin.payments.phone')}:</strong> {selectedPayment.driver.phoneNumber || t('admin.notProvided')}</p>
+                    </>
+                  ) : (
+                    <p>{t('admin.payments.driverNotFound')}</p>
+                  )}
+                  
+                  <h5 className="mt-3">{t('admin.payments.bankAccountInfo')}</h5>
+                  {selectedPayment.bankAccount ? (
+                    <>
+                      <p><strong>{t('admin.payments.bankName')}:</strong> {selectedPayment.bankAccount.bankName}</p>
+                      <p><strong>{t('admin.payments.accountName')}:</strong> {selectedPayment.bankAccount.accountName}</p>
+                      <p><strong>{t('admin.payments.accountNumber')}:</strong> {selectedPayment.bankAccount.accountNumber}</p>
+                      {selectedPayment.bankAccount.sortCode && (
+                        <p><strong>{t('admin.payments.sortCode')}:</strong> {selectedPayment.bankAccount.sortCode}</p>
+                      )}
+                    </>
+                  ) : (
+                    <p>{t('admin.payments.noBankAccountLinked')}</p>
+                  )}
+                </div>
+              </div>
+              
+              {selectedPayment.status === 'PENDING' && (
+                <div className="row mb-3">
+                  <div className="col-12">
+                    <Card>
+                      <Card.Header>{t('admin.payments.paymentActions')}</Card.Header>
+                      <Card.Body>
+                        <div className="d-flex flex-wrap mb-3">
+                          <Button
+                            variant="success"
+                            className="me-2 mb-2"
+                            onClick={() => handleConfirmPayment(selectedPayment.id, 'CONFIRMED')}
+                            disabled={processingPaymentId === selectedPayment.id}
+                          >
+                            {processingPaymentId === selectedPayment.id ? (
+                              <Spinner animation="border" size="sm" className="me-2" />
+                            ) : (
+                              <FaCheck className="me-2" />
+                            )}
+                            {t('admin.payments.confirmPayment')}
+                          </Button>
+                          
+                          <Button
+                            variant="danger"
+                            className="mb-2"
+                            onClick={() => {
+                              if (rejectionNote) {
+                                handleConfirmPayment(selectedPayment.id, 'REJECTED');
+                              } else {
+                                document.getElementById('rejection-note')?.focus();
+                              }
+                            }}
+                            disabled={processingPaymentId === selectedPayment.id}
+                          >
+                            {processingPaymentId === selectedPayment.id ? (
+                              <Spinner animation="border" size="sm" className="me-2" />
+                            ) : (
+                              <FaTimes className="me-2" />
+                            )}
+                            {t('admin.payments.rejectPayment')}
+                          </Button>
+                        </div>
+                        
+                        <Form.Group className="mb-3">
+                          <Form.Label>{t('admin.payments.rejectionReason')}</Form.Label>
+                          <Form.Control
+                            id="rejection-note"
+                            as="textarea"
+                            rows={3}
+                            value={rejectionNote}
+                            onChange={(e) => setRejectionNote(e.target.value)}
+                            placeholder={t('admin.payments.rejectionReasonPlaceholder')}
+                          />
+                          <Form.Text>{t('admin.payments.rejectionNoteRequired')}</Form.Text>
+                        </Form.Group>
+                      </Card.Body>
+                    </Card>
+                  </div>
+                </div>
+              )}
+              
+              <div className="row">
+                <div className="col-12">
+                  <Card>
+                    <Card.Header>{t('admin.payments.paymentReceipt')}</Card.Header>
+                    <Card.Body>
+                      <PaymentReceipt payment={selectedPayment} />
+                    </Card.Body>
+                  </Card>
+                </div>
+              </div>
+            </>
           )}
         </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowPaymentModal(false)}>
+            {t('button.close')}
+          </Button>
+        </Modal.Footer>
       </Modal>
       
       {/* Bank Account Modal */}
       <Modal show={showBankModal} onHide={() => setShowBankModal(false)}>
         <Modal.Header closeButton>
           <Modal.Title>
-            {editingBankAccount ? 'Edit Bank Account' : 'Add Bank Account'}
+            {editingBankAccount 
+              ? t('admin.payments.editBankAccount')
+              : t('admin.payments.addBankAccount')
+            }
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form onSubmit={handleBankFormSubmit}>
-            <Form.Group className="mb-3" controlId="bankName">
-              <Form.Label>Bank Name</Form.Label>
+            <Form.Group className="mb-3">
+              <Form.Label>{t('admin.payments.bankName')}</Form.Label>
               <Form.Control
                 type="text"
                 name="bankName"
@@ -620,8 +800,8 @@ export default function AdminPaymentManagement() {
               />
             </Form.Group>
             
-            <Form.Group className="mb-3" controlId="accountName">
-              <Form.Label>Account Name</Form.Label>
+            <Form.Group className="mb-3">
+              <Form.Label>{t('admin.payments.accountName')}</Form.Label>
               <Form.Control
                 type="text"
                 name="accountName"
@@ -631,8 +811,8 @@ export default function AdminPaymentManagement() {
               />
             </Form.Group>
             
-            <Form.Group className="mb-3" controlId="accountNumber">
-              <Form.Label>Account Number</Form.Label>
+            <Form.Group className="mb-3">
+              <Form.Label>{t('admin.payments.accountNumber')}</Form.Label>
               <Form.Control
                 type="text"
                 name="accountNumber"
@@ -642,8 +822,8 @@ export default function AdminPaymentManagement() {
               />
             </Form.Group>
             
-            <Form.Group className="mb-3" controlId="sortCode">
-              <Form.Label>Sort Code</Form.Label>
+            <Form.Group className="mb-3">
+              <Form.Label>{t('admin.payments.sortCode')}</Form.Label>
               <Form.Control
                 type="text"
                 name="sortCode"
@@ -652,8 +832,8 @@ export default function AdminPaymentManagement() {
               />
             </Form.Group>
             
-            <Form.Group className="mb-3" controlId="description">
-              <Form.Label>Description</Form.Label>
+            <Form.Group className="mb-3">
+              <Form.Label>{t('admin.payments.description')}</Form.Label>
               <Form.Control
                 as="textarea"
                 rows={3}
@@ -663,22 +843,22 @@ export default function AdminPaymentManagement() {
               />
             </Form.Group>
             
-            <Form.Group className="mb-3" controlId="isActive">
+            <Form.Group className="mb-3">
               <Form.Check
                 type="checkbox"
-                label="Active"
+                label={t('admin.payments.isActive')}
                 name="isActive"
                 checked={bankFormData.isActive}
-                onChange={(e) => handleBankFormChange(e as any)}
+                onChange={handleBankFormChange}
               />
             </Form.Group>
             
             <div className="d-flex justify-content-end">
-              <Button variant="secondary" onClick={() => setShowBankModal(false)} className="me-2">
-                Cancel
+              <Button variant="secondary" className="me-2" onClick={() => setShowBankModal(false)}>
+                {t('button.cancel')}
               </Button>
               <Button variant="primary" type="submit">
-                {editingBankAccount ? 'Update Account' : 'Add Account'}
+                {t('button.save')}
               </Button>
             </div>
           </Form>
