@@ -4,6 +4,7 @@ import React, { createContext, useState, useContext, useEffect, ReactNode } from
 import { useAuth } from './AuthContext';
 import { notificationService, Notification } from '@/services/notificationService';
 import { toast } from 'react-toastify';
+import TranslatedText from '@/components/TranslatedText';
 
 interface NotificationContextType {
   notifications: Notification[];
@@ -59,8 +60,8 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
           newNotifications.forEach(notification => {
             toast.info(
               <div>
-                <strong>{notification.title}</strong>
-                <p>{notification.message}</p>
+                <strong><TranslatedText text={notification.title} translation={false} /></strong>
+                <p><TranslatedText text={notification.message} translation={false} /></p>
               </div>
             );
           });

@@ -345,6 +345,18 @@ const defaultTranslations: Translations = {
     'notifications.select': 'Select',
     'notifications.time': 'Time',
     'notifications.details': 'Details',
+    'notifications': 'Notifications',
+    'noNotifications': 'No notifications',
+    
+    // Notification types and common messages
+    'notification.order.assigned': 'You have been assigned to order #{0}',
+    'notification.order.delivered': 'Order #{0} has been delivered',
+    'notification.order.cancelled': 'Order #{0} has been cancelled',
+    'notification.payment.received': 'Payment of ${0} has been received',
+    'notification.payment.confirmed': 'Your payment for order #{0} has been confirmed',
+    'notification.payment.rejected': 'Your payment for order #{0} has been rejected',
+    'notification.account.welcome': 'Welcome to Katakksa! Your account has been created successfully.',
+    'notification.system.maintenance': 'System maintenance scheduled for {0}',
     
     // Buttons
     'button.submit': 'Submit',
@@ -786,6 +798,18 @@ const defaultTranslations: Translations = {
     'notifications.select': 'تحديد',
     'notifications.time': 'الوقت',
     'notifications.details': 'التفاصيل',
+    'notifications': 'الإشعارات',
+    'noNotifications': 'لم يوجد إشعارات',
+    
+    // Notification types and common messages
+    'notification.order.assigned': 'لقد تم تعيينك إلى طلب #{0}',
+    'notification.order.delivered': 'تم تسليم طلب #{0}',
+    'notification.order.cancelled': 'تم إلغاء طلب #{0}',
+    'notification.payment.received': 'تم استلام دفعة بقيمة ${0}',
+    'notification.payment.confirmed': 'تم تأكيد دفعتك لطلب #{0}',
+    'notification.payment.rejected': 'تم رفض دفعتك لطلب #{0}',
+    'notification.account.welcome': 'مرحبا بك في Katakksa! تم إنشاء حسابك بنجاح بنجاح.',
+    'notification.system.maintenance': 'تم إجراء صيانة النظام المجدولة لـ {0}',
     
     // Buttons
     'button.submit': 'إرسال',

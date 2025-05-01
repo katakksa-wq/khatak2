@@ -4,10 +4,13 @@ import React, { useState } from 'react';
 import { FaBell } from 'react-icons/fa';
 import { useNotifications } from '@/contexts/NotificationContext';
 import { formatDistanceToNow } from 'date-fns';
+import { useLanguage } from '@/contexts/LanguageContext';
+import TranslatedText from '@/components/TranslatedText';
 
 const NotificationBell: React.FC = () => {
   const { notifications, unreadCount, markAsRead } = useNotifications();
   const [showDropdown, setShowDropdown] = useState(false);
+  const { t } = useLanguage();
 
   const toggleDropdown = () => {
     setShowDropdown(!showDropdown);
@@ -48,7 +51,7 @@ const NotificationBell: React.FC = () => {
       {showDropdown && (
         <div className="dropdown-menu dropdown-menu-end show notification-dropdown" style={{ minWidth: '300px', maxHeight: '400px', overflowY: 'auto' }}>
           <div className="dropdown-header d-flex justify-content-between align-items-center">
-            <h6 className="mb-0">Notifications</h6>
+            <h6 className="mb-0">{t('notifications')}</h6>
             <span className="badge bg-primary">{notifications.length}</span>
           </div>
           
@@ -56,7 +59,7 @@ const NotificationBell: React.FC = () => {
           
           {notifications.length === 0 ? (
             <div className="dropdown-item text-center text-muted">
-              No notifications
+              {t('noNotifications')}
             </div>
           ) : (
             notifications.map(notification => (
@@ -64,8 +67,8 @@ const NotificationBell: React.FC = () => {
                 key={notification.id} 
                 className={`dropdown-item ${!notification.read ? 'bg-light' : ''}`}
               >
-                <h6 className="mb-1">{notification.title}</h6>
-                <p className="mb-1">{notification.message}</p>
+                <h6 className="mb-1"><TranslatedText text={notification.title} translation={false} /></h6>
+                <p className="mb-1"><TranslatedText text={notification.message} translation={false} /></p>
                 <small className="text-muted">{formatTime(notification.createdAt)}</small>
               </div>
             ))

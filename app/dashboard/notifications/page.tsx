@@ -222,8 +222,8 @@ const NotificationsPage = () => {
                             </span>
                           </td>
                           <td>
-                            <div className="fw-bold">{notification.title}</div>
-                            <div className={notification.read ? 'text-muted' : ''}>{notification.message}</div>
+                            <div className="fw-bold"><TranslatedText text={notification.title} translation={false} /></div>
+                            <div className={notification.read ? 'text-muted' : ''}><TranslatedText text={notification.message} translation={false} /></div>
                           </td>
                           <td>
                             <small className="text-muted">{formatTime(notification.createdAt)}</small>

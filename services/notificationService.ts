@@ -13,6 +13,14 @@ export interface NotificationsResponse {
   notifications: Notification[];
 }
 
+// Helper function to format notification messages with parameters
+export const formatNotificationMessage = (key: string, params: string[] | number[] | any[]): string => {
+  // Replace {0}, {1}, etc. with corresponding parameter
+  return params.reduce((msg, param, index) => {
+    return msg.replace(`{${index}}`, param.toString());
+  }, key);
+};
+
 // API endpoints
 const ENDPOINTS = {
   notifications: '/api/notifications',
