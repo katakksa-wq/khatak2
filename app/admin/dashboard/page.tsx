@@ -6,6 +6,7 @@ import { FaUsers, FaTruck, FaBoxes, FaMoneyBillWave, FaChartLine, FaUserCheck, F
 import { apiClient } from '@/utils/apiClient';
 import { useRouter } from 'next/navigation';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { formatDate, formatShortDate } from '@/utils/dateUtils';
 
 interface AdminStats {
   totalUsers: number;
@@ -283,7 +284,7 @@ export default function AdminDashboard() {
                             </Link>
                           </td>
                           <td>{order.customer.name}</td>
-                          <td>{new Date(order.createdAt).toLocaleDateString(language === 'ar' ? 'ar-SA' : undefined)}</td>
+                          <td>{formatDate(order.createdAt)}</td>
                           <td>
                             <span className={`badge bg-${getStatusColor(order.status)}`}>
                               {t(`dashboard.orderStatus.${order.status}`)}
@@ -340,8 +341,8 @@ export default function AdminDashboard() {
                               {user.role}
                             </span>
                           </td>
-                          <td>{new Date(user.createdAt).toLocaleDateString(language === 'ar' ? 'ar-SA' : undefined)}</td>
-                          <td>{user.lastLogin ? new Date(user.lastLogin).toLocaleDateString(language === 'ar' ? 'ar-SA' : undefined) : t('admin.never')}</td>
+                          <td>{formatDate(user.createdAt)}</td>
+                          <td>{user.lastLogin ? formatDate(user.lastLogin) : t('admin.never')}</td>
                         </tr>
                       ))}
                     </tbody>

@@ -5,6 +5,7 @@ import { FaSearch, FaUserEdit, FaUserSlash, FaKey, FaCheckCircle, FaTimesCircle,
 import { apiClient } from '@/utils/apiClient';
 import { useRouter } from 'next/navigation';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { formatDate } from '@/utils/dateUtils';
 
 interface User {
   id: string;
@@ -529,8 +530,8 @@ export default function UsersManagementPage() {
                           <span className="badge bg-danger">{t('admin.users.inactive')}</span>
                         )}
                       </td>
-                      <td>{new Date(user.createdAt).toLocaleDateString()}</td>
-                      <td>{user.lastLogin ? new Date(user.lastLogin).toLocaleDateString() : t('admin.users.never')}</td>
+                      <td>{formatDate(user.createdAt)}</td>
+                      <td>{user.lastLogin ? formatDate(user.lastLogin) : t('admin.users.never')}</td>
                       <td>
                         <div className="btn-group" role="group">
                           <button
@@ -667,7 +668,7 @@ export default function UsersManagementPage() {
                     </div>
                     <div className="col-md-6">
                       <p className="mb-1"><strong>{t('admin.users.joined')}:</strong></p>
-                      <p>{new Date(selectedUser.createdAt).toLocaleString()}</p>
+                      <p>{formatDate(selectedUser.createdAt)}</p>
                     </div>
                   </div>
                 </div>
@@ -677,7 +678,7 @@ export default function UsersManagementPage() {
                   <div className="row g-2">
                     <div className="col-md-6">
                       <p className="mb-1"><strong>{t('admin.users.lastActive')}:</strong></p>
-                      <p>{selectedUser.lastLogin ? new Date(selectedUser.lastLogin).toLocaleString() : t('admin.users.never')}</p>
+                      <p>{selectedUser.lastLogin ? formatDate(selectedUser.lastLogin) : t('admin.users.never')}</p>
                     </div>
                     {selectedUser.totalOrders !== undefined && (
                       <div className="col-md-6">
@@ -740,7 +741,7 @@ export default function UsersManagementPage() {
                           </div>
                           <div className="col-md-6">
                             <p className="mb-1"><strong>{t('driver.expiryDate')}:</strong></p>
-                            <p>{selectedUser.driver_profile.licenseExpiry ? new Date(selectedUser.driver_profile.licenseExpiry).toLocaleDateString() : 'N/A'}</p>
+                            <p>{selectedUser.driver_profile.licenseExpiry ? formatDate(selectedUser.driver_profile.licenseExpiry) : 'N/A'}</p>
                           </div>
                         </div>
                       </div>

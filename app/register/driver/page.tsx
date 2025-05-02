@@ -197,7 +197,7 @@ export default function DriverRegistrationPage() {
         setUploadProgress(30);
         
         // Upload license document
-        const licenseResponse = await fetch('/api/uploads/license', {
+        const licenseResponse = await fetch('/api/driver/upload/license', {
           method: 'POST',
           body: licenseFormData
         });
@@ -211,7 +211,7 @@ export default function DriverRegistrationPage() {
         setUploadProgress(50);
         
         // Upload car photo
-        const carPhotoResponse = await fetch('/api/uploads/registration', {
+        const carPhotoResponse = await fetch('/api/driver/upload/registration', {
           method: 'POST',
           body: carPhotoFormData
         });
@@ -225,7 +225,7 @@ export default function DriverRegistrationPage() {
         setUploadProgress(70);
         
         // Upload driver photo
-        const driverPhotoResponse = await fetch('/api/uploads/driver-photo', {
+        const driverPhotoResponse = await fetch('/api/driver/upload/driver-photo', {
           method: 'POST',
           body: driverPhotoFormData
         });
@@ -239,7 +239,7 @@ export default function DriverRegistrationPage() {
         // Upload insurance document if available
         let insuranceData = null;
         if (carPhotos.length > 1) {
-          const insuranceResponse = await fetch('/api/uploads/insurance', {
+          const insuranceResponse = await fetch('/api/driver/upload/insurance', {
             method: 'POST',
             body: insuranceFormData
           });

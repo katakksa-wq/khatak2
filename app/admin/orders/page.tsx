@@ -5,6 +5,7 @@ import { FaEye, FaSearch, FaFilter, FaSync } from 'react-icons/fa';
 import { apiClient } from '@/utils/apiClient';
 import { useRouter } from 'next/navigation';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { formatDate } from '@/utils/dateUtils';
 
 interface Order {
   id: string;
@@ -517,7 +518,7 @@ export default function OrdersManagementPage() {
                       </td>
                       <td title={getAddressTitle(order.pickupAddress)}>{formatAddress(order.pickupAddress)}</td>
                       <td title={getAddressTitle(order.deliveryAddress)}>{formatAddress(order.deliveryAddress)}</td>
-                      <td>{new Date(order.createdAt).toLocaleDateString(language === 'ar' ? 'ar-SA' : undefined)}</td>
+                      <td>{formatDate(order.createdAt)}</td>
                       <td>{formatCurrency(order.totalAmount)}</td>
                       <td>
                         <button
