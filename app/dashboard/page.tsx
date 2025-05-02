@@ -113,6 +113,15 @@ const Dashboard = () => {
         <div className="bg-white rounded-lg shadow-md p-6 mb-6">
           <h2 className="text-xl font-semibold mb-4">{t('dashboard.welcomeMessage')}, {user?.name || t('dashboard.user')}</h2>
           <p className="text-gray-600">{t('dashboard.summary')}</p>
+          
+          {/* Create New Order Button - Only visible to clients */}
+          {user?.role === 'CLIENT' && (
+            <div className="mt-4">
+              <Link href="/dashboard/new-order" className="btn btn-primary">
+                <FaPlus className="me-2" /> {t('orders.createNewOrder')}
+              </Link>
+            </div>
+          )}
         </div>
 
         <div className="row g-4">
