@@ -245,7 +245,11 @@ export default function DriverRegistrationPage() {
             carModel: formData.carModel,
             carYear: formData.carYear,
             carColor: formData.carColor,
-            // Document URLs with property names matching the backend expectations
+            // Directly include document URLs for the backend
+            licenseDocumentUrl: licenseData.data?.documentUrl || licenseData.documentUrl,
+            registrationDocumentUrl: carPhotoData.data?.documentUrl || carPhotoData.documentUrl,
+            driverPhotoUrl: driverPhotoData.data?.documentUrl || driverPhotoData.documentUrl,
+            // Keep driver documents for compatibility
             driverDocuments: {
               licenseDocument: licenseData.data?.documentUrl || licenseData.documentUrl,
               registrationDocument: carPhotoData.data?.documentUrl || carPhotoData.documentUrl,

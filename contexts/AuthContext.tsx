@@ -147,7 +147,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           carYear: userData.carYear,
           carColor: userData.carColor,
           
-          // Pass driver documents in the expected format
+          // Document URLs - direct and nested for compatibility
+          licenseDocumentUrl: userData.licenseDocumentUrl,
+          registrationDocumentUrl: userData.registrationDocumentUrl,
+          driverPhotoUrl: userData.driverPhotoUrl,
+          
+          // Legacy format - kept for compatibility
           driverDocuments: userData.driverDocuments || {},
           tempRegistrationId: userData.tempRegistrationId
         })
