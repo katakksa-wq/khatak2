@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { Order, orderService, OrderStatus } from '@/services/orderService';
 import { useAuth } from '@/contexts/AuthContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { FaTruck, FaCheckCircle, FaTimesCircle, FaMapMarkerAlt } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 
@@ -11,6 +12,7 @@ export default function OrderDetailsPage() {
   const params = useParams();
   const router = useRouter();
   const { user } = useAuth();
+  const { t } = useLanguage();
   const orderId = params?.id as string || '';
   
   const [order, setOrder] = useState<Order | null>(null);
@@ -22,7 +24,7 @@ export default function OrderDetailsPage() {
     if (orderId) {
       fetchOrderDetails();
     } else {
-      setError('Order ID is missing');
+      setError(t('orders.missingOrderId'));
       setLoading(false);
     }
   }, [orderId]);
@@ -40,11 +42,11 @@ export default function OrderDetailsPage() {
       if (response.status === 'success' && response.data) {
         setOrder(response.data);
       } else {
-        throw new Error(response.message || 'Failed to fetch order details');
+        throw new Error(response.message || t('orders.fetchDetailsFailed'));
       }
     } catch (err: any) {
       console.error('Error fetching order details:', err);
-      setError(err.message || 'Failed to fetch order details');
+      setError(err.message || t('orders.fetchDetailsFailed'));
     } finally {
       setLoading(false);
     }
@@ -58,14 +60,14 @@ export default function OrderDetailsPage() {
       const response = await orderService.acceptOrder(order.id);
       
       if (response.status === 'success') {
-        toast.success('Order accepted successfully');
+        toast.success(t('orders.acceptSuccess'));
         fetchOrderDetails();
       } else {
-        throw new Error(response.message || 'Failed to accept order');
+        throw new Error(response.message || t('orders.acceptFailed'));
       }
     } catch (err: any) {
       console.error('Error accepting order:', err);
-      toast.error(err.message || 'Failed to accept order');
+      toast.error(err.message || t('orders.acceptFailed'));
     } finally {
       setUpdating(false);
     }
@@ -79,14 +81,14 @@ export default function OrderDetailsPage() {
       const response = await orderService.updateOrderStatus(order.id, 'PICKED_UP');
       
       if (response.status === 'success') {
-        toast.success('Order marked as picked up');
+        toast.success(t('orders.pickedUpSuccess'));
         fetchOrderDetails();
       } else {
-        throw new Error(response.message || 'Failed to update order status');
+        throw new Error(response.message || t('orders.updateStatusFailed'));
       }
     } catch (err: any) {
       console.error('Error updating order status:', err);
-      toast.error(err.message || 'Failed to update order status');
+      toast.error(err.message || t('orders.updateStatusFailed'));
     } finally {
       setUpdating(false);
     }
@@ -100,14 +102,14 @@ export default function OrderDetailsPage() {
       const response = await orderService.updateOrderStatus(order.id, 'DELIVERED');
       
       if (response.status === 'success') {
-        toast.success('Order marked as delivered');
+        toast.success(t('orders.deliveredSuccess'));
         fetchOrderDetails();
       } else {
-        throw new Error(response.message || 'Failed to update order status');
+        throw new Error(response.message || t('orders.updateStatusFailed'));
       }
     } catch (err: any) {
       console.error('Error updating order status:', err);
-      toast.error(err.message || 'Failed to update order status');
+      toast.error(err.message || t('orders.updateStatusFailed'));
     } finally {
       setUpdating(false);
     }
@@ -120,11 +122,11 @@ export default function OrderDetailsPage() {
       setUpdating(true);
       await orderService.updateOrderStatus(order.id, 'CANCELLED');
       
-      toast.success('Order cancelled successfully');
+      toast.success(t('orders.cancelSuccess'));
       fetchOrderDetails();
     } catch (err: any) {
       console.error('Error cancelling order:', err);
-      toast.error(err.message || 'Failed to cancel order');
+      toast.error(err.message || t('orders.cancelFailed'));
     } finally {
       setUpdating(false);
     }
@@ -139,7 +141,7 @@ export default function OrderDetailsPage() {
                    (isDriver && order?.driverId === user.id && ['ACCEPTED', 'PICKED_UP'].includes(order?.status || ''));
 
   const formatDateTime = (dateString: string) => {
-    if (!dateString) return 'N/A';
+    if (!dateString) return t('general.notApplicable');
     
     const options: Intl.DateTimeFormatOptions = {
       year: 'numeric',
@@ -166,7 +168,7 @@ export default function OrderDetailsPage() {
     return (
       <div className="d-flex justify-content-center my-5">
         <div className="spinner-border text-primary" role="status">
-          <span className="visually-hidden">Loading...</span>
+          <span className="visually-hidden">{t('loading.message')}</span>
         </div>
       </div>
     );
@@ -175,10 +177,10 @@ export default function OrderDetailsPage() {
   if (error) {
     return (
       <div className="alert alert-danger my-5" role="alert">
-        <h4 className="alert-heading">Error!</h4>
+        <h4 className="alert-heading">{t('orders.error')}</h4>
         <p>{error}</p>
         <button className="btn btn-outline-danger" onClick={fetchOrderDetails}>
-          Retry
+          {t('orders.retry')}
         </button>
       </div>
     );
@@ -187,10 +189,10 @@ export default function OrderDetailsPage() {
   if (!order) {
     return (
       <div className="alert alert-warning my-5" role="alert">
-        <h4 className="alert-heading">Order Not Found</h4>
-        <p>The requested order could not be found or you don't have permission to view it.</p>
+        <h4 className="alert-heading">{t('orders.notFound')}</h4>
+        <p>{t('orders.noPermission')}</p>
         <button className="btn btn-primary" onClick={() => router.back()}>
-          Go Back
+          {t('button.back')}
         </button>
       </div>
     );
@@ -201,7 +203,7 @@ export default function OrderDetailsPage() {
       <div className="card shadow">
         <div className="card-header bg-white py-3">
           <div className="d-flex justify-content-between align-items-center">
-            <h2 className="m-0 font-weight-bold">Order #{order.trackingNumber}</h2>
+            <h2 className="m-0 font-weight-bold">{t('orders.orderNumber')} #{order.trackingNumber}</h2>
             <span className={`badge ${getStatusBadgeClass(order.status)} fs-6`}>
               {order.status.replace('_', ' ')}
             </span>
@@ -210,28 +212,28 @@ export default function OrderDetailsPage() {
         <div className="card-body">
           <div className="row mb-4">
             <div className="col-md-6">
-              <h5 className="border-bottom pb-2">Order Information</h5>
+              <h5 className="border-bottom pb-2">{t('orders.orderInfo')}</h5>
               <div className="mb-3">
-                <p className="mb-1"><strong>Created:</strong> {formatDateTime(order.createdAt)}</p>
-                <p className="mb-1"><strong>Updated:</strong> {formatDateTime(order.updatedAt)}</p>
-                <p className="mb-1"><strong>Price:</strong> {order.price?.toFixed(2)} ريال سعودي</p>
+                <p className="mb-1"><strong>{t('orders.created')}:</strong> {formatDateTime(order.createdAt)}</p>
+                <p className="mb-1"><strong>{t('orders.updated')}:</strong> {formatDateTime(order.updatedAt)}</p>
+                <p className="mb-1"><strong>{t('orders.price')}:</strong> {order.price?.toFixed(2)} {t('general.currency')}</p>
                 {order.estimatedDeliveryTime && (
-                  <p className="mb-1"><strong>Estimated Delivery:</strong> {formatDateTime(order.estimatedDeliveryTime)}</p>
+                  <p className="mb-1"><strong>{t('orders.estimatedDelivery')}:</strong> {formatDateTime(order.estimatedDeliveryTime)}</p>
                 )}
               </div>
             </div>
             
             <div className="col-md-6">
-              <h5 className="border-bottom pb-2">Package Details</h5>
+              <h5 className="border-bottom pb-2">{t('orders.packageDetails')}</h5>
               <div className="mb-3">
-                <p className="mb-1"><strong>Weight:</strong> {order.packageDetails?.weight} kg</p>
-                <p className="mb-1"><strong>Dimensions:</strong> {order.packageDetails?.dimensions}</p>
-                <p className="mb-1"><strong>Fragile:</strong> {order.packageDetails?.isFragile ? 'Yes' : 'No'}</p>
+                <p className="mb-1"><strong>{t('orders.weight')}:</strong> {order.packageDetails?.weight} kg</p>
+                <p className="mb-1"><strong>{t('orders.dimensions')}:</strong> {order.packageDetails?.dimensions}</p>
+                <p className="mb-1"><strong>{t('orders.fragile')}:</strong> {order.packageDetails?.isFragile ? t('orders.yes') : t('orders.no')}</p>
                 {order.packageDetails?.additionalDetails && order.packageDetails.additionalDetails.recipientMobileNumber && (
-                  <p className="mb-1"><strong>Recipient Mobile:</strong> {order.packageDetails.additionalDetails.recipientMobileNumber}</p>
+                  <p className="mb-1"><strong>{t('orders.recipientMobile')}:</strong> {order.packageDetails.additionalDetails.recipientMobileNumber}</p>
                 )}
                 {order.packageDetails?.description && (
-                  <p className="mb-1"><strong>Description:</strong> {order.packageDetails.description}</p>
+                  <p className="mb-1"><strong>{t('orders.description')}:</strong> {order.packageDetails.description}</p>
                 )}
               </div>
             </div>
@@ -239,22 +241,22 @@ export default function OrderDetailsPage() {
           
           <div className="row mb-4">
             <div className="col-md-6">
-              <h5 className="border-bottom pb-2">Pickup Address</h5>
+              <h5 className="border-bottom pb-2">{t('orders.pickupAddress')}</h5>
               <div className="mb-3">
-                <p className="mb-1"><strong>Street:</strong> {order.pickupAddress?.street}</p>
-                <p className="mb-1"><strong>City:</strong> {order.pickupAddress?.city}</p>
-                <p className="mb-1"><strong>State:</strong> {order.pickupAddress?.state}</p>
-                <p className="mb-1"><strong>Country:</strong> {order.pickupAddress?.country}</p>
+                <p className="mb-1"><strong>{t('orders.street')}:</strong> {order.pickupAddress?.street}</p>
+                <p className="mb-1"><strong>{t('orders.city')}:</strong> {order.pickupAddress?.city}</p>
+                <p className="mb-1"><strong>{t('orders.state')}:</strong> {order.pickupAddress?.state}</p>
+                <p className="mb-1"><strong>{t('orders.country')}:</strong> {order.pickupAddress?.country}</p>
               </div>
             </div>
             
             <div className="col-md-6">
-              <h5 className="border-bottom pb-2">Delivery Address</h5>
+              <h5 className="border-bottom pb-2">{t('orders.deliveryAddress')}</h5>
               <div className="mb-3">
-                <p className="mb-1"><strong>Street:</strong> {order.deliveryAddress?.street}</p>
-                <p className="mb-1"><strong>City:</strong> {order.deliveryAddress?.city}</p>
-                <p className="mb-1"><strong>State:</strong> {order.deliveryAddress?.state}</p>
-                <p className="mb-1"><strong>Country:</strong> {order.deliveryAddress?.country}</p>
+                <p className="mb-1"><strong>{t('orders.street')}:</strong> {order.deliveryAddress?.street}</p>
+                <p className="mb-1"><strong>{t('orders.city')}:</strong> {order.deliveryAddress?.city}</p>
+                <p className="mb-1"><strong>{t('orders.state')}:</strong> {order.deliveryAddress?.state}</p>
+                <p className="mb-1"><strong>{t('orders.country')}:</strong> {order.deliveryAddress?.country}</p>
               </div>
               
               {order.deliveryAddress?.latitude && order.deliveryAddress?.longitude && (
@@ -262,7 +264,7 @@ export default function OrderDetailsPage() {
                   className="btn btn-sm btn-outline-primary"
                   onClick={() => window.open(`https://maps.google.com/?q=${order.deliveryAddress?.latitude},${order.deliveryAddress?.longitude}`, '_blank')}
                 >
-                  <FaMapMarkerAlt className="me-1" /> View on Map
+                  <FaMapMarkerAlt className="me-1" /> {t('orders.viewOnMap')}
                 </button>
               )}
             </div>
@@ -271,24 +273,24 @@ export default function OrderDetailsPage() {
           {/* People involved */}
           <div className="row mb-4">
             <div className="col-md-6">
-              <h5 className="border-bottom pb-2">Client</h5>
+              <h5 className="border-bottom pb-2">{t('orders.client')}</h5>
               <div className="mb-3">
-                <p className="mb-1"><strong>Name:</strong> {order.client?.name || 'N/A'}</p>
-                <p className="mb-1"><strong>Email:</strong> {order.client?.email || 'N/A'}</p>
-                <p className="mb-1"><strong>Phone:</strong> {order.client?.phone || 'N/A'}</p>
+                <p className="mb-1"><strong>{t('orders.name')}:</strong> {order.client?.name || t('general.notApplicable')}</p>
+                <p className="mb-1"><strong>{t('orders.email')}:</strong> {order.client?.email || t('general.notApplicable')}</p>
+                <p className="mb-1"><strong>{t('orders.phone')}:</strong> {order.client?.phone || t('general.notApplicable')}</p>
               </div>
             </div>
             
             <div className="col-md-6">
-              <h5 className="border-bottom pb-2">Driver</h5>
+              <h5 className="border-bottom pb-2">{t('orders.driver')}</h5>
               {order.driver ? (
                 <div className="mb-3">
-                  <p className="mb-1"><strong>Name:</strong> {order.driver?.name || 'N/A'}</p>
-                  <p className="mb-1"><strong>Email:</strong> {order.driver?.email || 'N/A'}</p>
-                  <p className="mb-1"><strong>Phone:</strong> {order.driver?.phone || 'N/A'}</p>
+                  <p className="mb-1"><strong>{t('orders.name')}:</strong> {order.driver?.name || t('general.notApplicable')}</p>
+                  <p className="mb-1"><strong>{t('orders.email')}:</strong> {order.driver?.email || t('general.notApplicable')}</p>
+                  <p className="mb-1"><strong>{t('orders.phone')}:</strong> {order.driver?.phone || t('general.notApplicable')}</p>
                 </div>
               ) : (
-                <p className="text-muted">No driver assigned yet</p>
+                <p className="text-muted">{t('orders.noDriverAssigned')}</p>
               )}
             </div>
           </div>
@@ -299,7 +301,7 @@ export default function OrderDetailsPage() {
               className="btn btn-secondary" 
               onClick={() => router.back()}
             >
-              Back
+              {t('button.back')}
             </button>
             
             {canAccept && (
@@ -308,7 +310,7 @@ export default function OrderDetailsPage() {
                 onClick={handleAcceptOrder}
                 disabled={updating}
               >
-                <FaTruck className="me-2" /> Accept Order
+                <FaTruck className="me-2" /> {t('orders.acceptOrder')}
               </button>
             )}
             
@@ -318,7 +320,7 @@ export default function OrderDetailsPage() {
                 onClick={handlePickupOrder}
                 disabled={updating}
               >
-                <FaTruck className="me-2" /> Mark as Picked Up
+                <FaTruck className="me-2" /> {t('orders.markAsPickedUp')}
               </button>
             )}
             
@@ -328,7 +330,7 @@ export default function OrderDetailsPage() {
                 onClick={handleDeliverOrder}
                 disabled={updating}
               >
-                <FaCheckCircle className="me-2" /> Mark as Delivered
+                <FaCheckCircle className="me-2" /> {t('orders.markAsDelivered')}
               </button>
             )}
             
@@ -338,7 +340,7 @@ export default function OrderDetailsPage() {
                 onClick={handleCancelOrder}
                 disabled={updating}
               >
-                <FaTimesCircle className="me-2" /> Cancel Order
+                <FaTimesCircle className="me-2" /> {t('orders.cancelOrder')}
               </button>
             )}
           </div>
