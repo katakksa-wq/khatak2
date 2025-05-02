@@ -503,8 +503,6 @@ const defaultTranslations: Translations = {
     'orders.processing': 'Processing...',
     'orders.next': 'Next',
     'orders.previous': 'Previous',
-    'button.back': 'Back',
-    'button.next': 'Next',
     
     // Pagination
     'pagination.previous': 'السابق',
@@ -552,21 +550,12 @@ const defaultTranslations: Translations = {
     'button.clear': 'Clear',
     'button.filter': 'Filter',
     'button.resetFilters': 'Reset Filters',
-    'button.save': 'Save',
-    'button.cancel': 'Cancel',
-    'button.close': 'Close',
-    'button.edit': 'Edit',
     'button.delete': 'Delete',
     'button.confirm': 'Confirm',
     'button.reject': 'Reject',
     'button.approve': 'Approve',
-    'button.update': 'Update',
-    'button.submit': 'Submit',
-    'button.next': 'Next',
-    'button.back': 'Back',
     'button.previous': 'Previous',
     'button.refresh': 'Refresh',
-    'button.processing': 'Processing...',
   },
   ar: {
     // Common
@@ -1050,8 +1039,6 @@ const defaultTranslations: Translations = {
     'orders.processing': 'جاري المعالجة...',
     'orders.next': 'التالي',
     'orders.previous': 'السابق',
-    'button.back': 'رجوع',
-    'button.next': 'التالي',
     
     // Pagination
     'pagination.previous': 'السابق',
@@ -1099,21 +1086,12 @@ const defaultTranslations: Translations = {
     'button.clear': 'مسح',
     'button.filter': 'تصفية',
     'button.resetFilters': 'إعادة ضبط التصفية',
-    'button.save': 'حفظ',
-    'button.cancel': 'إلغاء',
-    'button.close': 'إغلاق',
-    'button.edit': 'تعديل',
     'button.delete': 'حذف',
     'button.confirm': 'تأكيد',
     'button.reject': 'رفض',
     'button.approve': 'موافقة',
-    'button.update': 'تحديث',
-    'button.submit': 'إرسال',
-    'button.next': 'التالي',
-    'button.back': 'رجوع',
     'button.previous': 'السابق',
     'button.refresh': 'تحديث',
-    'button.processing': 'جاري المعالجة...',
   }
 };
 
