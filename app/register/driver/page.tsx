@@ -245,10 +245,12 @@ export default function DriverRegistrationPage() {
             carModel: formData.carModel,
             carYear: formData.carYear,
             carColor: formData.carColor,
-            // Use the correct property path from the responses
-            licenseDocumentUrl: licenseData.documentUrl,
-            registrationDocumentUrl: carPhotoData.documentUrl,
-            driverPhotoUrl: driverPhotoData.documentUrl,
+            // Document URLs with property names matching the backend expectations
+            driverDocuments: {
+              licenseDocument: licenseData.data?.documentUrl || licenseData.documentUrl,
+              registrationDocument: carPhotoData.data?.documentUrl || carPhotoData.documentUrl,
+              backgroundCheckDocument: driverPhotoData.data?.documentUrl || driverPhotoData.documentUrl
+            },
             tempRegistrationId
           }
         );

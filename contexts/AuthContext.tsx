@@ -147,11 +147,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           carYear: userData.carYear,
           carColor: userData.carColor,
           
-          // Document URLs from Cloudinary
-          licenseDocumentUrl: userData.licenseDocumentUrl,
-          registrationDocumentUrl: userData.registrationDocumentUrl,
-          driverPhotoUrl: userData.driverPhotoUrl,
-          insuranceDocumentUrl: userData.insuranceDocumentUrl,
+          // Pass driver documents in the expected format
+          driverDocuments: userData.driverDocuments || {},
           tempRegistrationId: userData.tempRegistrationId
         })
       };
