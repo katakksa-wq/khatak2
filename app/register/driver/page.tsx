@@ -185,13 +185,6 @@ export default function DriverRegistrationPage() {
       driverPhotoFormData.append('backgroundCheckDocument', driverPhotos[0]);
       driverPhotoFormData.append('tempId', tempRegistrationId);
       
-      // Upload insurance document if available
-      const insuranceFormData = new FormData();
-      if (carPhotos.length > 1) {
-        insuranceFormData.append('insuranceDocument', carPhotos[1]);
-        insuranceFormData.append('tempId', tempRegistrationId);
-      }
-      
       // Upload documents to temporary storage
       try {
         setUploadProgress(30);
@@ -236,20 +229,6 @@ export default function DriverRegistrationPage() {
         const driverPhotoData = await driverPhotoResponse.json();
         console.log('Driver photo upload response:', driverPhotoData);
         
-        // Upload insurance document if available
-        let insuranceData = null;
-        if (carPhotos.length > 1) {
-          const insuranceResponse = await fetch('/api/driver/upload/insurance', {
-            method: 'POST',
-            body: insuranceFormData
-          });
-          
-          if (!insuranceResponse.ok) {
-            throw new Error(t('driver.uploadInsuranceError'));
-          }
-          insuranceData = await insuranceResponse.json();
-        }
-        
         setUploadProgress(90);
         
         // Step 2: Register the user with document references
@@ -270,7 +249,6 @@ export default function DriverRegistrationPage() {
             licenseDocumentUrl: licenseData.documentUrl,
             registrationDocumentUrl: carPhotoData.documentUrl,
             driverPhotoUrl: driverPhotoData.documentUrl,
-            insuranceDocumentUrl: insuranceData?.documentUrl || null,
             tempRegistrationId
           }
         );

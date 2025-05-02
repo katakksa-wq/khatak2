@@ -427,6 +427,8 @@ const defaultTranslations: Translations = {
     'button.update': 'Update',
     'button.loading': 'Loading...',
     'button.close': 'Close',
+    'button.next': 'Next',
+    'button.back': 'Back',
     
     // Dashboard
     'dashboard.welcome': 'Welcome',
@@ -963,6 +965,8 @@ const defaultTranslations: Translations = {
     'button.update': 'تحديث',
     'button.loading': 'جاري التحميل...',
     'button.close': 'إغلاق',
+    'button.next': 'التالي',
+    'button.back': 'رجوع',
     
     // Dashboard
     'dashboard.welcome': 'مرحباً',
