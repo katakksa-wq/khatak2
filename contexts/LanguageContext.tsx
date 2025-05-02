@@ -558,6 +558,20 @@ const defaultTranslations: Translations = {
     'button.approve': 'Approve',
     'button.previous': 'Previous',
     'button.refresh': 'Refresh',
+    
+    // Driver
+    'driver.verificationPending': 'Verification Pending',
+    'driver.verificationPendingMessage': 'Thank you for registering as a driver with our platform. Your application has been submitted and is now pending verification.',
+    'driver.verificationReviewMessage': 'Our admin team will review your information and documents. This typically takes 1-3 business days. You will receive an email notification once your account has been approved or if we need additional information.',
+    'driver.whatsNext': 'What happens next?',
+    'driver.nextStep1': 'Your driver registration will be reviewed by our admin team',
+    'driver.nextStep2': 'We may contact you for additional information if needed',
+    'driver.nextStep3': 'Once approved, you\'ll receive an email with your account details',
+    'driver.nextStep4': 'You can then log in and start accepting delivery assignments',
+    'driver.goToLogin': 'Go to Login Page',
+    'driver.returnToHome': 'Return to Home',
+    'driver.needHelp': 'Need help?',
+    'driver.contactSupport': 'Contact Support',
   },
   ar: {
     // Common
@@ -1096,6 +1110,20 @@ const defaultTranslations: Translations = {
     'button.approve': 'موافقة',
     'button.previous': 'السابق',
     'button.refresh': 'تحديث',
+    
+    // Driver
+    'driver.verificationPending': 'التحقق قيد الانتظار',
+    'driver.verificationPendingMessage': 'شكراً لتسجيلك كسائق على منصتنا. تم تقديم طلبك وهو الآن قيد التحقق.',
+    'driver.verificationReviewMessage': 'سيقوم فريق الإدارة لدينا بمراجعة معلوماتك ومستنداتك. عادة ما يستغرق ذلك من 1 إلى 3 أيام عمل. ستتلقى إشعاراً بالبريد الإلكتروني بمجرد الموافقة على حسابك أو إذا كنا بحاجة إلى معلومات إضافية.',
+    'driver.whatsNext': 'ماذا سيحدث بعد ذلك؟',
+    'driver.nextStep1': 'ستتم مراجعة تسجيلك كسائق من قبل فريق الإدارة لدينا',
+    'driver.nextStep2': 'قد نتصل بك للحصول على معلومات إضافية إذا لزم الأمر',
+    'driver.nextStep3': 'بمجرد الموافقة، ستتلقى بريدًا إلكترونيًا يحتوي على تفاصيل حسابك',
+    'driver.nextStep4': 'يمكنك بعد ذلك تسجيل الدخول والبدء في قبول مهام التوصيل',
+    'driver.goToLogin': 'الذهاب إلى صفحة تسجيل الدخول',
+    'driver.returnToHome': 'العودة إلى الصفحة الرئيسية',
+    'driver.needHelp': 'هل تحتاج إلى مساعدة؟',
+    'driver.contactSupport': 'اتصل بالدعم',
   }
 };
 
