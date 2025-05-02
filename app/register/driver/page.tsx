@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { FaUser, FaLock, FaEnvelope, FaPhone, FaCar, FaIdCard, FaCamera } from 'react-icons/fa';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { apiConfig } from '@/utils/apiClient';
 
 // Components for image preview
 const ImagePreview = ({ file, onRemove }: { file: File; onRemove: () => void }) => {
@@ -190,7 +191,7 @@ export default function DriverRegistrationPage() {
         setUploadProgress(30);
         
         // Upload license document
-        const licenseResponse = await fetch('/api/driver/upload/license', {
+        const licenseResponse = await fetch(`${apiConfig.baseUrl}/api/driver/upload/license`, {
           method: 'POST',
           body: licenseFormData
         });
@@ -204,7 +205,7 @@ export default function DriverRegistrationPage() {
         setUploadProgress(50);
         
         // Upload car photo
-        const carPhotoResponse = await fetch('/api/driver/upload/registration', {
+        const carPhotoResponse = await fetch(`${apiConfig.baseUrl}/api/driver/upload/registration`, {
           method: 'POST',
           body: carPhotoFormData
         });
@@ -218,7 +219,7 @@ export default function DriverRegistrationPage() {
         setUploadProgress(70);
         
         // Upload driver photo
-        const driverPhotoResponse = await fetch('/api/driver/upload/driver-photo', {
+        const driverPhotoResponse = await fetch(`${apiConfig.baseUrl}/api/driver/upload/driver-photo`, {
           method: 'POST',
           body: driverPhotoFormData
         });
