@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { FaEnvelope, FaLock, FaEye, FaEyeSlash } from 'react-icons/fa';
+import { FaUser, FaLock, FaEye, FaEyeSlash } from 'react-icons/fa';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
@@ -14,7 +14,7 @@ export default function Login() {
   const { login } = useAuth();
   const { t } = useLanguage();
   const [credentials, setCredentials] = useState({
-    email: '',
+    identifier: '',
     password: ''
   });
   const [showPassword, setShowPassword] = useState(false);
@@ -39,7 +39,7 @@ export default function Login() {
     setError('');
 
     try {
-      await login(credentials.email, credentials.password);
+      await login(credentials.identifier, credentials.password);
       // The AuthContext will handle the navigation
     } catch (err) {
       console.error('Login error:', err);
@@ -76,22 +76,25 @@ export default function Login() {
 
               <form onSubmit={handleSubmit}>
                 <div className="mb-3">
-                  <label htmlFor="email" className="form-label"><TranslatedText text="auth.email" /></label>
+                  <label htmlFor="identifier" className="form-label"><TranslatedText text="auth.identifier" /></label>
                   <div className="input-group">
                     <span className="input-group-text">
-                      <FaEnvelope />
+                      <FaUser />
                     </span>
                     <input
-                      type="email"
+                      type="text"
                       className="form-control"
-                      id="email"
-                      placeholder={t('auth.email')}
-                      value={credentials.email}
+                      id="identifier"
+                      placeholder={t('auth.identifierPlaceholder')}
+                      value={credentials.identifier}
                       onChange={handleInputChange}
                       required
                       disabled={loading}
                     />
                   </div>
+                  <small className="form-text text-muted">
+                    <TranslatedText text="auth.identifierHelp" />
+                  </small>
                 </div>
 
                 <div className="mb-4">
@@ -140,9 +143,9 @@ export default function Login() {
 
                 <div className="text-center mt-3">
                   <p className="mb-0">
-                    <TranslatedText text="nav.signup" />?{' '}
+                    <TranslatedText text="auth.dontHaveAccount" />{' '}
                     <Link href="/register" className="text-primary">
-                      <TranslatedText text="nav.signup" />
+                      <TranslatedText text="auth.registerHere" />
                     </Link>
                   </p>
                 </div>

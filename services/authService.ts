@@ -25,7 +25,7 @@ export interface User {
 }
 
 export interface LoginCredentials {
-  email: string;
+  identifier: string; // Can be either email or phone
   password: string;
 }
 
@@ -73,10 +73,10 @@ const generateTempToken = (user: User): string => {
 
 // Auth service with all API methods
 export const authService = {
-  // Login user
+  // Login user with either email or phone
   login: async (credentials: LoginCredentials): Promise<ApiResponse<AuthResponse>> => {
     try {
-      console.log('Attempting login...');
+      console.log('Attempting login with identifier:', credentials.identifier);
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://api.katakksa.com'}${ENDPOINTS.login}`, {
         method: 'POST',
         headers: {

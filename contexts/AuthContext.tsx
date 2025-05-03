@@ -13,7 +13,7 @@ interface AuthContextType {
   token: string | null;
   loading: boolean;
   error: string | null;
-  login: (email: string, password: string) => Promise<void>;
+  login: (identifier: string, password: string) => Promise<void>;
   register: (email: string, password: string, userData?: any) => Promise<void>;
   logout: () => void;
   isClient: () => boolean;
@@ -61,9 +61,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setLoading(false);
   }, []);
 
-  const login = async (email: string, password: string) => {
+  const login = async (identifier: string, password: string) => {
     try {
-      const response = await authService.login({ email, password });
+      const response = await authService.login({ identifier, password });
       
       if (!response.data) {
         throw new Error('No response data received');
