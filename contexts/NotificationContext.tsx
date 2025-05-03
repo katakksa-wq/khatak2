@@ -35,6 +35,37 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [lastNotificationCount, setLastNotificationCount] = useState(0);
+  const [shownNotifications, setShownNotifications] = useState<string[]>([]);
+
+  // Clean up old notifications from localStorage
+  const cleanupOldNotifications = () => {
+    if (!user || typeof window === 'undefined') return;
+    
+    // Get current notifications to make sure we don't remove active ones
+    const currentIds = new Set(notifications.map(n => n.id));
+    const updatedShownNotifications = shownNotifications.filter(id => currentIds.has(id));
+    
+    // Only keep a maximum of 100 notification IDs to prevent localStorage from growing too large
+    if (updatedShownNotifications.length > 100) {
+      updatedShownNotifications.splice(0, updatedShownNotifications.length - 100);
+    }
+    
+    setShownNotifications(updatedShownNotifications);
+    localStorage.setItem(
+      `shown_notifications_${user.id}`,
+      JSON.stringify(updatedShownNotifications)
+    );
+  };
+
+  // Load previously shown notifications from localStorage
+  useEffect(() => {
+    if (typeof window !== 'undefined' && user) {
+      const storedNotifications = localStorage.getItem(`shown_notifications_${user.id}`);
+      if (storedNotifications) {
+        setShownNotifications(JSON.parse(storedNotifications));
+      }
+    }
+  }, [user]);
 
   // Calculate unread notifications count
   const unreadCount = notifications.filter(n => !n.read).length;
@@ -51,12 +82,12 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
         const notificationsArray = response.data.notifications || [];
         setNotifications(notificationsArray);
         
-        // If we have new unread notifications since the last fetch, show them as toasts
-        if (notificationsArray.length > lastNotificationCount) {
-          const newNotifications = notificationsArray
-            .filter(n => !n.read)
-            .slice(0, notificationsArray.length - lastNotificationCount);
+        // Filter out notifications that have already been shown
+        const newNotifications = notificationsArray
+          .filter(n => !n.read && !shownNotifications.includes(n.id));
             
+        // Show toast for each new notification
+        if (newNotifications.length > 0) {
           newNotifications.forEach(notification => {
             toast.info(
               <div>
@@ -65,6 +96,21 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
               </div>
             );
           });
+          
+          // Update shown notifications in state and localStorage
+          const updatedShownNotifications = [
+            ...shownNotifications,
+            ...newNotifications.map(n => n.id)
+          ];
+          
+          setShownNotifications(updatedShownNotifications);
+          
+          if (typeof window !== 'undefined') {
+            localStorage.setItem(
+              `shown_notifications_${user.id}`, 
+              JSON.stringify(updatedShownNotifications)
+            );
+          }
         }
         
         setLastNotificationCount(notificationsArray.length);
@@ -93,6 +139,21 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
             : notification
         )
       );
+      
+      // Add read notifications to shown notifications to prevent showing them again
+      const updatedShownNotifications = [
+        ...shownNotifications,
+        ...notificationIds.filter(id => !shownNotifications.includes(id))
+      ];
+      
+      setShownNotifications(updatedShownNotifications);
+      
+      if (typeof window !== 'undefined') {
+        localStorage.setItem(
+          `shown_notifications_${user.id}`,
+          JSON.stringify(updatedShownNotifications)
+        );
+      }
     } catch (err: any) {
       console.error('Error marking notifications as read:', err);
       setError(err.message || 'Failed to mark notifications as read');
@@ -109,8 +170,12 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
       // Poll for new notifications every minute
       const intervalId = setInterval(fetchNotifications, 60000);
       
+      // Clean up old notifications every day
+      const cleanupIntervalId = setInterval(cleanupOldNotifications, 86400000);
+      
       return () => {
         clearInterval(intervalId);
+        clearInterval(cleanupIntervalId);
       };
     }
   }, [user]);
