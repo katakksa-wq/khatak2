@@ -193,7 +193,38 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         };
         
         setUser(userForState);
-        router.push('/dashboard');
+        
+        // Store token if provided
+        if (response.data.token) {
+          localStorage.setItem('token', response.data.token);
+          setToken(response.data.token);
+          localStorage.setItem('user', JSON.stringify(userForState));
+        }
+        
+        // Redirect based on role
+        const role = apiUser.role.toUpperCase();
+        
+        // Handle special case for driver registration
+        if (role === 'DRIVER' && userData.tempRegistrationId) {
+          router.replace('/register/driver/pending');
+          return;
+        }
+        
+        // Regular role-based navigation
+        switch (role) {
+          case 'ADMIN':
+            router.replace('/admin/dashboard');
+            break;
+          case 'DRIVER':
+            router.replace('/dashboard');
+            break;
+          case 'CLIENT':
+            router.replace('/dashboard');
+            break;
+          default:
+            console.error('Unknown user role:', role);
+            router.replace('/dashboard');
+        }
       } else {
         throw new Error(response.message || 'Registration failed');
       }

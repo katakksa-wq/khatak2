@@ -44,17 +44,17 @@ export default function Login() {
     } catch (err) {
       console.error('Login error:', err);
       
-      // Provide more user-friendly error messages
-      let errorMessage = 'Failed to login. Please check your credentials and try again.';
+      // Provide more user-friendly error messages with translations
+      let errorMessage = t('auth.loginFailed');
       
       if (err instanceof Error) {
         // Handle specific error messages
         if (err.message.includes('Email/phone and password are required')) {
-          errorMessage = 'Please enter both your email/phone and password';
+          errorMessage = t('auth.requiredCredentials');
         } else if (err.message.includes('Invalid credentials')) {
-          errorMessage = 'Invalid email/phone or password';
+          errorMessage = t('auth.invalidCredentials');
         } else if (err.message.includes('deactivated')) {
-          errorMessage = 'Your account has been deactivated. Please contact support.';
+          errorMessage = t('auth.accountDeactivated');
         } else {
           errorMessage = err.message;
         }
@@ -78,7 +78,9 @@ export default function Login() {
             <div className="card-body p-3 p-md-4">
               <div className="text-center mb-4">
                 <h2 className="fw-bold"><TranslatedText text="auth.login" /></h2>
-                <p className="text-muted"><TranslatedText text="auth.loginDescription" translation={false}>{t('auth.login')}</TranslatedText></p>
+                <p className="text-muted">
+                  <TranslatedText text="auth.loginDescription" />
+                </p>
               </div>
 
               {error && (
@@ -120,7 +122,7 @@ export default function Login() {
                       type={showPassword ? 'text' : 'password'}
                       className="form-control"
                       id="password"
-                      placeholder={t('auth.password')}
+                      placeholder={t('auth.passwordPlaceholder')}
                       value={credentials.password}
                       onChange={handleInputChange}
                       required

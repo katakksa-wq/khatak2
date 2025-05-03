@@ -82,7 +82,7 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
         const notificationsArray = response.data.notifications || [];
         
         // Filter out notifications that have already been shown
-        const newNotifications = notificationsArray
+          const newNotifications = notificationsArray
           .filter(n => !n.read && !shownNotifications.includes(n.id));
             
         // Show toast for each new notification

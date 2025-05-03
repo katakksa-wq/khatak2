@@ -34,12 +34,12 @@ export default function RegisterPage() {
     
     // Basic validation
     if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match');
+      setError(t('auth.passwordsDoNotMatch'));
       return;
     }
 
     if (formData.password.length < 6) {
-      setError('Password must be at least 6 characters');
+      setError(t('auth.passwordTooShort'));
       return;
     }
     
@@ -53,9 +53,9 @@ export default function RegisterPage() {
         role: 'CLIENT'
       });
       
-      router.push('/dashboard');
+      // AuthContext will handle navigation based on user role
     } catch (err: any) {
-      setError(err.message || 'Failed to register. Please try again.');
+      setError(err.message || t('auth.registrationFailed'));
     } finally {
       setLoading(false);
     }
@@ -90,7 +90,7 @@ export default function RegisterPage() {
                           name="firstName"
                           value={formData.firstName}
                           onChange={handleChange}
-                          placeholder={t('auth.firstName')}
+                          placeholder={t('auth.firstNamePlaceholder')}
                           required
                         />
                       </div>
@@ -108,7 +108,7 @@ export default function RegisterPage() {
                           name="lastName"
                           value={formData.lastName}
                           onChange={handleChange}
-                          placeholder={t('auth.lastName')}
+                          placeholder={t('auth.lastNamePlaceholder')}
                           required
                         />
                       </div>
@@ -127,7 +127,7 @@ export default function RegisterPage() {
                       name="email"
                       value={formData.email}
                       onChange={handleChange}
-                      placeholder={t('auth.email')}
+                      placeholder={t('auth.emailPlaceholder')}
                       required
                     />
                   </div>
