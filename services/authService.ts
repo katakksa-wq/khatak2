@@ -77,18 +77,40 @@ export const authService = {
   login: async (credentials: LoginCredentials): Promise<ApiResponse<AuthResponse>> => {
     try {
       console.log('Attempting login with identifier:', credentials.identifier);
+      
+      // Determine if the identifier is an email or phone number
+      const isEmail = (str: string): boolean => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(str);
+      };
+      
+      // Format the request body based on identifier type
+      const requestBody = {
+        password: credentials.password,
+        // Send as either email or phone based on format
+        ...(isEmail(credentials.identifier) 
+          ? { email: credentials.identifier } 
+          : { phone: credentials.identifier })
+      };
+      
+      console.log('Sending login request with:', requestBody);
+      
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://api.katakksa.com'}${ENDPOINTS.login}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json'
         },
-        body: JSON.stringify(credentials)
+        body: JSON.stringify(requestBody)
       });
       
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || 'Login failed');
+        const errorMessage = errorData.message || 
+                            errorData.error || 
+                            errorData.detail || 
+                            'Login failed. Please check your credentials.';
+        throw new Error(errorMessage);
       }
       
       const responseData = await response.json();

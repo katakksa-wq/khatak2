@@ -112,13 +112,25 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           console.error('Unknown user role:', role);
           router.replace('/dashboard');
       }
-    } catch (error) {
+    } catch (error: any) {
+      console.error('Authentication error:', error);
+      
       // Clear any partial auth data
       localStorage.removeItem('token');
       localStorage.removeItem('user');
       setUser(null);
       setToken(null);
-      throw error;
+      
+      // Extract the error message from the API response if available
+      let errorMessage = 'Authentication failed';
+      
+      if (error.message) {
+        errorMessage = error.message;
+      } else if (error.details?.message) {
+        errorMessage = error.details.message;
+      }
+      
+      throw new Error(errorMessage);
     }
   };
 

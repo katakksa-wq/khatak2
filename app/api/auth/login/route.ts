@@ -62,12 +62,15 @@ export async function POST(request: NextRequest) {
   try {
     // Parse the request body
     const body = await request.json();
-    const { identifier, password } = body;
+    const { email, phone, password } = body;
+    
+    // Get the identifier (either email or phone)
+    const identifier = email || phone;
 
     // Validate required fields
     if (!identifier || !password) {
       return NextResponse.json(
-        { status: 'error', message: 'Identifier and password are required' },
+        { status: 'error', message: 'Email/phone and password are required' },
         { status: 400 }
       );
     }
@@ -75,15 +78,15 @@ export async function POST(request: NextRequest) {
     // Determine if identifier is an email or phone number
     let user;
 
-    if (isEmail(identifier)) {
+    if (email) {
       // Find user by email
-      user = USERS.find(u => u.email.toLowerCase() === identifier.toLowerCase());
-    } else if (isPhoneNumber(identifier)) {
+      user = USERS.find(u => u.email.toLowerCase() === email.toLowerCase());
+    } else if (phone) {
       // Find user by phone
-      user = USERS.find(u => u.phone === identifier);
+      user = USERS.find(u => u.phone === phone);
     } else {
       return NextResponse.json(
-        { status: 'error', message: 'Invalid identifier format. Please provide a valid email or phone number' },
+        { status: 'error', message: 'Please provide email or phone number' },
         { status: 400 }
       );
     }

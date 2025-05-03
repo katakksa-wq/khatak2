@@ -43,11 +43,24 @@ export default function Login() {
       // The AuthContext will handle the navigation
     } catch (err) {
       console.error('Login error:', err);
-      setError(
-        err instanceof Error 
-          ? err.message 
-          : 'Failed to login. Please check your credentials and try again.'
-      );
+      
+      // Provide more user-friendly error messages
+      let errorMessage = 'Failed to login. Please check your credentials and try again.';
+      
+      if (err instanceof Error) {
+        // Handle specific error messages
+        if (err.message.includes('Email/phone and password are required')) {
+          errorMessage = 'Please enter both your email/phone and password';
+        } else if (err.message.includes('Invalid credentials')) {
+          errorMessage = 'Invalid email/phone or password';
+        } else if (err.message.includes('deactivated')) {
+          errorMessage = 'Your account has been deactivated. Please contact support.';
+        } else {
+          errorMessage = err.message;
+        }
+      }
+      
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
