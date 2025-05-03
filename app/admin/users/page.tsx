@@ -537,6 +537,13 @@ export default function UsersManagementPage() {
                           <button
                             type="button"
                             className="btn btn-sm btn-outline-primary"
+                            onClick={() => router.push(`/admin/users/${user.id}/edit`)}
+                          >
+                            <FaUserEdit /> {t('admin.edit')}
+                          </button>
+                          <button
+                            type="button"
+                            className="btn btn-sm btn-outline-primary"
                             onClick={() => handleViewDetails(user)}
                           >
                             <FaFileAlt /> {t('admin.view')}
@@ -925,6 +932,16 @@ export default function UsersManagementPage() {
               </div>
               <div className="modal-footer">
                 <div className="me-auto">
+                  <button
+                    type="button"
+                    className="btn me-2 btn-primary"
+                    onClick={() => {
+                      setShowDetailsModal(false);
+                      router.push(`/admin/users/${selectedUser.id}/edit`);
+                    }}
+                  >
+                    <FaUserEdit className="me-1" /> {t('admin.edit')}
+                  </button>
                   <button
                     type="button"
                     className={`btn me-2 btn-${selectedUser.isActive ? 'danger' : 'success'}`}
