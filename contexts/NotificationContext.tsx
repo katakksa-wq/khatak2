@@ -80,7 +80,6 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
       
       if (response.status === 'success' && response.data) {
         const notificationsArray = response.data.notifications || [];
-        setNotifications(notificationsArray);
         
         // Filter out notifications that have already been shown
         const newNotifications = notificationsArray
@@ -88,6 +87,10 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
             
         // Show toast for each new notification
         if (newNotifications.length > 0) {
+          // Get IDs of new notifications to mark as read
+          const newNotificationIds = newNotifications.map(n => n.id);
+          
+          // Show toast notifications
           newNotifications.forEach(notification => {
             // Check if the notification content is a translation key
             const isTranslationKey = (text: string | undefined): boolean => 
@@ -125,8 +128,24 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
               JSON.stringify(updatedShownNotifications)
             );
           }
+          
+          try {
+            // Mark them as read directly through the API
+            await notificationService.markNotificationsAsRead(newNotificationIds);
+            
+            // Update notifications in local state
+            notificationsArray.forEach(notification => {
+              if (newNotificationIds.includes(notification.id)) {
+                notification.read = true;
+              }
+            });
+          } catch (markError) {
+            console.error('Error marking notifications as read:', markError);
+          }
         }
         
+        // Update the state with all notifications including the newly read ones
+        setNotifications(notificationsArray);
         setLastNotificationCount(notificationsArray.length);
       }
     } catch (err: any) {
