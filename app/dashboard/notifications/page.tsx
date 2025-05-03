@@ -50,6 +50,10 @@ const NotificationsPage = () => {
     }
   };
 
+  // Check if the notification content is a translation key
+  const isTranslationKey = (text: string | undefined): boolean => 
+    Boolean(text && text.startsWith('notification.'));
+
   // Handle marking selected notifications as read
   const handleMarkAsRead = async () => {
     const unreadSelected = selectedNotifications.filter(id => 
@@ -222,8 +226,18 @@ const NotificationsPage = () => {
                             </span>
                           </td>
                           <td>
-                            <div className="fw-bold"><TranslatedText text={notification.title} translation={false} /></div>
-                            <div className={notification.read ? 'text-muted' : ''}><TranslatedText text={notification.message} translation={false} /></div>
+                            <div className="fw-bold">
+                              <TranslatedText 
+                                text={notification.title} 
+                                translation={isTranslationKey(notification.title)} 
+                              />
+                            </div>
+                            <div className={notification.read ? 'text-muted' : ''}>
+                              <TranslatedText 
+                                text={notification.message} 
+                                translation={isTranslationKey(notification.message)} 
+                              />
+                            </div>
                           </td>
                           <td>
                             <small className="text-muted">{formatTime(notification.createdAt)}</small>

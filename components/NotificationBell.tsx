@@ -33,6 +33,10 @@ const NotificationBell: React.FC = () => {
       return 'recently';
     }
   };
+  
+  // Check if the notification content is a translation key
+  const isTranslationKey = (text: string | undefined): boolean => 
+    Boolean(text && text.startsWith('notification.'));
 
   return (
     <div className="dropdown position-relative">
@@ -67,8 +71,18 @@ const NotificationBell: React.FC = () => {
                 key={notification.id} 
                 className={`dropdown-item ${!notification.read ? 'bg-light' : ''}`}
               >
-                <h6 className="mb-1"><TranslatedText text={notification.title} translation={false} /></h6>
-                <p className="mb-1"><TranslatedText text={notification.message} translation={false} /></p>
+                <h6 className="mb-1">
+                  <TranslatedText 
+                    text={notification.title} 
+                    translation={isTranslationKey(notification.title)} 
+                  />
+                </h6>
+                <p className="mb-1">
+                  <TranslatedText 
+                    text={notification.message} 
+                    translation={isTranslationKey(notification.message)} 
+                  />
+                </p>
                 <small className="text-muted">{formatTime(notification.createdAt)}</small>
               </div>
             ))

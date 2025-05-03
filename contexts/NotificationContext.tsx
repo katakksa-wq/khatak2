@@ -89,10 +89,24 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
         // Show toast for each new notification
         if (newNotifications.length > 0) {
           newNotifications.forEach(notification => {
+            // Check if the notification content is a translation key
+            const isTranslationKey = (text: string | undefined): boolean => 
+              Boolean(text && text.startsWith('notification.'));
+            
             toast.info(
               <div>
-                <strong><TranslatedText text={notification.title} translation={false} /></strong>
-                <p><TranslatedText text={notification.message} translation={false} /></p>
+                <strong>
+                  <TranslatedText 
+                    text={notification.title} 
+                    translation={isTranslationKey(notification.title)} 
+                  />
+                </strong>
+                <p>
+                  <TranslatedText 
+                    text={notification.message} 
+                    translation={isTranslationKey(notification.message)} 
+                  />
+                </p>
               </div>
             );
           });
