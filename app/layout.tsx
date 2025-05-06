@@ -20,7 +20,7 @@ const tajawal = Tajawal({
 
 export const metadata: Metadata = {
   title: 'khatak - Your Reliable Shipping Partner',
-  description: 'A modern shipping and delivery service',
+  description: 'مرحبًا بك في خطك، وجهتك الأولى لخدمات النقل البري بين المدن! نحن نقدم حلول نقل آمنة وموثوقة تلبي احتياجات الأفراد والشركات، مع تغطية واسعة تشمل مختلف مناطق المملكة. سواء كنت تنقل شحنة صغيرة أو ترغب في جدولة رحلة نقل بضائع كبيرة، فإننا نوفر لك السهولة والسرعة في الحجز، إلى جانب التزامنا بالمواعيد وجودة الخدمة.',
 };
 
 // Client component implementation
