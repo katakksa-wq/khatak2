@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { Container, Row, Col, Form, Button, Card, Alert } from 'react-bootstrap';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { FaUser, FaLock, FaEnvelope, FaTruck } from 'react-icons/fa';
+import { FaUser, FaLock, FaEnvelope, FaTruck, FaPhone } from 'react-icons/fa';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
@@ -17,7 +17,8 @@ export default function RegisterPage() {
     lastName: '',
     email: '',
     password: '',
-    confirmPassword: ''
+    confirmPassword: '',
+    phone: ''
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -48,9 +49,16 @@ export default function RegisterPage() {
     setError('');
     
     try {
+      // Format phone number if it's a Saudi ID number (10 digits)
+      let phone = formData.phone;
+      if (/^\d{10}$/.test(phone)) {
+        phone = `+966${phone}`;
+      }
+
       await register(formData.email, formData.password, {
         firstName: formData.firstName, 
         lastName: formData.lastName,
+        phone: phone,
         role: 'CLIENT'
       });
       
@@ -136,6 +144,26 @@ export default function RegisterPage() {
                       required
                     />
                   </div>
+                </Form.Group>
+                
+                <Form.Group className="mb-3">
+                  <Form.Label><TranslatedText text="auth.phone" /></Form.Label>
+                  <div className="input-group">
+                    <span className="input-group-text">
+                      <FaPhone />
+                    </span>
+                    <Form.Control
+                      type="tel"
+                      name="phone"
+                      value={formData.phone}
+                      onChange={handleChange}
+                      placeholder={t('auth.phonePlaceholder')}
+                      required
+                    />
+                  </div>
+                  <small className="form-text text-muted">
+                    <TranslatedText text="auth.phoneHelp" />
+                  </small>
                 </Form.Group>
                 
                 <Form.Group className="mb-3">

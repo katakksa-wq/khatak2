@@ -169,6 +169,12 @@ export default function DriverRegistrationPage() {
       setError('');
       setUploadProgress(10);
       
+      // Format phone number if it's a Saudi ID number (10 digits)
+      let phone = formData.phone;
+      if (/^\d{10}$/.test(phone)) {
+        phone = `+966${phone}`;
+      }
+      
       // Step 1: Upload documents to temporary storage
       setUploadProgress(20);
       
@@ -241,7 +247,7 @@ export default function DriverRegistrationPage() {
           {
             firstName: formData.firstName,
             lastName: formData.lastName,
-            phone: formData.phone,
+            phone: phone,
             role: 'DRIVER',
             plateNumber: formData.plateNumber,
             carMake: formData.carMake,
