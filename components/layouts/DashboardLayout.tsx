@@ -7,6 +7,7 @@ import { FaSignOutAlt, FaBars, FaHome, FaBox, FaDollarSign, FaUser, FaTruck, FaC
 import Link from 'next/link';
 import { useLanguage } from '@/contexts/LanguageContext';
 import TranslatedText from '../TranslatedText';
+import Logo from '../Logo';
 
 // Define missing types
 interface User {
@@ -69,7 +70,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       <div className="d-md-none bg-dark text-white p-2 shadow-sm">
         <div className="d-flex justify-content-between align-items-center">
           <div className="d-flex align-items-center">
-            <span className="ms-2 fw-bold">{user.firstName || user.email}</span>
+            <Logo width={64} height={64} showText className="text-white" />
           </div>
           <button 
             className="btn btn-link text-white"
@@ -94,15 +95,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       >
         <div className="p-3">
           <div className="d-flex justify-content-between align-items-center mb-4">
-            <div className="d-flex align-items-center">
-              <div className="rounded-circle me-2 bg-primary text-center" style={{ width: '32px', height: '32px', lineHeight: '32px' }}>
-                {user.firstName?.charAt(0) || user.email.charAt(0)}
-              </div>
-              <div>
-                <strong className="d-block">{user.firstName || user.email}</strong>
-                <small className="text-white-50">{user.role}</small>
-              </div>
-            </div>
+            <Logo width={80} height={80} showText className="text-white" />
             <button 
               className="btn-close btn-close-white" 
               onClick={() => setIsMobileMenuOpen(false)} 
@@ -147,13 +140,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         {/* Desktop Sidebar Navigation */}
         <div className="bg-dark text-white d-none d-md-flex flex-column p-3" style={{ width: '250px', minHeight: '100vh' }}>
           <div className="d-flex align-items-center mb-4">
-            <div className="rounded-circle me-2 bg-primary text-center" style={{ width: '32px', height: '32px', lineHeight: '32px' }}>
-              {user.firstName?.charAt(0) || user.email.charAt(0)}
-            </div>
-            <div>
-              <strong className="d-block">{user.firstName || user.email}</strong>
-              <small className="text-white-50">{user.role}</small>
-            </div>
+            <Logo width={80} height={80} showText className="text-white" />
           </div>
           <hr className="text-white-50" />
           <ul className="nav flex-column">
@@ -183,7 +170,10 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         <div className="flex-grow-1 d-flex flex-column">
           <header className="bg-light p-3 shadow-sm d-none d-md-block">
             <div className="d-flex justify-content-between align-items-center">
-              <h1 className="h4 mb-0"><TranslatedText text="dashboard.welcome" /></h1>
+              <div className="d-flex align-items-center">
+                <Logo height={64} width={64} className="me-2" />
+                <h1 className="h4 mb-0"><TranslatedText text="dashboard.welcome" /></h1>
+              </div>
             </div>
           </header>
           <main className="py-3 px-3 px-md-4 flex-grow-1">

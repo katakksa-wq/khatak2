@@ -8,6 +8,8 @@ import { FaUser, FaLock, FaEnvelope, FaPhone, FaCar, FaIdCard, FaCamera } from '
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { apiConfig } from '@/utils/apiClient';
+import Logo from '@/components/Logo';
+import LanguageSwitcher from '@/components/LanguageSwitcher';
 
 // Components for image preview
 const ImagePreview = ({ file, onRemove }: { file: File; onRemove: () => void }) => {
@@ -71,7 +73,7 @@ export default function DriverRegistrationPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [uploadProgress, setUploadProgress] = useState(0);
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState<number>(1);
   
   // Refs for file inputs
   const driverPhotoInputRef = useRef<HTMLInputElement>(null);
@@ -298,9 +300,14 @@ export default function DriverRegistrationPage() {
   };
   
   return (
-    <Container className="py-5">
+    <Container className="py-4">
+      <div className="d-flex justify-content-between align-items-center mb-3">
+        <Logo showText width={50} height={50} />
+        <LanguageSwitcher />
+      </div>
+      
       <Row className="justify-content-center">
-        <Col md={8} lg={7}>
+        <Col md={10} lg={8}>
           <Card className="shadow-sm">
             <Card.Header className="bg-primary text-white">
               <h2 className="h4 mb-0">{t('driver.registration')}</h2>

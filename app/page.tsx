@@ -9,6 +9,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import TranslatedText from '@/components/TranslatedText';
+import Logo from '@/components/Logo';
 
 interface CTAButton {
   text: string;
@@ -119,7 +120,7 @@ export default function Home() {
       <header className="bg-light py-2">
         <div className="container d-flex justify-content-between align-items-center">
           <div className="d-flex align-items-center">
-            <h1 className="h5 mb-0"><TranslatedText text="app.title" /></h1>
+            <Logo showText width={140} height={140} />
           </div>
           <LanguageSwitcher />
         </div>
@@ -128,6 +129,9 @@ export default function Home() {
       {/* Hero Section */}
       <section className="bg-primary text-white text-center py-4 py-md-5">
         <div className="container py-3 py-md-5">
+          <div className="text-center mb-4">
+            <Logo width={280} height={280} className="mb-3" />
+          </div>
           <h1 className="display-5 display-md-4 fw-bold mb-3 mb-md-4"><TranslatedText text="app.title" /></h1>
           <p className="lead mb-4">
             <TranslatedText text="homepage.subtitle" />

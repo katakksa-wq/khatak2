@@ -9,6 +9,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import TranslatedText from '@/components/TranslatedText';
+import Logo from '@/components/Logo';
 
 export default function RegisterPage() {
   const [formData, setFormData] = useState({
@@ -63,7 +64,8 @@ export default function RegisterPage() {
 
   return (
     <Container className="py-3 py-md-5 px-4">
-      <div className="d-flex justify-content-end mb-3">
+      <div className="d-flex justify-content-between align-items-center mb-3">
+        <Logo showText width={100} height={100} />
         <LanguageSwitcher />
       </div>
       
@@ -71,7 +73,10 @@ export default function RegisterPage() {
         <Col xs={12} sm={11} md={10} lg={8} xl={6}>
           <Card className="shadow-sm">
             <Card.Header className="bg-primary text-white">
-              <h2 className="h4 mb-0"><TranslatedText text="auth.signup" /></h2>
+              <div className="d-flex align-items-center">
+                <Logo width={64} height={64} className="me-2" />
+                <h2 className="h4 mb-0"><TranslatedText text="auth.signup" /></h2>
+              </div>
             </Card.Header>
             <Card.Body className="p-3 p-md-4">
               {error && <Alert variant="danger">{error}</Alert>}

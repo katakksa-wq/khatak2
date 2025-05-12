@@ -8,6 +8,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import TranslatedText from '@/components/TranslatedText';
+import Logo from '@/components/Logo';
 
 export default function Login() {
   const router = useRouter();
@@ -77,6 +78,9 @@ export default function Login() {
           <div className="card shadow-sm border-0">
             <div className="card-body p-3 p-md-4">
               <div className="text-center mb-4">
+                <div className="d-flex justify-content-center">
+                  <Logo width={240} height={240} className="mb-3" />
+                </div>
                 <h2 className="fw-bold"><TranslatedText text="auth.login" /></h2>
                 <p className="text-muted">
                   <TranslatedText text="auth.loginDescription" />
