@@ -2,9 +2,10 @@
 
 import React, { createContext, useState, useContext, useEffect, ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
-import { AuthState, User, ApiResponse } from '@/types';
+import { AuthState, User } from '@/types';
 import { postData } from '@/utils/api';
-import { authService } from '@/services/authService';
+import { authService, AuthResponse } from '@/services/authService';
+import { ApiResponse } from '@/utils/apiClient';
 
 export type UserRole = 'CLIENT' | 'DRIVER' | 'ADMIN';
 
@@ -14,13 +15,7 @@ interface AuthContextType {
   loading: boolean;
   error: string | null;
   login: (identifier: string, password: string) => Promise<void>;
-  register: (email: string, password: string, userData?: any) => Promise<{
-    status: string;
-    message: string;
-    data?: {
-      user: User;
-    };
-  }>;
+  register: (email: string, password: string, userData?: any) => Promise<ApiResponse<AuthResponse>>;
   logout: () => void;
   isClient: () => boolean;
   isDriver: () => boolean;
@@ -213,7 +208,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         // Handle special case for driver registration
         if (role === 'DRIVER' && userData.tempRegistrationId) {
           router.replace('/register/driver/pending');
-          return;
+          return response;
         }
         
         // Regular role-based navigation
@@ -231,6 +226,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             console.error('Unknown user role:', role);
             router.replace('/dashboard');
         }
+        
+        return response;
       } else {
         throw new Error(response.message || 'Registration failed');
       }
