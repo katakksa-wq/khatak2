@@ -55,15 +55,26 @@ export default function RegisterPage() {
         phone = `+966${phone}`;
       }
 
-      await register(formData.email, formData.password, {
+      const response = await register(formData.email, formData.password, {
         firstName: formData.firstName, 
         lastName: formData.lastName,
         phone: phone,
         role: 'CLIENT'
       });
-      
-      // AuthContext will handle navigation based on user role
+
+      // Check if registration was successful
+      if (response.status === 'success') {
+        // Show success message
+        setError(t('auth.registrationPending'));
+        // Redirect to login page after a short delay
+        setTimeout(() => {
+          router.push('/login');
+        }, 2000);
+      } else {
+        setError(response.message || t('auth.registrationFailed'));
+      }
     } catch (err: any) {
+      console.error('Registration error:', err);
       setError(err.message || t('auth.registrationFailed'));
     } finally {
       setLoading(false);

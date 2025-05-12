@@ -189,70 +189,17 @@ export const authService = {
         body: JSON.stringify(data)
       });
       
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Registration failed');
-      }
-      
       const responseData = await response.json();
       console.log('Raw server response:', responseData);
       
-      // Extract token and user based on response structure
-      let token, user;
-      
-      // Handle different response structures
-      if (responseData.status === 'success') {
-        // Case 1: Fully nested - {status: 'success', data: {token, user}}
-        if (responseData.data?.token && responseData.data?.user) {
-          token = responseData.data.token;
-          user = responseData.data.user;
-        }
-        // Case 2: Mixed - {status: 'success', token: '...', data: {user}}
-        else if (responseData.token && responseData.data?.user) {
-          token = responseData.token;
-          user = responseData.data.user;
-        }
-        // Case 3: Flat with status - {status: 'success', token: '...', user: {...}}
-        else if (responseData.token && responseData.user) {
-          token = responseData.token;
-          user = responseData.user;
-        }
-      }
-      // Case 4: Completely flat without status - {token: '...', user: {...}}
-      else if (responseData.token && responseData.user) {
-        token = responseData.token;
-        user = responseData.user;
+      if (!response.ok) {
+        throw new Error(responseData.message || 'Registration failed');
       }
       
-      // Validate extracted data
-      if (!token || !user || !user.id) {
-        console.error('Invalid response structure:', responseData);
-        throw new Error('Registration failed: Invalid response from server');
-      }
-      
-      // Store auth data
-      localStorage.setItem('token', token);
-      localStorage.setItem('user', JSON.stringify(user));
-      
-      // Show a confirmation message based on the user role
-      if (user.role === 'DRIVER') {
-        alert('Driver registered successfully! Please complete your driver profile.');
-      } else {
-        alert('Registration successful! You are now logged in.');
-      }
-      
-      // Return formatted response
-      return {
-        status: 'success',
-        data: {
-          user,
-          token
-        }
-      };
+      // Return the response as is since it matches our expected structure
+      return responseData;
     } catch (error) {
       console.error('Registration error:', error);
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
       throw error;
     }
   },

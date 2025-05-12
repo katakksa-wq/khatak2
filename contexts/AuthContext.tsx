@@ -14,7 +14,13 @@ interface AuthContextType {
   loading: boolean;
   error: string | null;
   login: (identifier: string, password: string) => Promise<void>;
-  register: (email: string, password: string, userData?: any) => Promise<void>;
+  register: (email: string, password: string, userData?: any) => Promise<{
+    status: string;
+    message: string;
+    data?: {
+      user: User;
+    };
+  }>;
   logout: () => void;
   isClient: () => boolean;
   isDriver: () => boolean;

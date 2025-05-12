@@ -270,9 +270,17 @@ export default function DriverRegistrationPage() {
         
         setUploadProgress(100);
         
-        // Redirect to pending approval page
-        router.replace('/register/driver/pending');
-        
+        // Check if registration was successful
+        if (response.status === 'success') {
+          // Show success message
+          setError(t('auth.registrationPending'));
+          // Redirect to pending approval page after a short delay
+          setTimeout(() => {
+            router.replace('/register/driver/pending');
+          }, 2000);
+        } else {
+          setError(response.message || t('auth.registrationFailed'));
+        }
       } catch (uploadError) {
         console.error('Error uploading documents:', uploadError);
         setError(t('driver.uploadError'));
