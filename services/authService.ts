@@ -83,14 +83,20 @@ export const authService = {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return emailRegex.test(str);
       };
+
+      // Format phone number if it's a Saudi ID number (10 digits)
+      let identifier = credentials.identifier;
+      if (/^\d{10}$/.test(identifier)) {
+        identifier = `+966${identifier}`;
+      }
       
       // Format the request body based on identifier type
       const requestBody = {
         password: credentials.password,
         // Send as either email or phone based on format
-        ...(isEmail(credentials.identifier) 
-          ? { email: credentials.identifier } 
-          : { phone: credentials.identifier })
+        ...(isEmail(identifier) 
+          ? { email: identifier } 
+          : { phone: identifier })
       };
       
       console.log('Sending login request with:', requestBody);

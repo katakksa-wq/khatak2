@@ -40,7 +40,13 @@ export default function Login() {
     setError('');
 
     try {
-      await login(credentials.identifier, credentials.password);
+      // Format the identifier if it's a Saudi ID number (10 digits)
+      let formattedIdentifier = credentials.identifier;
+      if (/^\d{10}$/.test(credentials.identifier)) {
+        formattedIdentifier = `+966${credentials.identifier}`;
+      }
+
+      await login(formattedIdentifier, credentials.password);
       // The AuthContext will handle the navigation
     } catch (err) {
       console.error('Login error:', err);
