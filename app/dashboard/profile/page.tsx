@@ -4,7 +4,8 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { FaUser, FaEnvelope, FaPhone, FaEdit, FaSave } from 'react-icons/fa';
 import { apiClient } from '@/utils/apiClient';
-import { authService, User } from '@/services/authService';
+import { authService } from '@/services/authService';
+import { User } from '@/types';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 export default function ProfilePage() {

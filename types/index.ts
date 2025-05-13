@@ -15,6 +15,7 @@ export interface User {
   };
   role: UserRole;
   isActive: boolean;
+  isConfirmed: boolean;
   createdAt: string;
 }
 
