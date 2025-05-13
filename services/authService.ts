@@ -112,6 +112,13 @@ export const authService = {
       
       if (!response.ok) {
         const errorData = await response.json();
+        
+        // Handle specific error cases based on status code and response structure
+        if (errorData.status === 'fail') {
+          throw new Error(errorData.message);
+        }
+        
+        // Handle other error cases
         const errorMessage = errorData.message || 
                             errorData.error || 
                             errorData.detail || 
@@ -122,51 +129,31 @@ export const authService = {
       const responseData = await response.json();
       console.log('Raw server response:', responseData);
       
-      // Extract token and user based on response structure
-      let token, user;
-      
-      // Handle different response structures
-      if (responseData.status === 'success') {
-        // Case 1: Fully nested - {status: 'success', data: {token, user}}
-        if (responseData.data?.token && responseData.data?.user) {
-          token = responseData.data.token;
-          user = responseData.data.user;
+      // Handle success response structure
+      if (responseData.status === 'success' && responseData.data?.token && responseData.data?.user) {
+        const { token, user } = responseData.data;
+        
+        // Validate extracted data
+        if (!token || !user || !user.id) {
+          console.error('Invalid response structure:', responseData);
+          throw new Error('Login failed: Invalid response from server');
         }
-        // Case 2: Mixed - {status: 'success', token: '...', data: {user}}
-        else if (responseData.token && responseData.data?.user) {
-          token = responseData.token;
-          user = responseData.data.user;
-        }
-        // Case 3: Flat with status - {status: 'success', token: '...', user: {...}}
-        else if (responseData.token && responseData.user) {
-          token = responseData.token;
-          user = responseData.user;
-        }
-      }
-      // Case 4: Completely flat without status - {token: '...', user: {...}}
-      else if (responseData.token && responseData.user) {
-        token = responseData.token;
-        user = responseData.user;
+        
+        // Store auth data
+        localStorage.setItem('token', token);
+        localStorage.setItem('user', JSON.stringify(user));
+        
+        // Return formatted response
+        return {
+          status: 'success',
+          data: {
+            user,
+            token
+          }
+        };
       }
       
-      // Validate extracted data
-      if (!token || !user || !user.id) {
-        console.error('Invalid response structure:', responseData);
-        throw new Error('Login failed: Invalid response from server');
-      }
-      
-      // Store auth data
-      localStorage.setItem('token', token);
-      localStorage.setItem('user', JSON.stringify(user));
-      
-      // Return formatted response
-      return {
-        status: 'success',
-        data: {
-          user,
-          token
-        }
-      };
+      throw new Error('Invalid response structure from server');
     } catch (error) {
       console.error('Login error:', error);
       // Clear any partial auth data if login fails
