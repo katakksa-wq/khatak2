@@ -125,36 +125,46 @@ export const authService = {
       if (!response.ok) {
         // Handle specific error cases based on status code and response structure
         if (responseData.status === 'fail') {
-          // Check if this is a registration-to-login issue
-          if (responseData.message === 'Incorrect email/phone or password') {
-            throw new Error('Login failed. If you just registered, please wait a moment and try again.');
+          switch (responseData.message) {
+            case 'Password is required':
+            case 'Email or phone number is required':
+              throw new Error('Please provide all required credentials');
+            case 'Incorrect email/phone or password':
+              throw new Error('Invalid credentials. Please check your email/phone and password');
+            case 'Your account has been deactivated':
+              throw new Error('This account has been deactivated. Please contact support');
+            case 'Your account is pending confirmation':
+              throw new Error('Please confirm your account before logging in');
+            default:
+              throw new Error(responseData.message);
           }
-          throw new Error(responseData.message);
+        } else if (responseData.status === 'error') {
+          throw new Error('Server error occurred. Please try again later');
         }
         
         // Handle HTTP status codes
         switch (response.status) {
           case 400:
-            throw new Error(responseData.message || 'Invalid request format');
+            throw new Error('Invalid request format');
           case 401:
-            throw new Error(responseData.message || 'Incorrect email/phone or password');
+            throw new Error('Authentication failed');
           case 403:
-            throw new Error(responseData.message || 'Account access denied');
+            throw new Error('Access denied');
           case 500:
-            throw new Error(responseData.message || 'Server error occurred');
+            throw new Error('Server error occurred');
           default:
-            throw new Error(responseData.message || 'Login failed. Please try again.');
+            throw new Error('Login failed. Please try again');
         }
       }
       
-      // Handle success response structure
+      // Handle success response
       if (responseData.status === 'success' && responseData.data?.token && responseData.data?.user) {
         const { token, user } = responseData.data;
         
-        // Validate extracted data
-        if (!token || !user || !user.id) {
-          console.error('Invalid response structure:', responseData);
-          throw new Error('Login failed: Invalid response from server');
+        // Validate user data
+        if (!user.id || !user.name || !user.email || !user.phone || !user.role) {
+          console.error('Invalid user data in response:', user);
+          throw new Error('Invalid user data received from server');
         }
         
         // Store auth data
