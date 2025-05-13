@@ -60,72 +60,31 @@ const isPhoneNumber = (identifier: string): boolean => {
 
 export async function POST(request: NextRequest) {
   try {
-    // Parse the request body
     const body = await request.json();
-    const { email, phone, password } = body;
     
-    // Get the identifier (either email or phone)
-    const identifier = email || phone;
-
-    // Validate required fields
-    if (!identifier || !password) {
-      return NextResponse.json(
-        { status: 'error', message: 'Email/phone and password are required' },
-        { status: 400 }
-      );
-    }
-
-    // Determine if identifier is an email or phone number
-    let user;
-
-    if (email) {
-      // Find user by email
-      user = USERS.find(u => u.email.toLowerCase() === email.toLowerCase());
-    } else if (phone) {
-      // Find user by phone
-      user = USERS.find(u => u.phone === phone);
-    } else {
-      return NextResponse.json(
-        { status: 'error', message: 'Please provide email or phone number' },
-        { status: 400 }
-      );
-    }
-
-    // Check if user exists and password is correct
-    if (!user || user.password !== password) {
-      return NextResponse.json(
-        { status: 'error', message: 'Invalid credentials' },
-        { status: 401 }
-      );
-    }
-
-    // Check if user is active
-    if (!user.isActive) {
-      return NextResponse.json(
-        { status: 'error', message: 'Your account is deactivated. Please contact support.' },
-        { status: 403 }
-      );
-    }
-
-    // Generate token
-    const token = generateToken(user.id, user.role);
-
-    // Omit password from the returned user object
-    const { password: _, ...safeUser } = user;
-
-    // Return user and token
-    return NextResponse.json({
-      status: 'success',
-      data: {
-        user: safeUser,
-        token: token
-      }
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://api.katakksa.com'}/api/auth/login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify(body)
     });
-  } catch (error: any) {
-    console.error('Login error:', error);
 
+    const data = await response.json();
+
+    if (!response.ok) {
+      return NextResponse.json(
+        { message: data.message || 'Login failed' },
+        { status: response.status }
+      );
+    }
+
+    return NextResponse.json(data);
+  } catch (error) {
+    console.error('Login error:', error);
     return NextResponse.json(
-      { status: 'error', message: error.message || 'An unexpected error occurred' },
+      { message: 'Internal server error' },
       { status: 500 }
     );
   }

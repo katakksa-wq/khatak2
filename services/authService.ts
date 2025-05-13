@@ -79,7 +79,7 @@ export const authService = {
       
       console.log('Sending login request with:', requestBody);
       
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://api.katakksa.com'}${ENDPOINTS.login}`, {
+      const response = await fetch(`/api/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -90,98 +90,54 @@ export const authService = {
       
       const responseData = await response.json();
       console.log('Server response:', responseData);
-      
+
       if (!response.ok) {
-        // Handle specific error cases based on status code and response structure
-        if (responseData.status === 'fail') {
-          switch (responseData.message) {
-            case 'Password is required':
-            case 'Email or phone number is required':
-              throw new Error('Please provide all required credentials');
-            case 'Incorrect email/phone or password':
-              throw new Error('Invalid credentials. Please check your email/phone and password');
-            case 'Your account has been deactivated':
-              throw new Error('This account has been deactivated. Please contact support');
-            case 'Your account is pending confirmation':
-              throw new Error('Please confirm your account before logging in');
-            default:
-              throw new Error(responseData.message);
-          }
-        } else if (responseData.status === 'error') {
-          throw new Error('Server error occurred. Please try again later');
-        }
-        
-        // Handle HTTP status codes
-        switch (response.status) {
-          case 400:
-            throw new Error('Invalid request format');
-          case 401:
-            throw new Error('Authentication failed');
-          case 403:
-            throw new Error('Access denied');
-          case 500:
-            throw new Error('Server error occurred');
-          default:
-            throw new Error('Login failed. Please try again');
-        }
+        throw new Error(responseData.message || 'Login failed');
       }
-      
-      // Handle success response
-      if (responseData.status === 'success' && responseData.data?.token && responseData.data?.user) {
-        const { token, user } = responseData.data;
-        
-        // Validate user data
-        if (!user.id || !user.name || !user.phone || !user.role) {
-          console.error('Invalid user data in response:', user);
-          throw new Error('Invalid user data received from server');
-        }
-        
-        // Store auth data
-        localStorage.setItem('token', token);
-        localStorage.setItem('user', JSON.stringify(user));
-        
-        // Return formatted response
-        return {
-          status: 'success',
-          data: {
-            user,
-            token
-          }
-        };
-      }
-      
-      throw new Error('Invalid response structure from server');
+
+      return {
+        status: 'success',
+        data: responseData
+      };
     } catch (error) {
       console.error('Login error:', error);
-      // Clear any partial auth data if login fails
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
       throw error;
     }
   },
 
-  // Register user
-  register: async (data: RegisterData): Promise<ApiResponse<AuthResponse>> => {
+  // Register new user
+  register: async (phone: string, password: string, additionalData?: any): Promise<ApiResponse<AuthResponse>> => {
     try {
-      console.log('Attempting registration...');
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://api.katakksa.com'}${ENDPOINTS.register}`, {
+      console.log('Attempting registration with:', phone);
+      
+      const requestBody = {
+        phone,
+        password,
+        ...additionalData
+      };
+      
+      console.log('Registration data being sent to server:', requestBody);
+      
+      const response = await fetch(`/api/auth/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json'
         },
-        body: JSON.stringify(data)
+        body: JSON.stringify(requestBody)
       });
       
       const responseData = await response.json();
-      console.log('Raw server response:', responseData);
-      
+      console.log('Server response:', responseData);
+
       if (!response.ok) {
         throw new Error(responseData.message || 'Registration failed');
       }
-      
-      // Return the response as is since it matches our expected structure
-      return responseData;
+
+      return {
+        status: 'success',
+        data: responseData
+      };
     } catch (error) {
       console.error('Registration error:', error);
       throw error;
