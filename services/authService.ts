@@ -1,67 +1,33 @@
 import { apiClient, ApiResponse, cancelAllRequests } from '@/utils/apiClient';
+import { User } from '@/types';
 
 
 // Types
-export interface User {
-  id: string;
-  name: string;
-  email: string;
-  phone: string;
-  role: 'ADMIN' | 'CLIENT' | 'DRIVER';
-  isConfirmed: boolean;
-  isActive: boolean;
-  createdAt?: string;
-  updatedAt?: string;
-  address?: string;
-  lastLogin?: string;
-  profileImage?: string;
-  driver_profile?: {
-    licenseNumber: string;
-    licenseExpiry: string;
-    vehicleMake: string;
-    vehicleModel: string;
-    vehicleYear: string;
-    vehicleColor: string;
-    vehicleRegistration?: string;
-    licenseDocument?: string;
-    registrationDocument?: string;
-    insuranceDocument?: string;
-    backgroundCheckDocument?: string;
-    isApproved?: boolean;
-    isRejected?: boolean;
-    approvedAt?: string;
-    rejectedAt?: string;
-    rejectionReason?: string;
-  };
-}
-
 export interface LoginCredentials {
-  identifier: string; // Can be either email or phone
+  phone: string;
   password: string;
 }
 
 export interface RegisterData {
   name: string;
-  email: string;
-  password: string;
   phone: string;
-  role: 'CLIENT' | 'DRIVER';
-}
-
-export interface DriverRegistrationData {
-  vehicleDetails: {
-    type: string;
-    model: string;
-    plateNumber: string;
-    year: number;
-  };
-  licenseNumber: string;
-  insuranceNumber: string;
+  password: string;
+  role: string;
+  plateNumber?: string;
+  carMake?: string;
+  carModel?: string;
+  carYear?: string;
+  carColor?: string;
+  licenseDocumentUrl?: string;
+  registrationDocumentUrl?: string;
+  driverPhotoUrl?: string;
+  driverDocuments?: any;
+  tempRegistrationId?: string;
 }
 
 export interface AuthResponse {
-  token: string;
   user: User;
+  token: string;
 }
 
 // API endpoints
@@ -87,44 +53,15 @@ export const authService = {
   // Login user with either email or phone
   login: async (credentials: LoginCredentials): Promise<ApiResponse<AuthResponse>> => {
     try {
-      console.log('Attempting login with identifier:', credentials.identifier);
-      
-      // Determine if the identifier is an email or phone number
-      const isEmail = (str: string): boolean => {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        return emailRegex.test(str);
-      };
-
-      let identifier = credentials.identifier;
-      
-      // Remove any spaces
-      identifier = identifier.replace(/\s+/g, '');
+      console.log('Attempting login with identifier:', credentials.phone);
       
       // Format phone number only if it's not an email
-      if (!isEmail(identifier)) {
-        // Format phone number based on different patterns
-        if (identifier.startsWith('+966')) {
-          // Already in correct format
-          identifier = identifier;
-        } else if (identifier.startsWith('0')) {
-          // Convert 0XXXXXXXXX to +966XXXXXXXXX
-          identifier = `+966${identifier.substring(1)}`;
-        } else if (/^\d{10}$/.test(identifier)) {
-          // Convert 10 digits to +966XXXXXXXXX
-          identifier = `+966${identifier}`;
-        } else if (!identifier.startsWith('+')) {
-          // Add + if missing
-          identifier = `+${identifier}`;
-        }
-      }
+      let phone = credentials.phone;
       
       // Format the request body based on identifier type
       const requestBody = {
         password: credentials.password,
-        // Send as either email or phone based on format
-        ...(isEmail(identifier) 
-          ? { email: identifier } 
-          : { phone: identifier })
+        phone: phone
       };
       
       console.log('Sending login request with:', requestBody);
@@ -181,7 +118,7 @@ export const authService = {
         const { token, user } = responseData.data;
         
         // Validate user data
-        if (!user.id || !user.name || !user.email || !user.phone || !user.role) {
+        if (!user.id || !user.name || !user.phone || !user.role) {
           console.error('Invalid user data in response:', user);
           throw new Error('Invalid user data received from server');
         }

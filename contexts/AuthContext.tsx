@@ -2,10 +2,9 @@
 
 import React, { createContext, useState, useContext, useEffect, ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
-import { AuthState, User } from '@/types';
+import { AuthState, User, ApiResponse } from '@/types';
 import { postData } from '@/utils/api';
-import { authService, AuthResponse } from '@/services/authService';
-import { ApiResponse } from '@/utils/apiClient';
+import { authService } from '@/services/authService';
 
 export type UserRole = 'CLIENT' | 'DRIVER' | 'ADMIN';
 
@@ -14,8 +13,8 @@ interface AuthContextType {
   token: string | null;
   loading: boolean;
   error: string | null;
-  login: (identifier: string, password: string) => Promise<void>;
-  register: (email: string, password: string, userData?: any) => Promise<ApiResponse<AuthResponse>>;
+  login: (phone: string, password: string) => Promise<void>;
+  register: (phone: string, password: string, userData?: any) => Promise<void>;
   logout: () => void;
   isClient: () => boolean;
   isDriver: () => boolean;
@@ -43,6 +42,14 @@ interface AuthProviderProps {
   children: ReactNode;
 }
 
+// Helper function to format phone number
+const formatPhoneNumber = (phone: string): string => {
+  // Remove any existing country code or formatting
+  const cleaned = phone.replace(/^\+966|^966|\s+/g, '');
+  // Add +966 prefix if not present
+  return cleaned.startsWith('+966') ? cleaned : `+966${cleaned}`;
+};
+
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
@@ -62,9 +69,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setLoading(false);
   }, []);
 
-  const login = async (identifier: string, password: string) => {
+  const login = async (phone: string, password: string) => {
     try {
-      const response = await authService.login({ identifier, password });
+      const formattedPhone = formatPhoneNumber(phone);
+      const response = await authService.login({ phone: formattedPhone, password });
       
       if (!response.data) {
         throw new Error('No response data received');
@@ -135,20 +143,20 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  const register = async (email: string, password: string, userData: any = {}) => {
+  const register = async (phone: string, password: string, userData: any = {}) => {
     try {
       setLoading(true);
       setError(null);
-      console.log('AuthContext: Attempting registration with:', email);
+      const formattedPhone = formatPhoneNumber(phone);
+      console.log('AuthContext: Attempting registration with:', formattedPhone);
 
       // Prepare registration data
       const registrationData = {
         name: userData.firstName && userData.lastName 
           ? `${userData.firstName} ${userData.lastName}`
-          : userData.name || email.split('@')[0], // Use email username as fallback name
-        email,
+          : userData.name || formattedPhone, // Use phone as fallback name
+        phone: formattedPhone,
         password,
-        phone: userData.phone || '', // Optional phone number
         role: userData.role || 'CLIENT', // Default to CLIENT if not specified
         
         // Include all driver-specific fields for document URLs
@@ -194,40 +202,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         };
         
         setUser(userForState);
-        
-        // Store token if provided
-        if (response.data.token) {
-          localStorage.setItem('token', response.data.token);
-          setToken(response.data.token);
-          localStorage.setItem('user', JSON.stringify(userForState));
-        }
-        
-        // Redirect based on role
-        const role = apiUser.role.toUpperCase();
-        
-        // Handle special case for driver registration
-        if (role === 'DRIVER' && userData.tempRegistrationId) {
-          router.replace('/register/driver/pending');
-          return response;
-        }
-        
-        // Regular role-based navigation
-        switch (role) {
-          case 'ADMIN':
-            router.replace('/admin/dashboard');
-            break;
-          case 'DRIVER':
-            router.replace('/dashboard');
-            break;
-          case 'CLIENT':
-            router.replace('/dashboard');
-            break;
-          default:
-            console.error('Unknown user role:', role);
-            router.replace('/dashboard');
-        }
-        
-        return response;
+        router.push('/dashboard');
       } else {
         throw new Error(response.message || 'Registration failed');
       }

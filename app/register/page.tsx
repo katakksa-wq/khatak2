@@ -10,72 +10,32 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import TranslatedText from '@/components/TranslatedText';
 import Logo from '@/components/Logo';
+import { toast } from 'react-hot-toast';
 
 export default function RegisterPage() {
-  const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-    phone: ''
-  });
+  const [phone, setPhone] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const { register } = useAuth();
   const router = useRouter();
+  const { register } = useAuth();
   const { t } = useLanguage();
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // Basic validation
-    if (formData.password !== formData.confirmPassword) {
-      setError(t('auth.passwordsDoNotMatch'));
-      return;
-    }
-
-    if (formData.password.length < 6) {
-      setError(t('auth.passwordTooShort'));
-      return;
-    }
-    
     setLoading(true);
-    setError('');
-    
+
     try {
-      // Format phone number if it's a Saudi ID number (10 digits)
-      let phone = formData.phone;
-      if (/^\d{10}$/.test(phone)) {
-        phone = `+966${phone}`;
+      if (password !== confirmPassword) {
+        throw new Error('كلمات المرور غير متطابقة');
       }
 
-      const response = await register(formData.email, formData.password, {
-        firstName: formData.firstName, 
-        lastName: formData.lastName,
-        phone: phone,
-        role: 'CLIENT'
-      });
-
-      // Check if registration was successful
-      if (response.status === 'success') {
-        // Show success message
-        setError(t('auth.registrationPending'));
-        // Redirect to login page after a short delay
-        setTimeout(() => {
-          router.push('/login');
-        }, 2000);
-      } else {
-        setError(response.message || t('auth.registrationFailed'));
-      }
-    } catch (err: any) {
-      console.error('Registration error:', err);
-      setError(err.message || t('auth.registrationFailed'));
+      await register(phone, password);
+      toast.success('تم إنشاء الحساب بنجاح');
+      router.push('/dashboard');
+    } catch (error: any) {
+      console.error('Registration error:', error);
+      toast.error(error.message || 'فشل إنشاء الحساب');
     } finally {
       setLoading(false);
     }
@@ -98,65 +58,7 @@ export default function RegisterPage() {
               </div>
             </Card.Header>
             <Card.Body className="p-3 p-md-4">
-              {error && <Alert variant="danger">{error}</Alert>}
-              
               <Form onSubmit={handleSubmit}>
-                <Row>
-                  <Col xs={12} md={6} className="mb-3">
-                    <Form.Group>
-                      <Form.Label><TranslatedText text="auth.firstName" /></Form.Label>
-                      <div className="input-group">
-                        <span className="input-group-text">
-                          <FaUser />
-                        </span>
-                        <Form.Control
-                          type="text"
-                          name="firstName"
-                          value={formData.firstName}
-                          onChange={handleChange}
-                          placeholder={t('auth.firstNamePlaceholder')}
-                          required
-                        />
-                      </div>
-                    </Form.Group>
-                  </Col>
-                  <Col xs={12} md={6} className="mb-3">
-                    <Form.Group>
-                      <Form.Label><TranslatedText text="auth.lastName" /></Form.Label>
-                      <div className="input-group">
-                        <span className="input-group-text">
-                          <FaUser />
-                        </span>
-                        <Form.Control
-                          type="text"
-                          name="lastName"
-                          value={formData.lastName}
-                          onChange={handleChange}
-                          placeholder={t('auth.lastNamePlaceholder')}
-                          required
-                        />
-                      </div>
-                    </Form.Group>
-                  </Col>
-                </Row>
-                
-                <Form.Group className="mb-3">
-                  <Form.Label><TranslatedText text="auth.email" /></Form.Label>
-                  <div className="input-group">
-                    <span className="input-group-text">
-                      <FaEnvelope />
-                    </span>
-                    <Form.Control
-                      type="email"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleChange}
-                      placeholder={t('auth.emailPlaceholder')}
-                      required
-                    />
-                  </div>
-                </Form.Group>
-                
                 <Form.Group className="mb-3">
                   <Form.Label><TranslatedText text="auth.phone" /></Form.Label>
                   <div className="input-group">
@@ -166,15 +68,12 @@ export default function RegisterPage() {
                     <Form.Control
                       type="tel"
                       name="phone"
-                      value={formData.phone}
-                      onChange={handleChange}
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
                       placeholder={t('auth.phonePlaceholder')}
                       required
                     />
                   </div>
-                  <small className="form-text text-muted">
-                    <TranslatedText text="auth.phoneHelp" />
-                  </small>
                 </Form.Group>
                 
                 <Form.Group className="mb-3">
@@ -186,8 +85,8 @@ export default function RegisterPage() {
                     <Form.Control
                       type="password"
                       name="password"
-                      value={formData.password}
-                      onChange={handleChange}
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
                       placeholder={t('auth.createPassword')}
                       required
                     />
@@ -203,8 +102,8 @@ export default function RegisterPage() {
                     <Form.Control
                       type="password"
                       name="confirmPassword"
-                      value={formData.confirmPassword}
-                      onChange={handleChange}
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
                       placeholder={t('auth.confirmPasswordPlaceholder')}
                       required
                     />

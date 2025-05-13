@@ -1,180 +1,107 @@
 'use client';
 
-import { useState } from 'react';
-import Link from 'next/link';
+import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { FaUser, FaLock, FaEye, FaEyeSlash } from 'react-icons/fa';
+import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
-import { useLanguage } from '@/contexts/LanguageContext';
-import LanguageSwitcher from '@/components/LanguageSwitcher';
-import TranslatedText from '@/components/TranslatedText';
-import Logo from '@/components/Logo';
+import { toast } from 'react-hot-toast';
 
-export default function Login() {
+export default function LoginPage() {
+  const [phone, setPhone] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
   const { login } = useAuth();
-  const { t } = useLanguage();
-  const [credentials, setCredentials] = useState({
-    identifier: '',
-    password: ''
-  });
-  const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { id, value } = e.target;
-    setCredentials(prev => ({
-      ...prev,
-      [id]: value
-    }));
-    // Clear error when user starts typing again
-    if (error) setError('');
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (loading) return;
-
     setLoading(true);
-    setError('');
 
     try {
-      // Format the identifier if it's a Saudi ID number (10 digits)
-      let formattedIdentifier = credentials.identifier;
-      if (/^\d{10}$/.test(credentials.identifier)) {
-        formattedIdentifier = `+966${credentials.identifier}`;
-      }
-
-      await login(formattedIdentifier, credentials.password);
-      // The AuthContext will handle the navigation
-    } catch (err) {
-      console.error('Login error:', err);
-      
-      // Provide more user-friendly error messages with translations
-      let errorMessage = t('auth.loginFailed');
-      
-      if (err instanceof Error) {
-        // Handle specific error messages
-        if (err.message.includes('Email/phone and password are required')) {
-          errorMessage = t('auth.requiredCredentials');
-        } else if (err.message.includes('Invalid credentials')) {
-          errorMessage = t('auth.invalidCredentials');
-        } else if (err.message.includes('deactivated')) {
-          errorMessage = t('auth.accountDeactivated');
-        } else {
-          errorMessage = err.message;
-        }
-      }
-      
-      setError(errorMessage);
+      await login(phone, password);
+      toast.success('تم تسجيل الدخول بنجاح');
+    } catch (error: any) {
+      console.error('Login error:', error);
+      toast.error(error.message || 'فشل تسجيل الدخول');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="container px-4">
-      <div className="row justify-content-center align-items-center min-vh-100 py-4">
-        <div className="col-12 col-sm-10 col-md-8 col-lg-6 col-xl-5">
-          <div className="text-end mb-3">
-            <LanguageSwitcher />
-          </div>
+    <div className="min-h-screen bg-gray-100 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+      <div className="sm:mx-auto sm:w-full sm:max-w-md">
+        <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+          تسجيل الدخول
+        </h2>
+      </div>
 
-          <div className="card shadow-sm border-0">
-            <div className="card-body p-3 p-md-4">
-              <div className="text-center mb-4">
-                <div className="d-flex justify-content-center">
-                  <Logo width={240} height={240} className="mb-3" />
-                </div>
-                <h2 className="fw-bold"><TranslatedText text="auth.login" /></h2>
-                <p className="text-muted">
-                  <TranslatedText text="auth.loginDescription" />
-                </p>
+      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+        <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+          <form className="space-y-6" onSubmit={handleSubmit}>
+            <div>
+              <label htmlFor="phone" className="block text-sm font-medium text-gray-700">
+                رقم الجوال
+              </label>
+              <div className="mt-1">
+                <input
+                  id="phone"
+                  name="phone"
+                  type="tel"
+                  required
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="+966XXXXXXXXX"
+                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                />
               </div>
+            </div>
 
-              {error && (
-                <div className="alert alert-danger" role="alert">
-                  {error}
-                </div>
-              )}
+            <div>
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+                كلمة المرور
+              </label>
+              <div className="mt-1">
+                <input
+                  id="password"
+                  name="password"
+                  type="password"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                />
+              </div>
+            </div>
 
-              <form onSubmit={handleSubmit}>
-                <div className="mb-3">
-                  <label htmlFor="identifier" className="form-label"><TranslatedText text="auth.identifier" /></label>
-                  <div className="input-group">
-                    <span className="input-group-text">
-                      <FaUser />
-                    </span>
-                    <input
-                      type="text"
-                      className="form-control"
-                      id="identifier"
-                      placeholder={t('auth.identifierPlaceholder')}
-                      value={credentials.identifier}
-                      onChange={handleInputChange}
-                      required
-                      disabled={loading}
-                    />
-                  </div>
-                  <small className="form-text text-muted">
-                    <TranslatedText text="auth.identifierHelp" />
-                  </small>
-                </div>
+            <div>
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
+              >
+                {loading ? 'جاري تسجيل الدخول...' : 'تسجيل الدخول'}
+              </button>
+            </div>
+          </form>
 
-                <div className="mb-4">
-                  <label htmlFor="password" className="form-label"><TranslatedText text="auth.password" /></label>
-                  <div className="input-group">
-                    <span className="input-group-text">
-                      <FaLock />
-                    </span>
-                    <input
-                      type={showPassword ? 'text' : 'password'}
-                      className="form-control"
-                      id="password"
-                      placeholder={t('auth.passwordPlaceholder')}
-                      value={credentials.password}
-                      onChange={handleInputChange}
-                      required
-                      disabled={loading}
-                    />
-                    <button
-                      type="button"
-                      className="btn btn-outline-secondary"
-                      onClick={() => setShowPassword(!showPassword)}
-                      aria-label={t(showPassword ? 'auth.hidePassword' : 'auth.showPassword')}
-                    >
-                      {showPassword ? <FaEyeSlash /> : <FaEye />}
-                    </button>
-                  </div>
-                </div>
+          <div className="mt-6">
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-gray-300" />
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="px-2 bg-white text-gray-500">أو</span>
+              </div>
+            </div>
 
-                <div className="d-grid gap-2">
-                  <button
-                    type="submit"
-                    className="btn btn-primary"
-                    disabled={loading}
-                  >
-                    {loading ? (
-                      <>
-                        <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                        <TranslatedText text="loading.message" />
-                      </>
-                    ) : (
-                      <TranslatedText text="auth.login" />
-                    )}
-                  </button>
-                </div>
-
-                <div className="text-center mt-3">
-                  <p className="mb-0">
-                    <TranslatedText text="auth.dontHaveAccount" />{' '}
-                    <Link href="/register" className="text-primary">
-                      <TranslatedText text="auth.registerHere" />
-                    </Link>
-                  </p>
-                </div>
-              </form>
+            <div className="mt-6 grid grid-cols-1 gap-3">
+              <Link
+                href="/register"
+                className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+              >
+                إنشاء حساب جديد
+              </Link>
             </div>
           </div>
         </div>
