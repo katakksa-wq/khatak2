@@ -15,12 +15,23 @@ export interface User {
   address?: string;
   lastLogin?: string;
   profileImage?: string;
-  driverProfile?: {
-    vehicleType: string;
-    vehicleModel: string;
+  driver_profile?: {
     licenseNumber: string;
-    insuranceNumber: string;
-    isVerified: boolean;
+    licenseExpiry: string;
+    vehicleMake: string;
+    vehicleModel: string;
+    vehicleYear: string;
+    vehicleColor: string;
+    vehicleRegistration?: string;
+    licenseDocument?: string;
+    registrationDocument?: string;
+    insuranceDocument?: string;
+    backgroundCheckDocument?: string;
+    isApproved?: boolean;
+    isRejected?: boolean;
+    approvedAt?: string;
+    rejectedAt?: string;
+    rejectionReason?: string;
   };
 }
 
