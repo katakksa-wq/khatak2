@@ -70,10 +70,9 @@ interface DriverProfile {
 }
 
 interface ApiResponse<T> {
-  success: boolean;
-  message?: string;
+  status: string;
   data: T;
-  results?: number;
+  total?: number;
   totalPages?: number;
   currentPage?: number;
 }
@@ -83,10 +82,9 @@ interface DriverProfileResponse {
   data: User;
 }
 
-interface UsersApiResponse {
+interface UsersResponse {
   users: User[];
-  totalPages: number;
-  currentPage: number;
+  total: number;
 }
 
 interface ResetPasswordResponse {
@@ -108,6 +106,8 @@ export default function UsersManagementPage() {
   const [roleFilter, setRoleFilter] = useState<string>('ALL');
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [totalUsers, setTotalUsers] = useState(0);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [resetPasswordEmail, setResetPasswordEmail] = useState('');
@@ -118,54 +118,9 @@ export default function UsersManagementPage() {
     tempPassword?: string;
   } | null>(null);
 
-  const usersPerPage = 10;
-
   useEffect(() => {
     fetchUsers();
-  }, [currentPage, roleFilter]);
-
-  // Helper function to extract users from various response formats
-  const extractUsersFromResponse = (responseData: any): User[] => {
-    console.log("Extracting users from response data:", JSON.stringify(responseData));
-    
-    // Case 1: responseData.data is the array of users directly
-    if (Array.isArray(responseData.data)) {
-      console.log("Found users array directly in data property");
-      return responseData.data;
-    }
-    
-    // Case 2: responseData is the array of users directly (no data property)
-    if (Array.isArray(responseData)) {
-      console.log("Response data itself is an array of users");
-      return responseData;
-    }
-    
-    // Case 3: users are inside responseData.data.users
-    if (responseData.data && typeof responseData.data === 'object') {
-      console.log("Response data has nested data object");
-      
-      if (Array.isArray(responseData.data.users)) {
-        console.log("Found users array in data.users property");
-        return responseData.data.users;
-      }
-      
-      // Case 4: data property itself is the object we want to return
-      console.log("Using data property as users");
-      return responseData.data;
-    }
-    
-    // Case 5: users are directly in the responseData (no data property)
-    if (responseData && typeof responseData === 'object' && !responseData.data) {
-      console.log("Response object itself contains users");
-      if (responseData.users && Array.isArray(responseData.users)) {
-        return responseData.users;
-      }
-    }
-    
-    // Default empty array for safety
-    console.warn("Could not extract users from response, returning empty array");
-    return [];
-  };
+  }, [currentPage, roleFilter, pageSize]);
 
   const fetchUsers = async () => {
     try {
@@ -181,7 +136,7 @@ export default function UsersManagementPage() {
       // Construct the query parameters
       const params = new URLSearchParams();
       params.append('page', currentPage.toString());
-      params.append('limit', usersPerPage.toString());
+      params.append('limit', pageSize.toString());
       
       if (roleFilter !== 'ALL') {
         params.append('role', roleFilter);
@@ -193,7 +148,7 @@ export default function UsersManagementPage() {
       
       console.log(`Fetching users with params: ${params.toString()}`);
       
-      const response = await apiClient.get(`/api/admin/users?${params.toString()}`, {
+      const response = await apiClient.get<ApiResponse<UsersResponse | User[]>>(`/api/admin/users?${params.toString()}`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -207,68 +162,27 @@ export default function UsersManagementPage() {
       
       const responseData = response.data;
       
-      // Check if response is directly an array of users
-      if (Array.isArray(responseData)) {
-        console.log(`Found ${responseData.length} users in direct array response`);
-        setUsers(responseData);
-        setTotalPages(1);
-        setCurrentPage(1);
-        setLoading(false);
-        return;
+      // Extract users and pagination info
+      let usersData: User[] = [];
+      let totalCount = 0;
+      
+      if (Array.isArray(responseData.data)) {
+        usersData = responseData.data;
+        totalCount = responseData.total || responseData.data.length;
+      } else if ('users' in responseData.data) {
+        usersData = responseData.data.users;
+        totalCount = responseData.data.total;
       }
       
-      // Check if response has a direct users property at the root level
-      if (responseData && typeof responseData === 'object' && 'users' in responseData && Array.isArray(responseData.users)) {
-        console.log(`Found ${responseData.users.length} users in root users property`);
-        setUsers(responseData.users);
-        setTotalPages((responseData as any).totalPages || 1);
-        setCurrentPage((responseData as any).currentPage || 1);
-        setLoading(false);
-        return;
-      }
-      
-      // Cast to structured response for typed access
-      const structuredResponse = responseData as ApiResponse<UsersApiResponse | User[]>;
-      
-      // Get raw data structure from backend response
-      console.log("Response structure:", Object.keys(responseData).join(', '));
-      
-      // Direct match with backend response structure
-      if (structuredResponse.data) {
-        console.log("Response contains data property");
-        
-        let usersData: User[] = [];
-        
-        // Extract users based on data format
-        if (Array.isArray(structuredResponse.data)) {
-          console.log(`Found ${structuredResponse.data.length} users in data array`);
-          usersData = structuredResponse.data;
-        } else {
-          // Try to handle nested formats
-          console.log("Data is not an array, trying to extract from object");
-          usersData = extractUsersFromResponse(structuredResponse);
-        }
-        
-        console.log(`Successfully extracted ${usersData.length} users with IDs:`, 
-          usersData.map(u => u.id).join(', '));
-        
-        setUsers(usersData);
-        setTotalPages(structuredResponse.totalPages || 1);
-        setCurrentPage(structuredResponse.currentPage || 1);
-      } else {
-        console.warn("Response does not match expected format:", responseData);
-        setUsers([]);
-        setTotalPages(1);
-        setCurrentPage(1);
-      }
-      
+      setUsers(usersData);
+      setTotalUsers(totalCount);
+      setTotalPages(Math.ceil(totalCount / pageSize));
       setLoading(false);
     } catch (err: any) {
       console.error('Error fetching users:', err);
       setError(err.response?.data?.message || 'Failed to fetch users');
       setLoading(false);
       
-      // If unauthorized, redirect to login
       if (err.response?.status === 401 || err.response?.status === 403) {
         router.replace('/login');
       }
@@ -535,124 +449,181 @@ export default function UsersManagementPage() {
               <p className="text-muted mb-0">{t('admin.users.noUsersFound')}</p>
             </div>
           ) : (
-            <div className="table-responsive">
-              <table className="table table-hover align-middle">
-                <thead>
-                  <tr>
-                    <th>{t('admin.users.name')}</th>
-                    <th>{t('admin.users.email')}</th>
-                    <th>{t('admin.users.role')}</th>
-                    <th>{t('admin.users.status')}</th>
-                    <th>{t('admin.users.joined')}</th>
-                    <th>{t('admin.users.lastActive')}</th>
-                    <th>{t('admin.actions')}</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {users.map((user) => (
-                    <tr key={user.id}>
-                      <td>{user.name}</td>
-                      <td>{user.email}</td>
-                      <td>
-                        <span className={`badge ${getRoleBadgeColor(user.role)}`}>
-                          {t(`admin.users.role${user.role}`)}
-                        </span>
-                      </td>
-                      <td>
-                        {user.isActive ? (
-                          <span className="badge bg-success">{t('admin.users.active')}</span>
-                        ) : (
-                          <span className="badge bg-danger">{t('admin.users.inactive')}</span>
-                        )}
-                      </td>
-                      <td>{formatDate(user.createdAt)}</td>
-                      <td>{user.lastLogin ? formatDate(user.lastLogin) : t('admin.users.never')}</td>
-                      <td>
-                        <div className="btn-group" role="group">
-                          <button
-                            type="button"
-                            className="btn btn-sm btn-outline-primary"
-                            onClick={() => router.push(`/admin/users/${user.id}/edit`)}
-                          >
-                            <FaUserEdit /> {t('admin.edit')}
-                          </button>
-                          <button
-                            type="button"
-                            className="btn btn-sm btn-outline-primary"
-                            onClick={() => handleViewDetails(user)}
-                          >
-                            <FaFileAlt /> {t('admin.view')}
-                          </button>
-                          <button
-                            type="button"
-                            className="btn btn-sm btn-outline-secondary"
-                            onClick={() => handleResetPassword(user.email)}
-                          >
-                            <FaKey /> {t('admin.users.resetPwd')}
-                          </button>
-                          {user.role !== 'ADMIN' && (
+            <>
+              <div className="table-responsive">
+                <table className="table table-hover align-middle">
+                  <thead>
+                    <tr>
+                      <th>{t('admin.users.name')}</th>
+                      <th>{t('admin.users.email')}</th>
+                      <th>{t('admin.users.role')}</th>
+                      <th>{t('admin.users.status')}</th>
+                      <th>{t('admin.users.joined')}</th>
+                      <th>{t('admin.users.lastActive')}</th>
+                      <th>{t('admin.actions')}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {users.map((user) => (
+                      <tr key={user.id}>
+                        <td>{user.name}</td>
+                        <td>{user.email}</td>
+                        <td>
+                          <span className={`badge ${getRoleBadgeColor(user.role)}`}>
+                            {t(`admin.users.role${user.role}`)}
+                          </span>
+                        </td>
+                        <td>
+                          {user.isActive ? (
+                            <span className="badge bg-success">{t('admin.users.active')}</span>
+                          ) : (
+                            <span className="badge bg-danger">{t('admin.users.inactive')}</span>
+                          )}
+                        </td>
+                        <td>{formatDate(user.createdAt)}</td>
+                        <td>{user.lastLogin ? formatDate(user.lastLogin) : t('admin.users.never')}</td>
+                        <td>
+                          <div className="btn-group" role="group">
                             <button
                               type="button"
-                              className={`btn btn-sm ${user.isActive ? 'btn-outline-danger' : 'btn-outline-success'}`}
-                              onClick={() => handleToggleUserStatus(user.id, user.isActive)}
+                              className="btn btn-sm btn-outline-primary"
+                              onClick={() => router.push(`/admin/users/${user.id}/edit`)}
                             >
-                              {user.isActive ? (
-                                <><FaUserSlash /> {t('admin.users.deactivate')}</>
-                              ) : (
-                                <><FaUserEdit /> {t('admin.users.activate')}</>
-                              )}
+                              <FaUserEdit /> {t('admin.edit')}
                             </button>
-                          )}
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                            <button
+                              type="button"
+                              className="btn btn-sm btn-outline-primary"
+                              onClick={() => handleViewDetails(user)}
+                            >
+                              <FaFileAlt /> {t('admin.view')}
+                            </button>
+                            <button
+                              type="button"
+                              className="btn btn-sm btn-outline-secondary"
+                              onClick={() => handleResetPassword(user.email)}
+                            >
+                              <FaKey /> {t('admin.users.resetPwd')}
+                            </button>
+                            {user.role !== 'ADMIN' && (
+                              <button
+                                type="button"
+                                className={`btn btn-sm ${user.isActive ? 'btn-outline-danger' : 'btn-outline-success'}`}
+                                onClick={() => handleToggleUserStatus(user.id, user.isActive)}
+                              >
+                                {user.isActive ? (
+                                  <><FaUserSlash /> {t('admin.users.deactivate')}</>
+                                ) : (
+                                  <><FaUserEdit /> {t('admin.users.activate')}</>
+                                )}
+                              </button>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              
+              {/* Enhanced Pagination */}
+              <div className="d-flex justify-content-between align-items-center mt-4">
+                <div className="d-flex align-items-center">
+                  <span className="me-2">{t('admin.users.showing')}</span>
+                  <select
+                    className="form-select form-select-sm"
+                    style={{ width: 'auto' }}
+                    value={pageSize}
+                    onChange={(e) => {
+                      setPageSize(Number(e.target.value));
+                      setCurrentPage(1); // Reset to first page when changing page size
+                    }}
+                  >
+                    <option value="5">5</option>
+                    <option value="10">10</option>
+                    <option value="20">20</option>
+                    <option value="50">50</option>
+                  </select>
+                  <span className="ms-2">
+                    {t('admin.users.of')} {totalUsers} {t('admin.users.users')}
+                  </span>
+                </div>
+                
+                <nav>
+                  <ul className="pagination mb-0">
+                    <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+                      <button 
+                        className="page-link" 
+                        onClick={() => setCurrentPage(1)}
+                        disabled={currentPage === 1}
+                      >
+                        {t('pagination.first')}
+                      </button>
+                    </li>
+                    
+                    <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+                      <button 
+                        className="page-link" 
+                        onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                        disabled={currentPage === 1}
+                      >
+                        {t('pagination.previous')}
+                      </button>
+                    </li>
+                    
+                    {/* Show page numbers with ellipsis */}
+                    {Array.from({ length: Math.min(5, totalPages) }).map((_, index) => {
+                      let pageNum;
+                      if (totalPages <= 5) {
+                        pageNum = index + 1;
+                      } else if (currentPage <= 3) {
+                        pageNum = index + 1;
+                      } else if (currentPage >= totalPages - 2) {
+                        pageNum = totalPages - 4 + index;
+                      } else {
+                        pageNum = currentPage - 2 + index;
+                      }
+                      
+                      return (
+                        <li 
+                          key={pageNum} 
+                          className={`page-item ${currentPage === pageNum ? 'active' : ''}`}
+                        >
+                          <button
+                            className="page-link"
+                            onClick={() => setCurrentPage(pageNum)}
+                          >
+                            {pageNum}
+                          </button>
+                        </li>
+                      );
+                    })}
+                    
+                    <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
+                      <button 
+                        className="page-link" 
+                        onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                        disabled={currentPage === totalPages}
+                      >
+                        {t('pagination.next')}
+                      </button>
+                    </li>
+                    
+                    <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
+                      <button 
+                        className="page-link" 
+                        onClick={() => setCurrentPage(totalPages)}
+                        disabled={currentPage === totalPages}
+                      >
+                        {t('pagination.last')}
+                      </button>
+                    </li>
+                  </ul>
+                </nav>
+              </div>
+            </>
           )}
         </div>
-        
-        {/* Pagination */}
-        {!loading && totalPages > 1 && (
-          <div className="card-footer bg-white">
-            <nav>
-              <ul className="pagination justify-content-center mb-0">
-                <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
-                  <button 
-                    className="page-link" 
-                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                  >
-                    {t('pagination.previous')}
-                  </button>
-                </li>
-                
-                {Array.from({ length: totalPages }).map((_, index) => (
-                  <li 
-                    key={index} 
-                    className={`page-item ${currentPage === index + 1 ? 'active' : ''}`}
-                  >
-                    <button
-                      className="page-link"
-                      onClick={() => setCurrentPage(index + 1)}
-                    >
-                      {index + 1}
-                    </button>
-                  </li>
-                ))}
-                
-                <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
-                  <button 
-                    className="page-link" 
-                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-                  >
-                    {t('pagination.next')}
-                  </button>
-                </li>
-              </ul>
-            </nav>
-          </div>
-        )}
       </div>
 
       {/* User Details Modal */}
