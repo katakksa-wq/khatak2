@@ -30,6 +30,19 @@ export interface AuthResponse {
   token: string;
 }
 
+export interface DriverRegistrationData {
+  plateNumber: string;
+  carMake: string;
+  carModel: string;
+  carYear: string;
+  carColor: string;
+  licenseDocumentUrl: string;
+  registrationDocumentUrl: string;
+  driverPhotoUrl: string;
+  driverDocuments?: any;
+  tempRegistrationId?: string;
+}
+
 // API endpoints
 const ENDPOINTS = {
   login: '/api/auth/login',
