@@ -264,6 +264,7 @@ export default function UsersManagementPage() {
         }
         
         console.log(`Fetching driver profile for ID: ${user.id}`);
+        console.log('Current user data:', user);
         
         const response = await apiClient.get<DriverProfileResponse>(`/api/admin/drivers/${user.id}/profile`, {
           headers: {
@@ -271,11 +272,15 @@ export default function UsersManagementPage() {
           }
         });
         
-        console.log('Driver profile response:', response.data);
+        console.log('Raw driver profile response:', response);
+        console.log('Driver profile data:', response.data);
         
         if (response.data && response.data.status === 'success') {
+          console.log('Updating selected user with driver profile:', response.data.data);
           // Update the selected user with the fetched data
           setSelectedUser(response.data.data);
+        } else {
+          console.warn('Unexpected response format:', response.data);
         }
       } catch (error) {
         console.error('Error fetching driver profile:', error);
