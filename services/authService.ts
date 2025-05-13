@@ -106,17 +106,10 @@ export const authService = {
   },
 
   // Register new user
-  register: async (phone: string, password: string, additionalData?: any): Promise<ApiResponse<AuthResponse>> => {
+  register: async (data: RegisterData): Promise<ApiResponse<AuthResponse>> => {
     try {
-      console.log('Attempting registration with:', phone);
-      
-      const requestBody = {
-        phone,
-        password,
-        ...additionalData
-      };
-      
-      console.log('Registration data being sent to server:', requestBody);
+      console.log('Attempting registration with:', data.phone);
+      console.log('Registration data being sent to server:', data);
       
       const response = await fetch(`/api/auth/register`, {
         method: 'POST',
@@ -124,7 +117,7 @@ export const authService = {
           'Content-Type': 'application/json',
           'Accept': 'application/json'
         },
-        body: JSON.stringify(requestBody)
+        body: JSON.stringify(data)
       });
       
       const responseData = await response.json();

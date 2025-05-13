@@ -4,7 +4,7 @@ import React, { createContext, useState, useContext, useEffect, ReactNode } from
 import { useRouter } from 'next/navigation';
 import { AuthState, User, ApiResponse } from '@/types';
 import { postData } from '@/utils/api';
-import { authService } from '@/services/authService';
+import { authService, RegisterData } from '@/services/authService';
 
 export type UserRole = 'CLIENT' | 'DRIVER' | 'ADMIN';
 
@@ -152,7 +152,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       console.log('AuthContext: Attempting registration with:', formattedPhone);
 
       // Prepare registration data
-      const registrationData = {
+      const registrationData: RegisterData = {
         name: userData.firstName && userData.lastName 
           ? `${userData.firstName} ${userData.lastName}`
           : userData.name || formattedPhone, // Use phone as fallback name
