@@ -95,6 +95,9 @@ export const authService = {
         // Ensure number starts with + if not already
         identifier = `+${identifier}`;
       }
+
+      // Remove any spaces from the phone number
+      identifier = identifier.replace(/\s+/g, '');
       
       // Format the request body based on identifier type
       const requestBody = {
@@ -122,6 +125,10 @@ export const authService = {
       if (!response.ok) {
         // Handle specific error cases based on status code and response structure
         if (responseData.status === 'fail') {
+          // Check if this is a registration-to-login issue
+          if (responseData.message === 'Incorrect email/phone or password') {
+            throw new Error('Login failed. If you just registered, please wait a moment and try again.');
+          }
           throw new Error(responseData.message);
         }
         
