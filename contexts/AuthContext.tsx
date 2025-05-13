@@ -95,6 +95,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         phone: apiUser.phone || '',
         role: apiUser.role as UserRole,
         isActive: apiUser.isActive,
+        isConfirmed: apiUser.isConfirmed || false,
         createdAt: apiUser.createdAt || new Date().toISOString(),
         // Convert string address to object if needed
         address: typeof apiUser.address === 'string' 
@@ -194,6 +195,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           phone: apiUser.phone,
           role: apiUser.role as UserRole,
           isActive: apiUser.isActive,
+          isConfirmed: apiUser.isConfirmed || false,
           createdAt: apiUser.createdAt || new Date().toISOString(),
           // Convert string address to object if needed
           address: typeof apiUser.address === 'string' 
