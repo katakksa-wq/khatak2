@@ -88,6 +88,12 @@ export const authService = {
       let identifier = credentials.identifier;
       if (/^\d{10}$/.test(identifier)) {
         identifier = `+966${identifier}`;
+      } else if (/^0\d{9}$/.test(identifier)) {
+        // Handle numbers starting with 0
+        identifier = `+966${identifier.substring(1)}`;
+      } else if (!identifier.startsWith('+')) {
+        // Ensure number starts with + if not already
+        identifier = `+${identifier}`;
       }
       
       // Format the request body based on identifier type
@@ -110,24 +116,29 @@ export const authService = {
         body: JSON.stringify(requestBody)
       });
       
+      const responseData = await response.json();
+      console.log('Server response:', responseData);
+      
       if (!response.ok) {
-        const errorData = await response.json();
-        
         // Handle specific error cases based on status code and response structure
-        if (errorData.status === 'fail') {
-          throw new Error(errorData.message);
+        if (responseData.status === 'fail') {
+          throw new Error(responseData.message);
         }
         
-        // Handle other error cases
-        const errorMessage = errorData.message || 
-                            errorData.error || 
-                            errorData.detail || 
-                            'Login failed. Please check your credentials.';
-        throw new Error(errorMessage);
+        // Handle HTTP status codes
+        switch (response.status) {
+          case 400:
+            throw new Error(responseData.message || 'Invalid request format');
+          case 401:
+            throw new Error(responseData.message || 'Incorrect email/phone or password');
+          case 403:
+            throw new Error(responseData.message || 'Account access denied');
+          case 500:
+            throw new Error(responseData.message || 'Server error occurred');
+          default:
+            throw new Error(responseData.message || 'Login failed. Please try again.');
+        }
       }
-      
-      const responseData = await response.json();
-      console.log('Raw server response:', responseData);
       
       // Handle success response structure
       if (responseData.status === 'success' && responseData.data?.token && responseData.data?.user) {
