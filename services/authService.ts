@@ -86,18 +86,24 @@ export const authService = {
 
       // Format phone number if it's a Saudi ID number (10 digits)
       let identifier = credentials.identifier;
-      if (/^\d{10}$/.test(identifier)) {
-        identifier = `+966${identifier}`;
-      } else if (/^0\d{9}$/.test(identifier)) {
-        // Handle numbers starting with 0
-        identifier = `+966${identifier.substring(1)}`;
-      } else if (!identifier.startsWith('+')) {
-        // Ensure number starts with + if not already
-        identifier = `+${identifier}`;
-      }
-
+      
       // Remove any spaces from the phone number
       identifier = identifier.replace(/\s+/g, '');
+      
+      // Format phone number based on different patterns
+      if (identifier.startsWith('+966')) {
+        // Already in correct format
+        identifier = identifier;
+      } else if (identifier.startsWith('0')) {
+        // Convert 0XXXXXXXXX to +966XXXXXXXXX
+        identifier = `+966${identifier.substring(1)}`;
+      } else if (/^\d{10}$/.test(identifier)) {
+        // Convert 10 digits to +966XXXXXXXXX
+        identifier = `+966${identifier}`;
+      } else if (!identifier.startsWith('+')) {
+        // Add + if missing
+        identifier = `+${identifier}`;
+      }
       
       // Format the request body based on identifier type
       const requestBody = {
