@@ -13,11 +13,41 @@ interface User {
   email: string;
   role: 'ADMIN' | 'CLIENT' | 'DRIVER';
   isActive: boolean;
+  isConfirmed: boolean;
   createdAt: string;
   lastLogin?: string;
   totalOrders?: number;
   phoneNumber?: string;
-  driver_profile?: DriverProfile;
+  documents?: {
+    license?: {
+      number?: string;
+      expiry?: string;
+      document?: string;
+    };
+    registration?: {
+      document?: string;
+    };
+    insurance?: {
+      document?: string;
+    };
+    backgroundCheck?: {
+      document?: string;
+    };
+  };
+  vehicle?: {
+    make?: string;
+    model?: string;
+    year?: string;
+    color?: string;
+    registration?: string;
+  };
+  status?: {
+    isApproved?: boolean;
+    isRejected?: boolean;
+    approvedAt?: string;
+    rejectedAt?: string;
+    rejectionReason?: string;
+  };
 }
 
 interface DriverProfile {
@@ -701,7 +731,7 @@ export default function UsersManagementPage() {
                   </div>
                 </div>
                 
-                {selectedUser.role === 'DRIVER' && selectedUser.driver_profile && (
+                {selectedUser.role === 'DRIVER' && selectedUser.documents && (
                   <div className="mb-3">
                     <h6 className="text-muted mb-2">{t('admin.users.driverProfile')}</h6>
                     
@@ -714,27 +744,27 @@ export default function UsersManagementPage() {
                         <div className="row g-2">
                           <div className="col-md-6">
                             <p className="mb-1"><strong>{t('driver.make')}:</strong></p>
-                            <p>{selectedUser.driver_profile.vehicleMake || 'N/A'}</p>
+                            <p>{selectedUser.vehicle?.make || 'N/A'}</p>
                           </div>
                           <div className="col-md-6">
                             <p className="mb-1"><strong>{t('driver.model')}:</strong></p>
-                            <p>{selectedUser.driver_profile.vehicleModel || 'N/A'}</p>
+                            <p>{selectedUser.vehicle?.model || 'N/A'}</p>
                           </div>
                         </div>
                         <div className="row g-2">
                           <div className="col-md-6">
                             <p className="mb-1"><strong>{t('driver.year')}:</strong></p>
-                            <p>{selectedUser.driver_profile.vehicleYear || 'N/A'}</p>
+                            <p>{selectedUser.vehicle?.year || 'N/A'}</p>
                           </div>
                           <div className="col-md-6">
                             <p className="mb-1"><strong>{t('driver.color')}:</strong></p>
-                            <p>{selectedUser.driver_profile.vehicleColor || 'N/A'}</p>
+                            <p>{selectedUser.vehicle?.color || 'N/A'}</p>
                           </div>
                         </div>
                         <div className="row g-2">
                           <div className="col-12">
                             <p className="mb-1"><strong>{t('driver.licensePlate')}:</strong></p>
-                            <p>{selectedUser.driver_profile.vehicleRegistration || 'N/A'}</p>
+                            <p>{selectedUser.vehicle?.registration || 'N/A'}</p>
                           </div>
                         </div>
                       </div>
@@ -749,11 +779,11 @@ export default function UsersManagementPage() {
                         <div className="row g-2">
                           <div className="col-md-6">
                             <p className="mb-1"><strong>{t('driver.licenseNumber')}:</strong></p>
-                            <p>{selectedUser.driver_profile.licenseNumber || 'N/A'}</p>
+                            <p>{selectedUser.documents?.license?.number || 'N/A'}</p>
                           </div>
                           <div className="col-md-6">
                             <p className="mb-1"><strong>{t('driver.expiryDate')}:</strong></p>
-                            <p>{selectedUser.driver_profile.licenseExpiry ? formatDate(selectedUser.driver_profile.licenseExpiry) : 'N/A'}</p>
+                            <p>{selectedUser.documents?.license?.expiry ? formatDate(selectedUser.documents.license.expiry) : 'N/A'}</p>
                           </div>
                         </div>
                       </div>
@@ -766,13 +796,13 @@ export default function UsersManagementPage() {
                       </div>
                       <div className="card-body">
                         <div className="row g-2">
-                          {selectedUser.driver_profile?.licenseDocument && (
+                          {selectedUser.documents?.license?.document && (
                             <div className="col-md-6 mb-2">
                               <p className="mb-1"><strong>{t('driver.license')}:</strong></p>
                               <div className="d-flex align-items-center gap-2">
                                 <div className="position-relative" style={{ width: '100px', height: '100px' }}>
                                   <img 
-                                    src={selectedUser.driver_profile?.licenseDocument} 
+                                    src={selectedUser.documents.license.document} 
                                     alt={t('driver.license')} 
                                     className="img-thumbnail" 
                                     style={{ 
@@ -781,7 +811,7 @@ export default function UsersManagementPage() {
                                       objectFit: 'cover',
                                       cursor: 'pointer'
                                     }}
-                                    onClick={() => window.open(selectedUser.driver_profile?.licenseDocument, '_blank')}
+                                    onClick={() => window.open(selectedUser.documents?.license?.document, '_blank')}
                                     onError={(e) => {
                                       e.currentTarget.src = '/images/document-placeholder.png';
                                       e.currentTarget.onerror = null;
@@ -792,7 +822,7 @@ export default function UsersManagementPage() {
                                   </div>
                                 </div>
                                 <a 
-                                  href={selectedUser.driver_profile?.licenseDocument} 
+                                  href={selectedUser.documents.license.document} 
                                   target="_blank" 
                                   rel="noopener noreferrer"
                                   className="btn btn-sm btn-outline-primary"
@@ -803,13 +833,13 @@ export default function UsersManagementPage() {
                             </div>
                           )}
                           
-                          {selectedUser.driver_profile?.registrationDocument && (
+                          {selectedUser.documents?.registration?.document && (
                             <div className="col-md-6 mb-2">
                               <p className="mb-1"><strong>{t('driver.registration')}:</strong></p>
                               <div className="d-flex align-items-center gap-2">
                                 <div className="position-relative" style={{ width: '100px', height: '100px' }}>
                                   <img 
-                                    src={selectedUser.driver_profile?.registrationDocument} 
+                                    src={selectedUser.documents.registration.document} 
                                     alt={t('driver.registration')} 
                                     className="img-thumbnail" 
                                     style={{ 
@@ -818,7 +848,7 @@ export default function UsersManagementPage() {
                                       objectFit: 'cover',
                                       cursor: 'pointer'
                                     }}
-                                    onClick={() => window.open(selectedUser.driver_profile?.registrationDocument, '_blank')}
+                                    onClick={() => window.open(selectedUser.documents?.registration?.document, '_blank')}
                                     onError={(e) => {
                                       e.currentTarget.src = '/images/document-placeholder.png';
                                       e.currentTarget.onerror = null;
@@ -829,7 +859,7 @@ export default function UsersManagementPage() {
                                   </div>
                                 </div>
                                 <a 
-                                  href={selectedUser.driver_profile?.registrationDocument} 
+                                  href={selectedUser.documents.registration.document} 
                                   target="_blank" 
                                   rel="noopener noreferrer"
                                   className="btn btn-sm btn-outline-primary"
@@ -840,13 +870,13 @@ export default function UsersManagementPage() {
                             </div>
                           )}
                           
-                          {selectedUser.driver_profile?.insuranceDocument && (
+                          {selectedUser.documents?.insurance?.document && (
                             <div className="col-md-6 mb-2">
                               <p className="mb-1"><strong>{t('driver.insurance')}:</strong></p>
                               <div className="d-flex align-items-center gap-2">
                                 <div className="position-relative" style={{ width: '100px', height: '100px' }}>
                                   <img 
-                                    src={selectedUser.driver_profile?.insuranceDocument} 
+                                    src={selectedUser.documents.insurance.document} 
                                     alt={t('driver.insurance')} 
                                     className="img-thumbnail" 
                                     style={{ 
@@ -855,7 +885,7 @@ export default function UsersManagementPage() {
                                       objectFit: 'cover',
                                       cursor: 'pointer'
                                     }}
-                                    onClick={() => window.open(selectedUser.driver_profile?.insuranceDocument, '_blank')}
+                                    onClick={() => window.open(selectedUser.documents?.insurance?.document, '_blank')}
                                     onError={(e) => {
                                       e.currentTarget.src = '/images/document-placeholder.png';
                                       e.currentTarget.onerror = null;
@@ -866,7 +896,7 @@ export default function UsersManagementPage() {
                                   </div>
                                 </div>
                                 <a 
-                                  href={selectedUser.driver_profile?.insuranceDocument} 
+                                  href={selectedUser.documents.insurance.document} 
                                   target="_blank" 
                                   rel="noopener noreferrer"
                                   className="btn btn-sm btn-outline-primary"
@@ -877,13 +907,13 @@ export default function UsersManagementPage() {
                             </div>
                           )}
                           
-                          {selectedUser.driver_profile?.backgroundCheckDocument && (
+                          {selectedUser.documents?.backgroundCheck?.document && (
                             <div className="col-md-6 mb-2">
                               <p className="mb-1"><strong>{t('driver.backgroundCheck')}:</strong></p>
                               <div className="d-flex align-items-center gap-2">
                                 <div className="position-relative" style={{ width: '100px', height: '100px' }}>
                                   <img 
-                                    src={selectedUser.driver_profile?.backgroundCheckDocument} 
+                                    src={selectedUser.documents.backgroundCheck.document} 
                                     alt={t('driver.backgroundCheck')} 
                                     className="img-thumbnail" 
                                     style={{ 
@@ -892,7 +922,7 @@ export default function UsersManagementPage() {
                                       objectFit: 'cover',
                                       cursor: 'pointer'
                                     }}
-                                    onClick={() => window.open(selectedUser.driver_profile?.backgroundCheckDocument, '_blank')}
+                                    onClick={() => window.open(selectedUser.documents?.backgroundCheck?.document, '_blank')}
                                     onError={(e) => {
                                       e.currentTarget.src = '/images/document-placeholder.png';
                                       e.currentTarget.onerror = null;
@@ -903,7 +933,7 @@ export default function UsersManagementPage() {
                                   </div>
                                 </div>
                                 <a 
-                                  href={selectedUser.driver_profile?.backgroundCheckDocument} 
+                                  href={selectedUser.documents.backgroundCheck.document} 
                                   target="_blank" 
                                   rel="noopener noreferrer"
                                   className="btn btn-sm btn-outline-primary"
@@ -914,10 +944,10 @@ export default function UsersManagementPage() {
                             </div>
                           )}
                           
-                          {!selectedUser.driver_profile?.licenseDocument && 
-                           !selectedUser.driver_profile?.registrationDocument && 
-                           !selectedUser.driver_profile?.insuranceDocument && 
-                           !selectedUser.driver_profile?.backgroundCheckDocument && (
+                          {!selectedUser.documents?.license?.document && 
+                           !selectedUser.documents?.registration?.document && 
+                           !selectedUser.documents?.insurance?.document && 
+                           !selectedUser.documents?.backgroundCheck?.document && (
                             <div className="col-12">
                               <p className="text-muted">{t('admin.users.noDocumentsAvailable')}</p>
                             </div>
@@ -928,7 +958,7 @@ export default function UsersManagementPage() {
                   </div>
                 )}
                 
-                {selectedUser.role === 'DRIVER' && !selectedUser.driver_profile && (
+                {selectedUser.role === 'DRIVER' && !selectedUser.documents && (
                   <div className="mb-3">
                     <h6 className="text-muted mb-2">{t('admin.users.driverInfo')}</h6>
                     <p className="text-muted">{t('admin.users.noDriverProfileInfo')}</p>
