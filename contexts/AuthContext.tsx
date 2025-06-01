@@ -44,10 +44,28 @@ interface AuthProviderProps {
 
 // Helper function to format phone number
 const formatPhoneNumber = (phone: string): string => {
-  // Remove any existing country code or formatting
-  const cleaned = phone.replace(/^\+966|^966|\s+/g, '');
-  // Add +966 prefix if not present
-  return cleaned.startsWith('+966') ? cleaned : `+966${cleaned}`;
+  if (!phone) return '';
+  
+  // Remove any non-digit characters
+  let cleaned = phone.replace(/\D/g, '');
+  
+  // If it's a Saudi number with country code (966)
+  if (cleaned.startsWith('966') && cleaned.length === 12) {
+    return '+966' + cleaned.substring(3);
+  }
+  
+  // If it's a Saudi number without country code (starts with 05)
+  if (cleaned.startsWith('05') && cleaned.length === 10) {
+    return '+966' + cleaned.substring(1);
+  }
+  
+  // If it's a Saudi number without country code (starts with 5)
+  if (cleaned.startsWith('5') && cleaned.length === 9) {
+    return '+966' + cleaned;
+  }
+  
+  // If it doesn't match any pattern, return the original cleaned number
+  return '+966' + cleaned;
 };
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {

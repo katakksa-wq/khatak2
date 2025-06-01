@@ -62,7 +62,12 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://api.katakksa.com'}/api/auth/login`, {
+    // Use localhost for development, production URL for production
+    const apiUrl = process.env.NODE_ENV === 'development' 
+      ? 'http://localhost:5000' 
+      : (process.env.NEXT_PUBLIC_API_URL || 'https://api.katakksa.com');
+    
+    const response = await fetch(`${apiUrl}/api/auth/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -70,6 +75,24 @@ export async function POST(request: NextRequest) {
       },
       body: JSON.stringify(body)
     });
+
+    // Check if response is JSON
+    const contentType = response.headers.get('content-type');
+    if (!contentType || !contentType.includes('application/json')) {
+      console.error('Non-JSON response received:', {
+        status: response.status,
+        contentType,
+        url: `${apiUrl}/api/auth/login`
+      });
+      
+      return NextResponse.json(
+        { 
+          message: `Server returned non-JSON response. Status: ${response.status}`,
+          details: 'Please check if the backend server is running on the correct port.'
+        },
+        { status: 502 }
+      );
+    }
 
     const data = await response.json();
 

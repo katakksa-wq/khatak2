@@ -9,10 +9,10 @@ function validateRegistrationData(data: any) {
     throw new Error(`Missing required fields: ${missingFields.join(', ')}`);
   }
 
-  // Validate phone number format
-  const phoneRegex = /^\+?[0-9]{10,15}$/;
+  // Validate phone number format - updated to accept Saudi format
+  const phoneRegex = /^\+966[5][0-9]{8}$/;
   if (!phoneRegex.test(data.phone)) {
-    throw new Error('Invalid phone number format');
+    throw new Error('Invalid phone number format. Please use Saudi number format: +966XXXXXXXXX');
   }
 
   // Validate password length
@@ -28,10 +28,15 @@ export async function POST(request: NextRequest) {
     // Validate registration data
     validateRegistrationData(body);
     
-    console.log('Making registration request to:', `${process.env.NEXT_PUBLIC_API_URL || 'https://api.katakksa.com'}/api/auth/register`);
+    // Use localhost for development, production URL for production
+    const apiUrl = process.env.NODE_ENV === 'development' 
+      ? 'http://localhost:5000' 
+      : (process.env.NEXT_PUBLIC_API_URL || 'https://api.katakksa.com');
+    
+    console.log('Making registration request to:', `${apiUrl}/api/auth/register`);
     console.log('Request body:', JSON.stringify(body, null, 2));
     
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://api.katakksa.com'}/api/auth/register`, {
+    const response = await fetch(`${apiUrl}/api/auth/register`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -39,6 +44,24 @@ export async function POST(request: NextRequest) {
       },
       body: JSON.stringify(body)
     });
+
+    // Check if response is JSON
+    const contentType = response.headers.get('content-type');
+    if (!contentType || !contentType.includes('application/json')) {
+      console.error('Non-JSON response received:', {
+        status: response.status,
+        contentType,
+        url: `${apiUrl}/api/auth/register`
+      });
+      
+      return NextResponse.json(
+        { 
+          message: `Server returned non-JSON response. Status: ${response.status}`,
+          details: 'Please check if the backend server is running on the correct port.'
+        },
+        { status: 502 }
+      );
+    }
 
     const data = await response.json();
     console.log('Registration response:', {
