@@ -204,26 +204,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       // Use authService for registration
       const response = await authService.register(registrationData);
       
-      if (response.status === 'success' && response.data?.user) {
-        // Map the API response user to our local User type
-        const apiUser = response.data.user;
-        const userForState: User = {
-          id: apiUser.id,
-          name: apiUser.name,
-          email: apiUser.email,
-          phone: apiUser.phone,
-          role: apiUser.role as UserRole,
-          isActive: apiUser.isActive,
-          isConfirmed: apiUser.isConfirmed || false,
-          createdAt: apiUser.createdAt || new Date().toISOString(),
-          // Convert string address to object if needed
-          address: typeof apiUser.address === 'string' 
-            ? { street: apiUser.address } 
-            : apiUser.address as User['address']
-        };
-        
-        setUser(userForState);
-        router.push('/dashboard');
+      if (response.status === 'success') {
+        // Registration successful - redirect to login
+        // Note: Most registration endpoints return success without user data
+        // User needs to login separately after registration
+        console.log('Registration successful:', response.message || 'Registration completed');
+        router.push('/login');
       } else {
         throw new Error(response.message || 'Registration failed');
       }
