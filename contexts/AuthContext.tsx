@@ -96,8 +96,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         throw new Error('No response data received');
       }
 
-      const { user: apiUser, token } = response.data;
+      // Handle nested response structure: response.data might contain the full API response
+      let userAndTokenData: any = response.data;
+      
+      // If the data contains another nested structure (like {status: 'success', data: {...}})
+      if ((userAndTokenData as any).data && typeof (userAndTokenData as any).data === 'object') {
+        userAndTokenData = (userAndTokenData as any).data;
+      }
+
+      const { user: apiUser, token } = userAndTokenData;
       if (!apiUser || !token) {
+        console.error('Response structure:', response);
         throw new Error('No user or token data received');
       }
 
