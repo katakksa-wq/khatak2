@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { Container, Row, Col, Form, Button, Card } from 'react-bootstrap';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { FaPhone, FaLock, FaTruck } from 'react-icons/fa';
+import { FaPhone, FaLock, FaTruck, FaUser } from 'react-icons/fa';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
@@ -13,6 +13,7 @@ import Logo from '@/components/Logo';
 import { toast } from 'react-hot-toast';
 
 export default function DriverRegisterPage() {
+  const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -30,7 +31,7 @@ export default function DriverRegisterPage() {
         throw new Error('كلمات المرور غير متطابقة');
       }
 
-      await register(phone, password, { role: 'DRIVER' });
+      await register(phone, password, { name, role: 'DRIVER' });
       toast.success('تم إنشاء حساب السائق بنجاح');
       router.push('/register/driver/pending');
     } catch (error: any) {
@@ -59,6 +60,23 @@ export default function DriverRegisterPage() {
             </Card.Header>
             <Card.Body className="p-3 p-md-4">
               <Form onSubmit={handleSubmit}>
+                <Form.Group className="mb-3">
+                  <Form.Label><TranslatedText text="auth.name" /></Form.Label>
+                  <div className="input-group">
+                    <span className="input-group-text">
+                      <FaUser />
+                    </span>
+                    <Form.Control
+                      type="text"
+                      name="name"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      placeholder={t('auth.namePlaceholder')}
+                      required
+                    />
+                  </div>
+                </Form.Group>
+
                 <Form.Group className="mb-3">
                   <Form.Label><TranslatedText text="auth.phone" /></Form.Label>
                   <div className="input-group">

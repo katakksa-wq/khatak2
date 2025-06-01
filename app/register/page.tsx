@@ -13,6 +13,7 @@ import Logo from '@/components/Logo';
 import { toast } from 'react-hot-toast';
 
 export default function RegisterPage() {
+  const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -30,7 +31,7 @@ export default function RegisterPage() {
         throw new Error('كلمات المرور غير متطابقة');
       }
 
-      await register(phone, password);
+      await register(phone, password, { name });
       toast.success('تم إنشاء الحساب بنجاح');
       router.push('/dashboard');
     } catch (error: any) {
@@ -59,6 +60,23 @@ export default function RegisterPage() {
             </Card.Header>
             <Card.Body className="p-3 p-md-4">
               <Form onSubmit={handleSubmit}>
+                <Form.Group className="mb-3">
+                  <Form.Label><TranslatedText text="auth.name" /></Form.Label>
+                  <div className="input-group">
+                    <span className="input-group-text">
+                      <FaUser />
+                    </span>
+                    <Form.Control
+                      type="text"
+                      name="name"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      placeholder={t('auth.namePlaceholder')}
+                      required
+                    />
+                  </div>
+                </Form.Group>
+
                 <Form.Group className="mb-3">
                   <Form.Label><TranslatedText text="auth.phone" /></Form.Label>
                   <div className="input-group">

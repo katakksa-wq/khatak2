@@ -171,9 +171,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       // Prepare registration data
       const registrationData: RegisterData = {
-        name: userData.firstName && userData.lastName 
-          ? `${userData.firstName} ${userData.lastName}`
-          : userData.name || formattedPhone, // Use phone as fallback name
+        name: userData.name || 
+              (userData.firstName && userData.lastName 
+                ? `${userData.firstName} ${userData.lastName}`
+                : formattedPhone), // Use phone as fallback name only if no name provided
         phone: formattedPhone,
         password,
         role: userData.role || 'CLIENT', // Default to CLIENT if not specified
