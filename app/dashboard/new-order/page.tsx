@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useOrders } from '@/contexts/OrderContext';
 import { Address } from '@/services/orderService';
 import { PackageDetails } from '@/types';
-import { FaBox, FaMapMarkerAlt, FaTruck, FaMapMarked, FaMobileAlt, FaMoneyBillWave } from 'react-icons/fa';
+import { FaBox, FaMapMarkerAlt, FaTruck, FaMobileAlt, FaMoneyBillWave } from 'react-icons/fa';
 import { useLanguage } from '@/contexts/LanguageContext';
 import styles from './styles.module.css';
 
@@ -23,7 +23,6 @@ const NewOrderPage = () => {
   const { t } = useLanguage();
   const { createOrder, loading: contextLoading, error: contextError } = useOrders();
   const userInitiatedSubmit = useRef(false);
-  const mapRef = useRef<HTMLDivElement>(null);
   
   // Form states
   const [formData, setFormData] = useState({
@@ -46,17 +45,12 @@ const NewOrderPage = () => {
       description: '',
       fragile: false
     },
-    customPrice: '', // For manual price entry
-    mapLocation: {
-      lat: 0,
-      lng: 0,
-      address: ''
-    }
+    customPrice: '' // For manual price entry
   });
   
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [formStep, setFormStep] = useState(1); // 1 = pickup, 2 = delivery, 3 = package details, 4 = map location
+  const [formStep, setFormStep] = useState(1); // 1 = pickup, 2 = delivery, 3 = package details
   const [isSubmitting, setIsSubmitting] = useState(false);
   
   // Track whether we've seen contextLoading become true
@@ -97,14 +91,6 @@ const NewOrderPage = () => {
       }
     }
   }, [contextLoading, resetLoadingStates, isFinalSubmit]);
-
-  // Initialize map when step 4 is active
-  useEffect(() => {
-    if (formStep === 4 && mapRef.current) {
-      // This would be where you'd initialize a map component
-      console.log('Map step active, would initialize map here');
-    }
-  }, [formStep]);
   
   // Handle field changes
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -146,14 +132,6 @@ const NewOrderPage = () => {
       }));
     }
   };
-
-  // Mock function to simulate map location selection
-  const handleMapLocationSelect = (location: { lat: number, lng: number, address: string }) => {
-    setFormData(prev => ({
-      ...prev,
-      mapLocation: location
-    }));
-  };
   
   // Move to next step
   const nextStep = () => {
@@ -182,21 +160,6 @@ const NewOrderPage = () => {
       
       setError(null);
       setFormStep(3);
-    } else if (formStep === 3) {
-      // Validate package details and custom price
-      if (!formData.packageDetails.weight || !formData.customPrice) {
-        setError(t('orders.fillPackageDetails'));
-        return;
-      }
-      
-      // Validate price is a number
-      if (isNaN(parseFloat(formData.customPrice)) || parseFloat(formData.customPrice) <= 0) {
-        setError(t('orders.invalidPrice'));
-        return;
-      }
-      
-      setError(null);
-      setFormStep(4);
     }
   };
   
@@ -242,7 +205,7 @@ const NewOrderPage = () => {
       if (!formData.pickupAddress.street || !formData.pickupAddress.city || 
           !formData.deliveryAddress.street || !formData.deliveryAddress.city ||
           !formData.deliveryAddress.recipientMobileNumber || !formData.packageDetails.weight || 
-          !formData.customPrice || !formData.mapLocation.address) {
+          !formData.customPrice) {
         throw new Error('Please complete all required fields in all steps');
       }
       
@@ -279,13 +242,11 @@ const NewOrderPage = () => {
         city: formData.deliveryAddress.city,
         state: formData.deliveryAddress.state,
         country: formData.deliveryAddress.country,
-        zipCode: '', // Empty string since we don't collect this
-        latitude: formData.mapLocation.lat,
-        longitude: formData.mapLocation.lng
+        zipCode: '' // Empty string since we don't collect this
       };
       
       // Create special notes for API
-      const notes = `Recipient Mobile: ${formData.deliveryAddress.recipientMobileNumber}\nMap Address: ${formData.mapLocation.address}`;
+      const notes = `Recipient Mobile: ${formData.deliveryAddress.recipientMobileNumber}`;
       
       console.log('Creating order with data:', {
         pickupAddress: pickupAddressForAPI,
@@ -304,7 +265,7 @@ const NewOrderPage = () => {
         packageDetails: {
           ...packageDetailsForAPI,
           description: packageDetailsForAPI.description + 
-            `\nRecipient Mobile: ${formData.deliveryAddress.recipientMobileNumber}\nMap Address: ${formData.mapLocation.address}`
+            `\nRecipient Mobile: ${formData.deliveryAddress.recipientMobileNumber}`
         },
         status: 'PENDING',
         paymentStatus: 'PENDING',
@@ -340,23 +301,21 @@ const NewOrderPage = () => {
         <div className={`${styles.progressCircle} ${formStep >= 1 ? styles.progressCircleActive : ''}`}>1</div>
         <div className={`${styles.progressCircle} ${formStep >= 2 ? styles.progressCircleActive : ''}`}>2</div>
         <div className={`${styles.progressCircle} ${formStep >= 3 ? styles.progressCircleActive : ''}`}>3</div>
-        <div className={`${styles.progressCircle} ${formStep >= 4 ? styles.progressCircleActive : ''}`}>4</div>
       </div>
       <div className={styles.progress}>
         <div 
           className={styles.progressBar}
           role="progressbar"
-          style={{ width: `${(formStep / 4) * 100}%` }}
+          style={{ width: `${(formStep / 3) * 100}%` }}
           aria-valuenow={formStep}
           aria-valuemin={1}
-          aria-valuemax={4}
+          aria-valuemax={3}
         ></div>
       </div>
       <div className={styles.progressStep}>
         <div className={`${styles.progressLabel} ${formStep >= 1 ? styles.progressLabelActive : ''}`}>{t('orders.pickup')}</div>
         <div className={`${styles.progressLabel} ${formStep >= 2 ? styles.progressLabelActive : ''}`}>{t('orders.delivery')}</div>
         <div className={`${styles.progressLabel} ${formStep >= 3 ? styles.progressLabelActive : ''}`}>{t('orders.package')}</div>
-        <div className={`${styles.progressLabel} ${formStep >= 4 ? styles.progressLabelActive : ''}`}>{t('orders.location')}</div>
       </div>
     </div>
   );
@@ -372,9 +331,6 @@ const NewOrderPage = () => {
         
       case 3:
         return renderPackageDetailsForm();
-        
-      case 4:
-        return renderMapLocationForm();
         
       default:
         return null;
@@ -573,82 +529,9 @@ const NewOrderPage = () => {
     </div>
   );
   
-  // Render map location form
-  const renderMapLocationForm = () => (
-    <div className="card shadow-sm">
-      <div className="card-header bg-primary bg-opacity-10">
-        <h4 className="card-title mb-0">
-          {t('orders.deliveryLocation')}
-        </h4>
-      </div>
-      <div className="card-body">
-        <div className="alert alert-info mb-4">
-          <FaMapMarked className="me-2" />
-          {t('orders.selectLocation')}
-        </div>
-        
-        <div 
-          ref={mapRef}
-          className="border rounded mb-4"
-          style={{ height: '300px', backgroundColor: '#f8f9fa' }}
-        >
-          <div className="d-flex justify-content-center align-items-center h-100 text-muted">
-            {t('orders.mapPlaceholder')}
-            <br />
-            {t('orders.mapIntegration')}
-          </div>
-        </div>
-        
-        <div className="mb-4">
-          <label className="form-label">{t('orders.selectedLocation')}</label>
-          <input
-            type="text"
-            className="form-control"
-            value={formData.mapLocation.address || t('orders.noLocationSelectedYet')}
-            readOnly
-          />
-        </div>
-        
-        <div className="mb-4">
-          <button
-            type="button"
-            className="btn btn-outline-secondary me-2"
-            onClick={() => handleMapLocationSelect({
-              lat: 37.7749,
-              lng: -122.4194,
-              address: formData.deliveryAddress.street + ', ' + 
-                       formData.deliveryAddress.city + ', ' +
-                       formData.deliveryAddress.state
-            })}
-          >
-            {t('orders.useDeliveryAddress')}
-          </button>
-          
-          <button
-            type="button"
-            className="btn btn-outline-secondary"
-            onClick={() => handleMapLocationSelect({
-              lat: 37.7833,
-              lng: -122.4167,
-              address: 'Custom location selected on map'
-            })}
-          >
-            {t('orders.simulateMapSelection')}
-          </button>
-        </div>
-        
-        <div className="alert alert-warning">
-          <small>
-            <strong>{t('orders.note')}:</strong> {t('orders.realImplementation')}
-          </small>
-        </div>
-      </div>
-    </div>
-  );
-  
   // Final form submit button (only shown on last step)
   const renderSubmitButton = () => {
-    if (formStep === 4) {
+    if (formStep === 3) {
       return (
         <button 
           type="submit" 
@@ -697,7 +580,7 @@ const NewOrderPage = () => {
             </button>
           )}
           
-          {formStep < 4 ? (
+          {formStep < 3 ? (
             <button 
               type="button" 
               className={`btn btn-primary ${formStep === 1 ? 'ms-auto' : ''}`}
