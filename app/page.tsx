@@ -10,6 +10,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import TranslatedText from '@/components/TranslatedText';
 import Logo from '@/components/Logo';
+import { FaStar, FaArrowRight, FaPlay, FaBox, FaTruck, FaCheckCircle, FaArrowUp, FaRocket } from 'react-icons/fa';
 
 interface CTAButton {
   text: string;
@@ -197,7 +198,7 @@ export default function Home() {
               <div className="hero-content">
                 <div className="hero-badge mb-4">
                   <span className="badge-text">
-                    <i className="bi bi-star-fill me-2"></i>
+                    <FaStar className="me-2" />
                     #1 Shipping Platform
                   </span>
                 </div>
@@ -211,10 +212,10 @@ export default function Home() {
                 <div className="hero-actions d-flex flex-column flex-sm-row gap-3 mb-5">
                   <Link href={content.hero.cta.secondary.link || '/register'} className="btn btn-hero-primary btn-lg">
                     <TranslatedText text="nav.signup" />
-                    <i className="bi bi-arrow-right ms-2"></i>
+                    <FaArrowRight className="ms-2" />
                   </Link>
                   <Link href={content.hero.cta.primary.link || '/login'} className="btn btn-hero-secondary btn-lg">
-                    <i className="bi bi-play-circle me-2"></i>
+                    <FaPlay className="me-2" />
                     <TranslatedText text="nav.login" />
                   </Link>
                 </div>
@@ -246,25 +247,25 @@ export default function Home() {
                <div className="hero-visual">
                  <div className="hero-image-container">
                    <div className="floating-card card-1">
-                     <i className="bi bi-box-seam"></i>
+                     <FaBox />
                      <span>Package Ready</span>
                    </div>
                    <div className="floating-card card-2">
-                     <i className="bi bi-truck"></i>
+                     <FaTruck />
                      <span>On the way</span>
                    </div>
                    <div className="floating-card card-3">
-                     <i className="bi bi-check-circle"></i>
+                     <FaCheckCircle />
                      <span>Delivered</span>
                    </div>
                    <div className="hero-illustration">
                      <div className="shipping-graphic">
                        <div className="truck-icon">
-                         <i className="bi bi-truck" style={{ fontSize: '4rem', color: 'white' }}></i>
+                         <FaTruck style={{ fontSize: '4rem', color: 'white' }} />
                        </div>
                        <div className="route-line"></div>
                        <div className="package-icon">
-                         <i className="bi bi-box-seam" style={{ fontSize: '3rem', color: 'white' }}></i>
+                         <FaBox style={{ fontSize: '3rem', color: 'white' }} />
                        </div>
                      </div>
                    </div>
@@ -295,7 +296,9 @@ export default function Home() {
               <div className="col-lg-4 col-md-6" key={index}>
                 <div className="service-card-modern">
                   <div className="service-icon-modern">
-                    <i className={`bi ${service.icon}`}></i>
+                    {index === 0 && <FaBox />}
+                    {index === 1 && <FaTruck />}
+                    {index === 2 && <FaCheckCircle />}
                   </div>
                   <div className="service-content">
                     <h3 className="service-title">
@@ -306,7 +309,7 @@ export default function Home() {
                     </p>
                   </div>
                   <div className="service-arrow">
-                    <i className="bi bi-arrow-up-right"></i>
+                    <FaArrowUp />
                   </div>
                 </div>
               </div>
@@ -339,11 +342,11 @@ export default function Home() {
                         <TranslatedText text={`homepage.howItWorks.${index}.description`} />
                       </p>
                     </div>
-                    {index < content.howItWorks.length - 1 && (
-                      <div className="step-connector">
-                        <i className="bi bi-arrow-right"></i>
-                      </div>
-                    )}
+                                         {index < content.howItWorks.length - 1 && (
+                       <div className="step-connector">
+                         <FaArrowRight />
+                       </div>
+                     )}
                   </div>
                 </div>
               ))}
@@ -355,26 +358,26 @@ export default function Home() {
       {/* CTA Section - Modern Design */}
       <section className="cta-modern">
         <div className="container">
-          <div className="cta-content-modern text-center">
-            <div className="cta-icon mb-4">
-              <i className="bi bi-rocket-takeoff"></i>
-            </div>
+                     <div className="cta-content-modern text-center">
+             <div className="cta-icon mb-4">
+               <FaRocket />
+             </div>
             <h2 className="cta-title mb-4">
               <TranslatedText text="homepage.cta.title" />
             </h2>
             <p className="cta-subtitle mb-5">
               <TranslatedText text="homepage.cta.subtitle" />
             </p>
-            <div className="cta-actions">
-              <Link href={content.cta.buttonLink || '/register'} className="btn btn-cta-primary btn-lg me-3">
-                <TranslatedText text="homepage.cta.buttonText" />
-                <i className="bi bi-arrow-right ms-2"></i>
-              </Link>
-              <Link href="/login" className="btn btn-cta-secondary btn-lg">
-                <i className="bi bi-person-circle me-2"></i>
-                <TranslatedText text="nav.login" />
-              </Link>
-            </div>
+                         <div className="cta-actions">
+               <Link href={content.cta.buttonLink || '/register'} className="btn btn-cta-primary btn-lg me-3">
+                 <TranslatedText text="homepage.cta.buttonText" />
+                 <FaArrowRight className="ms-2" />
+               </Link>
+               <Link href="/login" className="btn btn-cta-secondary btn-lg">
+                 <FaPlay className="me-2" />
+                 <TranslatedText text="nav.login" />
+               </Link>
+             </div>
           </div>
         </div>
       </section>
