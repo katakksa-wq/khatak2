@@ -35,6 +35,8 @@ const defaultTranslations: Translations = {
     
     // Homepage
     'homepage.subtitle': 'Fast and reliable shipping service for all your needs',
+    'services.title': 'Our Services',
+    'howItWorks.title': 'How It Works',
     'homepage.services.0.title': 'Express Delivery',
     'homepage.services.0.description': 'Same-day delivery service for urgent packages',
     'homepage.services.1.title': 'Package Tracking',
@@ -647,6 +649,8 @@ const defaultTranslations: Translations = {
     
     // Homepage
     'homepage.subtitle': 'خدمة شحن سريعة وموثوقة لجميع احتياجاتك',
+    'services.title': 'خدماتنا',
+    'howItWorks.title': 'كيف يعمل',
     'homepage.services.0.title': 'توصيل سريع',
     'homepage.services.0.description': 'خدمة توصيل في نفس اليوم للطرود العاجلة',
     'homepage.services.1.title': 'تتبع الطرود',

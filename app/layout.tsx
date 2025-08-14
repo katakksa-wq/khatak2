@@ -1,7 +1,8 @@
 import type { Metadata } from 'next';
 import { Inter, Tajawal } from 'next/font/google';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import '@/app/globals.css';
+import 'bootstrap-icons/font/bootstrap-icons.css';
+import '@/styles/globals.css';
 import '@/styles/rtl.css';
 import '@/styles/responsive.css';
 import { AuthProvider } from '@/contexts/AuthContext';

@@ -55,7 +55,60 @@ export default function Home() {
   const router = useRouter();
   const { user, loading } = useAuth();
   const { t } = useLanguage();
-  const [content, setContent] = useState<HomeContent | null>(null);
+  
+  // Fallback content structure
+  const fallbackContent: HomeContent = {
+    hero: {
+      title: 'Fast & Reliable Shipping Services',
+      subtitle: 'We connect you with professional drivers to deliver your packages safely and on time.',
+      cta: {
+        primary: { text: 'Sign Up', link: '/register' },
+        secondary: { text: 'Login', link: '/login' }
+      }
+    },
+    services: [
+      {
+        icon: 'bi-box-seam',
+        title: 'Package Shipping',
+        description: 'Fast and secure delivery of your packages to any destination.'
+      },
+      {
+        icon: 'bi-truck',
+        title: 'Same-Day Delivery',
+        description: 'Get your packages delivered on the same day within city limits.'
+      },
+      {
+        icon: 'bi-geo-alt',
+        title: 'Real-Time Tracking',
+        description: 'Track your package\'s location in real-time throughout its journey.'
+      }
+    ],
+    howItWorks: [
+      {
+        step: 1,
+        title: 'Create an Order',
+        description: 'Enter your package details and shipping information.'
+      },
+      {
+        step: 2,
+        title: 'Driver Assignment',
+        description: 'A nearby driver accepts your delivery request.'
+      },
+      {
+        step: 3,
+        title: 'Package Delivery',
+        description: 'Your package is picked up and delivered to its destination.'
+      }
+    ],
+    cta: {
+      title: 'Ready to Ship Your Package?',
+      subtitle: 'Join thousands of satisfied customers who trust our shipping service.',
+      buttonText: 'Get Started',
+      buttonLink: '/register'
+    }
+  };
+  
+  const [content, setContent] = useState<HomeContent>(fallbackContent);
   const [loadingContent, setLoadingContent] = useState(true);
 
   useEffect(() => {
@@ -77,6 +130,8 @@ export default function Home() {
         setContent(response.data);
       } catch (error) {
         console.error('Error fetching home content:', error);
+        // Keep using fallback content if API fails
+        console.log('Using fallback content');
       } finally {
         setLoadingContent(false);
       }
@@ -101,68 +156,157 @@ export default function Home() {
     return null;
   }
 
+  // Content should always be available due to fallback
   if (!content) {
     return (
       <div className="container text-center py-5">
-        <div className="alert alert-warning" role="alert">
-          No content available. Redirecting...
+        <div className="spinner-border text-primary" role="status">
+          <span className="visually-hidden">Loading content...</span>
         </div>
-        <Link href="/login" className="btn btn-primary">
-          Go to Login
-        </Link>
       </div>
     );
   }
 
   return (
-    <main className="container-fluid p-0">
-      {/* Header with language switcher */}
-      <header className="bg-light py-2">
-        <div className="container d-flex justify-content-between align-items-center">
-          <div className="d-flex align-items-center">
-            <Logo showText width={140} height={140} />
-          </div>
-          <LanguageSwitcher />
+    <div className="homepage-container">
+      {/* Modern Header */}
+      <header className="modern-header">
+        <div className="container">
+          <nav className="d-flex justify-content-between align-items-center py-3">
+            <div className="logo-container">
+              <Logo showText width={120} height={120} />
+            </div>
+            <div className="header-actions d-flex align-items-center gap-3">
+              <LanguageSwitcher />
+              <Link href={content.hero.cta.primary.link || '/login'} className="btn btn-outline-primary btn-sm">
+                <TranslatedText text="nav.login" />
+              </Link>
+              <Link href={content.hero.cta.secondary.link || '/register'} className="btn btn-primary btn-sm">
+                <TranslatedText text="nav.signup" />
+              </Link>
+            </div>
+          </nav>
         </div>
       </header>
-      
-      {/* Hero Section */}
-      <section className="bg-primary text-white text-center py-4 py-md-5">
-        <div className="container py-3 py-md-5">
-          <div className="text-center mb-4">
-            <Logo width={280} height={280} className="mb-3" />
+
+      {/* Hero Section - Split Layout */}
+      <section className="hero-modern">
+        <div className="container">
+          <div className="row align-items-center py-5">
+            <div className="col-lg-6">
+              <div className="hero-content">
+                <div className="hero-badge mb-4">
+                  <span className="badge-text">
+                    <i className="bi bi-star-fill me-2"></i>
+                    #1 Shipping Platform
+                  </span>
+                </div>
+                <h1 className="hero-title mb-4">
+                  <TranslatedText text="app.title" />
+                  <span className="title-accent">.</span>
+                </h1>
+                <p className="hero-subtitle mb-5">
+                  <TranslatedText text="homepage.subtitle" />
+                </p>
+                <div className="hero-actions d-flex flex-column flex-sm-row gap-3 mb-5">
+                  <Link href={content.hero.cta.secondary.link || '/register'} className="btn btn-hero-primary btn-lg">
+                    <TranslatedText text="nav.signup" />
+                    <i className="bi bi-arrow-right ms-2"></i>
+                  </Link>
+                  <Link href={content.hero.cta.primary.link || '/login'} className="btn btn-hero-secondary btn-lg">
+                    <i className="bi bi-play-circle me-2"></i>
+                    <TranslatedText text="nav.login" />
+                  </Link>
+                </div>
+                <div className="hero-stats">
+                  <div className="row text-center">
+                    <div className="col-4">
+                      <div className="stat-item">
+                        <div className="stat-number">10K+</div>
+                        <div className="stat-label">Happy Customers</div>
+                      </div>
+                    </div>
+                    <div className="col-4">
+                      <div className="stat-item">
+                        <div className="stat-number">50+</div>
+                        <div className="stat-label">Cities</div>
+                      </div>
+                    </div>
+                    <div className="col-4">
+                      <div className="stat-item">
+                        <div className="stat-number">24/7</div>
+                        <div className="stat-label">Support</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+                         <div className="col-lg-6">
+               <div className="hero-visual">
+                 <div className="hero-image-container">
+                   <div className="floating-card card-1">
+                     <i className="bi bi-box-seam"></i>
+                     <span>Package Ready</span>
+                   </div>
+                   <div className="floating-card card-2">
+                     <i className="bi bi-truck"></i>
+                     <span>On the way</span>
+                   </div>
+                   <div className="floating-card card-3">
+                     <i className="bi bi-check-circle"></i>
+                     <span>Delivered</span>
+                   </div>
+                   <div className="hero-illustration">
+                     <div className="shipping-graphic">
+                       <div className="truck-icon">
+                         <i className="bi bi-truck" style={{ fontSize: '4rem', color: 'white' }}></i>
+                       </div>
+                       <div className="route-line"></div>
+                       <div className="package-icon">
+                         <i className="bi bi-box-seam" style={{ fontSize: '3rem', color: 'white' }}></i>
+                       </div>
+                     </div>
+                   </div>
+                 </div>
+               </div>
+             </div>
           </div>
-          <h1 className="display-5 display-md-4 fw-bold mb-3 mb-md-4"><TranslatedText text="app.title" /></h1>
-          <p className="lead mb-4">
-            <TranslatedText text="homepage.subtitle" />
-          </p>
-          <div className="d-flex flex-column flex-sm-row justify-content-center gap-2 gap-sm-3">
-            <Link href={content?.hero.cta.primary.link || '/login'} className="btn btn-light btn-lg px-4">
-              <TranslatedText text="nav.login" />
-            </Link>
-            <Link href={content?.hero.cta.secondary.link || '/signup'} className="btn btn-outline-light btn-lg px-4">
-              <TranslatedText text="nav.signup" />
-            </Link>
-          </div>
+        </div>
+        <div className="hero-wave">
+          <svg viewBox="0 0 1200 120" preserveAspectRatio="none">
+            <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z"></path>
+          </svg>
         </div>
       </section>
 
-      {/* Services Section */}
-      <section className="py-4 py-md-5">
-        <div className="container">
-          <h2 className="text-center mb-4 mb-md-5"><TranslatedText text="services.title" /></h2>
-          <div className="row g-3 g-md-4">
-            {content?.services.map((service, index) => (
-              <div className="col-12 col-sm-6 col-md-4" key={index}>
-                <div className="card h-100 border-0 shadow-sm">
-                  <div className="card-body text-center p-3 p-md-4">
-                    <div className="mb-3">
-                      <i className={`bi ${service.icon} text-primary`} style={{ fontSize: '2.5rem' }}></i>
-                    </div>
-                    <h3 className="card-title h5"><TranslatedText text={`homepage.services.${index}.title`} /></h3>
-                    <p className="card-text">
+      {/* Services Section - Card Grid */}
+      <section className="services-modern py-5">
+        <div className="container py-5">
+          <div className="section-header text-center mb-5">
+            <div className="section-badge mb-3">
+              <span><TranslatedText text="services.title" /></span>
+            </div>
+            <h2 className="section-title mb-4">What We Offer</h2>
+            <p className="section-subtitle">Comprehensive shipping solutions for all your needs</p>
+          </div>
+          <div className="row g-4">
+            {content.services.map((service, index) => (
+              <div className="col-lg-4 col-md-6" key={index}>
+                <div className="service-card-modern">
+                  <div className="service-icon-modern">
+                    <i className={`bi ${service.icon}`}></i>
+                  </div>
+                  <div className="service-content">
+                    <h3 className="service-title">
+                      <TranslatedText text={`homepage.services.${index}.title`} />
+                    </h3>
+                    <p className="service-description">
                       <TranslatedText text={`homepage.services.${index}.description`} />
                     </p>
+                  </div>
+                  <div className="service-arrow">
+                    <i className="bi bi-arrow-up-right"></i>
                   </div>
                 </div>
               </div>
@@ -171,38 +315,90 @@ export default function Home() {
         </div>
       </section>
 
-      {/* How it Works Section */}
-      <section className="py-4 py-md-5 bg-light">
-        <div className="container">
-          <h2 className="text-center mb-4 mb-md-5"><TranslatedText text="howItWorks.title" /></h2>
-          <div className="row justify-content-center">
-            <div className="col-lg-10">
-              <div className="d-flex flex-column flex-sm-row gap-4">
-                {content?.howItWorks.map((step, index) => (
-                  <div className="text-center mb-3 mb-sm-0" key={index}>
-                    <div className="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style={{ width: '60px', height: '60px' }}>
-                      <span className="fs-4">{step.step}</span>
+      {/* How It Works - Timeline */}
+      <section className="process-modern py-5">
+        <div className="container py-5">
+          <div className="section-header text-center mb-5">
+            <div className="section-badge mb-3">
+              <span><TranslatedText text="howItWorks.title" /></span>
+            </div>
+            <h2 className="section-title mb-4">Simple Process</h2>
+            <p className="section-subtitle">Get your package delivered in just 3 easy steps</p>
+          </div>
+          <div className="process-timeline">
+            <div className="row">
+              {content.howItWorks.map((step, index) => (
+                <div className="col-lg-4" key={index}>
+                  <div className="process-step">
+                    <div className="step-number">{step.step}</div>
+                    <div className="step-content">
+                      <h3 className="step-title">
+                        <TranslatedText text={`homepage.howItWorks.${index}.title`} />
+                      </h3>
+                      <p className="step-description">
+                        <TranslatedText text={`homepage.howItWorks.${index}.description`} />
+                      </p>
                     </div>
-                    <h3 className="h5"><TranslatedText text={`homepage.howItWorks.${index}.title`} /></h3>
-                    <p className="mb-0"><TranslatedText text={`homepage.howItWorks.${index}.description`} /></p>
+                    {index < content.howItWorks.length - 1 && (
+                      <div className="step-connector">
+                        <i className="bi bi-arrow-right"></i>
+                      </div>
+                    )}
                   </div>
-                ))}
-              </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-4 py-md-5 bg-primary text-white">
-        <div className="container text-center">
-          <h2 className="mb-3 mb-md-4"><TranslatedText text="homepage.cta.title" /></h2>
-          <p className="lead mb-3 mb-md-4"><TranslatedText text="homepage.cta.subtitle" /></p>
-          <Link href={content?.cta.buttonLink || '/signup'} className="btn btn-light btn-lg px-4">
-            <TranslatedText text="homepage.cta.buttonText" />
-          </Link>
+      {/* CTA Section - Modern Design */}
+      <section className="cta-modern">
+        <div className="container">
+          <div className="cta-content-modern text-center">
+            <div className="cta-icon mb-4">
+              <i className="bi bi-rocket-takeoff"></i>
+            </div>
+            <h2 className="cta-title mb-4">
+              <TranslatedText text="homepage.cta.title" />
+            </h2>
+            <p className="cta-subtitle mb-5">
+              <TranslatedText text="homepage.cta.subtitle" />
+            </p>
+            <div className="cta-actions">
+              <Link href={content.cta.buttonLink || '/register'} className="btn btn-cta-primary btn-lg me-3">
+                <TranslatedText text="homepage.cta.buttonText" />
+                <i className="bi bi-arrow-right ms-2"></i>
+              </Link>
+              <Link href="/login" className="btn btn-cta-secondary btn-lg">
+                <i className="bi bi-person-circle me-2"></i>
+                <TranslatedText text="nav.login" />
+              </Link>
+            </div>
+          </div>
         </div>
       </section>
-    </main>
+
+      {/* Footer */}
+      <footer className="footer-modern py-4">
+        <div className="container">
+          <div className="row align-items-center">
+            <div className="col-md-6">
+              <div className="d-flex align-items-center">
+                <Logo width={60} height={60} />
+                <span className="footer-text ms-3">© 2024 Khatak. All rights reserved.</span>
+              </div>
+            </div>
+            <div className="col-md-6 text-md-end mt-3 mt-md-0">
+              <div className="footer-links">
+                <Link href="/privacy" className="footer-link me-4">Privacy</Link>
+                <Link href="/terms" className="footer-link me-4">Terms</Link>
+                <Link href="/contact" className="footer-link">Contact</Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
   );
 } 
