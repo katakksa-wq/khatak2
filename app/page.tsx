@@ -179,10 +179,10 @@ export default function Home() {
             </div>
             <div className="header-actions d-flex align-items-center gap-3">
               <LanguageSwitcher />
-              <Link href={content.hero.cta.primary.link || '/login'} className="btn btn-outline-primary btn-sm">
+              <Link href={content.hero.cta.secondary.link || '/login'} className="btn btn-outline-primary btn-sm">
                 <TranslatedText text="nav.login" />
               </Link>
-              <Link href={content.hero.cta.secondary.link || '/register'} className="btn btn-primary btn-sm">
+              <Link href={content.hero.cta.primary.link || '/register'} className="btn btn-primary btn-sm">
                 <TranslatedText text="nav.signup" />
               </Link>
             </div>
