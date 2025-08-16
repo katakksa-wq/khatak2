@@ -73,6 +73,7 @@ interface ApiResponse<T> {
   status: string;
   data: T;
   total?: number;
+  results?: number;
   totalPages?: number;
   currentPage?: number;
 }
