@@ -169,14 +169,16 @@ export default function UsersManagementPage() {
       if (Array.isArray(responseData.data)) {
         usersData = responseData.data;
         totalCount = responseData.total || responseData.data.length;
-      } else if ('users' in responseData.data) {
+      } else if (responseData.data && 'users' in responseData.data) {
         usersData = responseData.data.users;
-        totalCount = responseData.data.total;
+        totalCount = responseData.results || responseData.data.users.length;
       }
       
       setUsers(usersData);
       setTotalUsers(totalCount);
-      setTotalPages(Math.ceil(totalCount / pageSize));
+      // Use totalPages from backend if available, otherwise calculate
+      const totalPagesFromBackend = responseData.totalPages || Math.ceil(totalCount / pageSize);
+      setTotalPages(totalPagesFromBackend);
       setLoading(false);
     } catch (err: any) {
       console.error('Error fetching users:', err);
